@@ -18,15 +18,15 @@ example: FE/feature-name
 
 ```bash
 git commit -m "
-FE: feature-name 
-"```
+FE: feature-name "
+```
 
 or
 
 ```bash
 git commit -m "
-BE: feature-name 
-"```
+BE: feature-name "
+```
 
 4) after commiting changes push it to the repo then go and raise a pull request to merge your branch to the main branch
 
