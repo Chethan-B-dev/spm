@@ -18,4 +18,9 @@ public class ProtectedController {
     public String testPost() {
         return "hello world from post";
     }
+
+    @GetMapping("/hello")
+    public String printHello(){
+        return "Hello from printHello function";
+    }
 }
