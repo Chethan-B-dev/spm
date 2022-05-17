@@ -1,9 +1,11 @@
 package com.example.spm.filter;
 
+import com.example.spm.config.SecurityConfig;
 import com.example.spm.utility.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,49 +27,54 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserDetailsService userDetailsService;
+
+    // todo: handle access denied exception properly
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        if(request.getServletPath().equals("/api/login")) {
-            chain.doFilter(request, response);
+        String path = request.getServletPath();
+
+        for (int i = 0; i < SecurityConfig.whiteListUrls.size(); i++) {
+            if (path.contains(SecurityConfig.whiteListUrls.get(i)))
+                chain.doFilter(request, response);
         }
 
-        final String requestTokenHeader = request.getHeader("Authorization");
+        System.out.println("filtering " + request.getServletPath());
 
-        String email = null;
-        String jwtToken = null;
-        // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
-            try {
-                email = jwtTokenUtil.getUsernameFromToken(jwtToken);
-                System.out.println("email is " + email);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
-                throwErrorToResponse(response, e.getMessage());
-            } catch (ExpiredJwtException e) {
-                System.out.println("JWT Token has expired");
-                throwErrorToResponse(response, e.getMessage());
+        try {
+            final String requestTokenHeader = request.getHeader("Authorization");
+
+            String email = null;
+            String jwtToken = null;
+            // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
+            if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+                jwtToken = requestTokenHeader.substring(7);
+                try {
+                    email = jwtTokenUtil.getUsernameFromToken(jwtToken);
+                    System.out.println("email is " + email);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Unable to get JWT Token");
+                } catch (ExpiredJwtException e) {
+                    System.out.println("JWT Token has expired");
+                }
+            } else {
+                System.out.println("came here inside to no token");
             }
-        } else {
-            throwErrorToResponse(response, null);
-        }
+            // Once we get the token validate it.
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-        // Once we get the token validate it.
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                System.out.println(userDetails);
 
-            System.out.println(userDetails);
+                // if token is valid configure Spring Security to manually set authentication
 
-            // if token is valid configure Spring Security to manually set authentication
-
-            try {
                 if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
@@ -78,27 +85,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     // After setting the Authentication in the context, we specify
                     // that the current user is authenticated. So it passes the Spring Security Configurations successfully.
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                }else {
-                    throwErrorToResponse(response, "JWT Parse Error");
                 }
-                // todo: catch exception properly when given invalid jwt
-            } catch (Exception exception){
-                System.out.println("picked up error");
-                throwErrorToResponse(response, exception.getMessage());
             }
-
+        } catch (Exception exception) {
+            log.warn(exception.getMessage());
+            response.setStatus(FORBIDDEN.value());
+            Map<String, String> error = new HashMap<>();
+            error.put("error", exception.getMessage());
+            response.setContentType(APPLICATION_JSON_VALUE);
+            new ObjectMapper().writeValue(response.getOutputStream(), error);
         }
         chain.doFilter(request, response);
     }
-
-    public void throwErrorToResponse(HttpServletResponse response, String errorMessage) throws IOException {
-        if (errorMessage == null) errorMessage = "JWT Token does not begin with Bearer String";
-        logger.warn("JWT Token does not begin with Bearer String");
-        response.setStatus(FORBIDDEN.value());
-        Map<String, String> error = new HashMap<>();
-        error.put("error", errorMessage);
-        response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), error);
-    }
-
 }

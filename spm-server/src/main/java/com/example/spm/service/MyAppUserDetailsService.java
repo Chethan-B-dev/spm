@@ -28,4 +28,9 @@ public class MyAppUserDetailsService implements UserDetailsService {
             return new MyAppUserDetails(user);
         }
     }
+
+    @Override
+    public String toString() {
+        return "my app user details service";
+    }
 }

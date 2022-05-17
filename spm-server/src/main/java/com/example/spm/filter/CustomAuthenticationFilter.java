@@ -57,7 +57,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         AppUser user = userService.getUser(email);
         MyAppUserDetails myUserDetails = new MyAppUserDetails(user);
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(myUserDetails.getUsername(), password, myUserDetails.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(myUserDetails.getUsername(), password, myUserDetails.getAuthorities());
         return authenticationManager.authenticate(authenticationToken);
     }
 

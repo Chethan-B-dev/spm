@@ -1,6 +1,5 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { HeaderComponent } from "./header/header.component";
 import { SidenavComponent } from "./sidenav/sidenav.component";
 import { RouterModule } from "@angular/router";
 import { AdminComponent } from "./admin/admin.component";
@@ -22,7 +21,6 @@ import { TopNavComponent } from "./top-nav/top-nav.component";
 
 @NgModule({
   declarations: [
-    HeaderComponent,
     SidenavComponent,
     AdminComponent,
     ConfirmDeleteComponent,
@@ -39,7 +37,6 @@ import { TopNavComponent } from "./top-nav/top-nav.component";
   entryComponents: [ConfirmDeleteComponent],
   imports: [RouterModule, CommonModule, AuthModule, MaterialModule],
   exports: [
-    HeaderComponent,
     SidenavComponent,
     AdminComponent,
     ConfirmDeleteComponent,

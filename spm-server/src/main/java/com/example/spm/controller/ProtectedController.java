@@ -11,6 +11,7 @@ public class ProtectedController {
 
     @GetMapping
     public String test() {
+        System.out.println("hit this route");
         return "hello world";
     }
 
@@ -20,7 +21,7 @@ public class ProtectedController {
     }
 
     @GetMapping("/hello")
-    public String printHello(){
+    public String printHello() {
         return "Hello from printHello function";
     }
 }
