@@ -3,8 +3,6 @@ package com.example.spm.filter;
 import com.example.spm.utility.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +32,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+
+        if(request.getServletPath().equals("/api/login")) {
+            chain.doFilter(request, response);
+        }
 
         final String requestTokenHeader = request.getHeader("Authorization");
 
@@ -80,12 +82,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     throwErrorToResponse(response, "JWT Parse Error");
                 }
                 // todo: catch exception properly when given invalid jwt
-            } catch (SignatureException signatureException){
+            } catch (Exception exception){
                 System.out.println("picked up error");
-                throwErrorToResponse(response, signatureException.getMessage());
-            } catch (JwtException jwtException) {
-                System.out.println("picked up error");
-                throwErrorToResponse(response, jwtException.getMessage());
+                throwErrorToResponse(response, exception.getMessage());
             }
 
         }
