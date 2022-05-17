@@ -1,0 +1,70 @@
+<mat-card class="example-card">
+  <div class="left-and-right">
+    <div class="my-flex-start">
+      <button *ngIf="showBackButton" (click)="goBack()" mat-icon-button>
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+
+      <mat-card-title class="mb-3 push-down"> Project title </mat-card-title>
+    </div>
+    <button
+      *ngIf="showAddTask"
+      mat-button
+      color="primary"
+      (click)="openCreateTaskDialog()"
+    >
+      Add Task
+    </button>
+  </div>
+
+  <mat-chip-list aria-label="Fish selection">
+    <mat-chip color="primary" selected>Status</mat-chip>
+    <mat-chip color="warn" selected>Deadline - {{ deadLine | date }}</mat-chip>
+    <mat-chip>Employees - 10</mat-chip>
+    <mat-chip>Tasks - 6</mat-chip>
+    <mat-chip>Backlogs - 3</mat-chip>
+    <mat-chip>Completed - 3</mat-chip>
+    <mat-chip color="accent" selected>Manager</mat-chip>
+  </mat-chip-list>
+
+  <mat-card-subtitle class="py-2">{{ createdDate | date }}</mat-card-subtitle>
+
+  <mat-card-content>
+    <p>This card indeterminates progress bar description.</p>
+  </mat-card-content>
+
+  <app-progress-bar [value]="65"></app-progress-bar>
+
+  <div class="row">
+    <div class="col-md-4" *ngIf="showAddEmps">
+      <mat-form-field appearance="fill">
+        <mat-hint>Assign Employees to Project</mat-hint>
+        <mat-label>Employees</mat-label>
+        <mat-select multiple>
+          <mat-option *ngFor="let topping of toppingList" [value]="topping">{{
+            topping
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-8" *ngIf="showIssueStats">
+      <mat-card>
+        <app-pie-chart></app-pie-chart>
+        <mat-card-actions>
+          <button mat-button>View All Issues</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <mat-card-actions *ngIf="showViewDetailsButton">
+    <button
+      [routerLink]="['/project-detail', 1]"
+      mat-raised-button
+      color="primary"
+    >
+      View Details
+    </button>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,56 @@
+<mat-toolbar>
+  <button
+    mat-icon-button
+    class="example-icon"
+    aria-label="Example icon-button with menu icon"
+  >
+    <mat-icon (click)="toggleSideNav()">menu</mat-icon>
+  </button>
+  <span class="px-2">SPM</span>
+  <button mat-button [routerLink]="'/'"><mat-icon>home</mat-icon> Home</button>
+
+  <button mat-button [matMenuTriggerFor]="projects">Projects</button>
+  <mat-menu #projects="matMenu">
+    <button mat-menu-item>Project 1</button>
+    <button mat-menu-item>Project 2</button>
+  </mat-menu>
+
+  <button matTooltip="Notifications" mat-icon-button class="mr-4">
+    <mat-icon matBadge="15" matBadgeColor="warn"
+      >notification_important</mat-icon
+    >
+  </button>
+
+  <form class="example-form" class="ml-4">
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Search</mat-label>
+      <input matInput placeholder="" />
+    </mat-form-field>
+  </form>
+
+  <span class="example-spacer"></span>
+  <button mat-button routerLink="/profile">
+    <mat-icon> person_pin</mat-icon> Profile
+  </button>
+  <button mat-button><mat-icon>exit_to_app</mat-icon> Logout</button>
+
+  <!-- <button
+    mat-button
+    (click)="toggleAuthButtons()"
+    routerLink="/login"
+    *ngIf="isLoginRoute"
+  >
+    Login
+  </button> -->
+  <button mat-button routerLink="/login">Login</button>
+  <!-- <button
+    mat-button
+    (click)="toggleAuthButtons()"
+    routerLink="/signup"
+    *ngIf="isRegisterRoute"
+  >
+    Register
+  </button>
+   -->
+  <button mat-button routerLink="/signup">Register</button>
+</mat-toolbar>

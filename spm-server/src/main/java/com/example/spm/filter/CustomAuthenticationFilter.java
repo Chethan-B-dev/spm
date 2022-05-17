@@ -1,0 +1,91 @@
+package com.example.spm.filter;
+
+import com.example.spm.model.dto.BadCredentialsResponse;
+import com.example.spm.model.entity.AppUser;
+import com.example.spm.service.AppUserService;
+import com.example.spm.service.MyAppUserDetails;
+import com.example.spm.utility.JwtTokenUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+
+@Slf4j
+public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    private final AuthenticationManager authenticationManager;
+    private final AppUserService userService;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    private final JwtTokenUtil jwtTokenUtil;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public CustomAuthenticationFilter(
+            JwtTokenUtil jwtTokenUtil,
+            AuthenticationManager authenticationManager,
+            AppUserService userService
+    ) {
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.authenticationManager = authenticationManager;
+        this.userService = userService;
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        AppUser user = userService.getUser(email);
+        MyAppUserDetails myUserDetails = new MyAppUserDetails(user);
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(myUserDetails.getUsername(), password, myUserDetails.getAuthorities());
+        return authenticationManager.authenticate(authenticationToken);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        BadCredentialsResponse badCredentialsResponse = BadCredentialsResponse.builder()
+                .timeStamp(LocalDateTime.now().toString())
+                .message("Bad credentials")
+                .build();
+
+        response.setContentType(APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+        objectMapper.writeValue(response.getOutputStream(), badCredentialsResponse);
+    }
+
+    @Override
+    protected void successfulAuthentication(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain,
+            Authentication authentication
+    ) throws IOException, ServletException {
+        UserDetails user = (UserDetails) authentication.getPrincipal();
+        String token = jwtTokenUtil.generateToken(user);
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("token", token);
+        response.setContentType(APPLICATION_JSON_VALUE);
+        objectMapper.writeValue(response.getOutputStream(), tokens);
+    }
+}

@@ -1,0 +1,18 @@
+.row-height{
+  height: 88vh;
+}
+
+.users {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.border-right{
+  border-right: 1px solid black;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

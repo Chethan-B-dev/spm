@@ -1,0 +1,46 @@
+package com.example.spm.controller;
+
+import com.example.spm.model.dto.UserRegisterDTO;
+import com.example.spm.model.entity.AppUser;
+import com.example.spm.service.AppUserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+@RequestMapping("/api/auth")
+public class AuthController {
+
+    private final AppUserService appUserService;
+
+    @GetMapping("/users")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYEE')")
+    public ResponseEntity<List<AppUser>> getUsers() {
+        return ResponseEntity.ok().body(appUserService.getUsers());
+    }
+
+    @GetMapping("/users/pending")
+    public ResponseEntity<List<AppUser>> getPendingUsers() {
+        return ResponseEntity.ok().body(appUserService.getPendingUsers());
+    }
+
+    @PostMapping("/user/save")
+    public ResponseEntity<AppUser> saveUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, BindingResult bindingResult) {
+
+        if (bindingResult.hasFieldErrors()) bindingResult.getFieldErrors().forEach(System.out::println);
+
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
+
+        return ResponseEntity.created(uri).body(appUserService.saveUser(userRegisterDTO));
+    }
+
+}

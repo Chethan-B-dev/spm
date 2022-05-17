@@ -1,0 +1,142 @@
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+  crossorigin="anonymous"
+/>
+
+<div class="row row-height">
+  <!-- project card -->
+
+  <div class="col-md-9 border-right">
+    <div class="container my-3">
+      <app-project-card
+        appSpacing
+        [margin]="100"
+        [padding]="10"
+        [showBackButton]="true"
+        [showAddEmps]="true"
+        [showAddTask]="true"
+        [showIssueStats]="true"
+        [showViewDetailsButton]="false"
+      >
+      </app-project-card>
+    </div>
+  </div>
+  <!-- stats -->
+
+  <div class="col-md-3 tasks">
+    <div class="stats container my-3">
+      <mat-card-title class="mb-3"> Tasks </mat-card-title>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Favorite Food</mat-label>
+        <mat-select [(value)]="selectedFood">
+          <mat-option></mat-option>
+          <mat-option [value]="option" *ngFor="let option of foods">{{
+            option
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-card class="my-2">
+        <div class="left-and-right">
+          <mat-card-title>Task Name</mat-card-title>
+
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </div>
+        <mat-chip-list aria-label="Fish selection">
+          <mat-chip color="primary">
+            <mat-chip-avatar>
+              <mat-icon>person</mat-icon>
+            </mat-chip-avatar>
+            Assignee
+          </mat-chip>
+          <mat-chip color="warn" selected
+            >Deadline - {{ deadLine | date }}</mat-chip
+          >
+        </mat-chip-list>
+        <mat-card-subtitle class="my-2"
+          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
+          alias?</mat-card-subtitle
+        >
+        <mat-card-actions>
+          <button mat-button color="warn" (click)="navigateToTaskDetail(1)">
+            View Details
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <mat-card class="my-2">
+        <mat-card-title>Task Name</mat-card-title>
+        <mat-chip-list aria-label="Fish selection">
+          <mat-chip color="primary">
+            <mat-chip-avatar>
+              <mat-icon>person</mat-icon>
+            </mat-chip-avatar>
+            Assignee
+          </mat-chip>
+          <mat-chip color="warn" selected
+            >Deadline - {{ deadLine | date }}</mat-chip
+          >
+        </mat-chip-list>
+        <mat-card-subtitle class="my-2"
+          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
+          alias?</mat-card-subtitle
+        >
+        <mat-card-actions>
+          <button mat-button color="warn">View Details</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <mat-card class="my-2">
+        <mat-card-title>Task Name</mat-card-title>
+        <mat-chip-list aria-label="Fish selection">
+          <mat-chip color="primary" selected>Assignee</mat-chip>
+          <mat-chip color="warn" selected
+            >Deadline - {{ deadLine | date }}</mat-chip
+          >
+        </mat-chip-list>
+        <mat-card-subtitle class="my-2"
+          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
+          alias?</mat-card-subtitle
+        >
+        <mat-card-actions>
+          <button mat-button color="warn">View Details</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <mat-card class="my-2">
+        <mat-card-title>Task Name</mat-card-title>
+        <mat-chip-list aria-label="Fish selection">
+          <mat-chip color="primary" selected>Assignee</mat-chip>
+          <mat-chip color="warn" selected
+            >Deadline - {{ deadLine | date }}</mat-chip
+          >
+        </mat-chip-list>
+        <mat-card-subtitle class="my-2"
+          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
+          alias?</mat-card-subtitle
+        >
+        <mat-card-actions>
+          <button mat-button color="warn">View Details</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <div class="center my-3">
+        <button
+          mat-button
+          color="accent"
+          class="content-center"
+          *ngIf="!isLoading"
+        >
+          Load More <mat-icon>arrow_downward</mat-icon>
+        </button>
+        <app-loading-spinner
+          color="accent"
+          *ngIf="isLoading"
+        ></app-loading-spinner>
+      </div>
+    </div>
+  </div>
+</div>

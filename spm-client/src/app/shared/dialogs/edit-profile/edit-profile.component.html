@@ -1,0 +1,52 @@
+<mat-card>
+    <mat-card-title class="py-3">Edit Profile Details</mat-card-title>
+
+    <p class="error">
+      error
+    </p>
+
+    <mat-card-content class="py-2">
+      <form>
+        <p>
+          <mat-form-field>
+            <input type="text" matInput placeholder="Username" disabled formControlName="username" value="chethan">
+          </mat-form-field>
+        </p>
+
+        <p>
+          <mat-form-field class="example-full-width">
+              <input value="9591833072" type="tel" matInput placeholder="Phone number" required pattern="[6-9]\\d{9}" maxlength="10">
+              <mat-hint>lol</mat-hint>
+                <mat-error>
+                  Phone number is <strong>required</strong>
+                </mat-error>
+          </mat-form-field>
+          </p>
+
+        <p>
+          <mat-form-field>
+            <input type="password" matInput placeholder="Current Password" formControlName="password">
+          </mat-form-field>
+        </p>
+
+        <p>
+          <mat-form-field>
+            <input type="password" matInput placeholder="New Password" formControlName="password">
+          </mat-form-field>
+        </p>
+
+        <p>
+          <mat-form-field>
+            <input type="password" matInput placeholder="Confirm New Password" formControlName="password">
+          </mat-form-field>
+        </p>
+
+
+
+        <div class="button mt-5">
+          <button type="submit" mat-raised-button color="primary">Save Changes</button>
+        </div>
+
+      </form>
+  </mat-card-content>
+</mat-card>
