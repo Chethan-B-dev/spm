@@ -47,6 +47,7 @@ import { TopNavComponent } from "./top-nav/top-nav.component";
     SpacingDirective,
     LoadingSpinnerComponent,
     PieChartComponent,
+    TopNavComponent,
   ],
 })
 export class SharedModule {}
