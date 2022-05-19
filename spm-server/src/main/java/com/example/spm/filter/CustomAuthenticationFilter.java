@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -54,6 +55,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        if (email == null || password == null) {
+            try {
+                Map<String, String> requestMap = objectMapper.readValue(request.getInputStream(), HashMap.class);
+                email = requestMap.get("email");
+                password = requestMap.get("password");
+            } catch (IOException e) {
+                throw new AuthenticationServiceException(e.getMessage(), e);
+            }
+        }
         AppUser user = userService.getUser(email);
         MyAppUserDetails myUserDetails = new MyAppUserDetails(user);
         UsernamePasswordAuthenticationToken authenticationToken =

@@ -13,7 +13,6 @@ import java.util.List;
 
 @AllArgsConstructor
 public class MyAppUserDetails implements UserDetails {
-
     private final AppUser user;
 
     @Override
