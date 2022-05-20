@@ -28,18 +28,13 @@ public class AuthController {
         return ResponseEntity.ok().body(appUserService.getUsers());
     }
 
-    @GetMapping("/users/pending")
-    public ResponseEntity<List<AppUser>> getPendingUsers() {
-        return ResponseEntity.ok().body(appUserService.getPendingUsers());
-    }
-
     @PostMapping("/user/save")
-    public ResponseEntity<AppUser> saveUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, BindingResult bindingResult) {
-
+    public ResponseEntity<AppUser> saveUser(
+            @RequestBody @Valid UserRegisterDTO userRegisterDTO,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasFieldErrors()) bindingResult.getFieldErrors().forEach(System.out::println);
-
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
-
         return ResponseEntity.created(uri).body(appUserService.saveUser(userRegisterDTO));
     }
 

@@ -1,6 +1,6 @@
 package com.example.spm.filter;
 
-import com.example.spm.model.dto.BadCredentialsResponse;
+import com.example.spm.model.dto.BadCredentialsResponseDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.service.AppUserService;
 import com.example.spm.service.MyAppUserDetails;
@@ -57,7 +57,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
         if (email == null || password == null) {
             try {
-                Map<String, String> requestMap = objectMapper.readValue(request.getInputStream(), HashMap.class);
+                Map<String, String> requestMap =
+                        objectMapper.readValue(request.getInputStream(), HashMap.class);
                 email = requestMap.get("email");
                 password = requestMap.get("password");
             } catch (IOException e) {
@@ -65,6 +66,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             }
         }
         AppUser user = userService.getUser(email);
+        if (user == null)
+            throw new AuthenticationServiceException("Bad Credentials");
         MyAppUserDetails myUserDetails = new MyAppUserDetails(user);
         UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(myUserDetails.getUsername(), password, myUserDetails.getAuthorities());
@@ -72,16 +75,21 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        BadCredentialsResponse badCredentialsResponse = BadCredentialsResponse.builder()
+    protected void unsuccessfulAuthentication
+            (HttpServletRequest request,
+             HttpServletResponse response,
+             AuthenticationException failed
+            ) throws IOException, ServletException {
+
+        BadCredentialsResponseDTO badCredentialsResponseDTO = BadCredentialsResponseDTO.builder()
                 .timeStamp(LocalDateTime.now().toString())
-                .message("Bad credentials")
+                .message(failed.getMessage())
                 .build();
 
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
-        objectMapper.writeValue(response.getOutputStream(), badCredentialsResponse);
+        objectMapper.writeValue(response.getOutputStream(), badCredentialsResponseDTO);
     }
 
     @Override
@@ -91,6 +99,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             FilterChain chain,
             Authentication authentication
     ) throws IOException, ServletException {
+
         UserDetails user = (UserDetails) authentication.getPrincipal();
         String token = jwtTokenUtil.generateToken(user);
         Map<String, String> tokens = new HashMap<>();

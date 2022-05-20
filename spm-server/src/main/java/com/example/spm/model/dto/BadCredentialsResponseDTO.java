@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-public class BadCredentialsResponse {
+public class BadCredentialsResponseDTO {
     private String timeStamp;
     private String message;
 }

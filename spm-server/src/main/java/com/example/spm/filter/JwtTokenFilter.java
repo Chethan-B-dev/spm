@@ -1,6 +1,5 @@
 package com.example.spm.filter;
 
-import com.example.spm.config.SecurityConfig;
 import com.example.spm.utility.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -40,12 +39,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        for (int i = 0; i < SecurityConfig.whiteListUrls.size(); i++) {
-            if (path.contains(SecurityConfig.whiteListUrls.get(i)))
-                chain.doFilter(request, response);
-        }
+        System.out.println("path is "+ path);
 
-        System.out.println("filtering " + request.getServletPath());
+        if (path.equals("/api/login") || path.equals("/api/auth/user/save")){
+            chain.doFilter(request, response);
+            return;
+        }
 
         try {
             final String requestTokenHeader = request.getHeader("Authorization");

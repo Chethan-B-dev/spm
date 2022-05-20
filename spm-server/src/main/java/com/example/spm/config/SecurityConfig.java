@@ -39,7 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    public static final List<String> whiteListUrls = List.of("/api/login", "/api/test/**");
+    public static final List<String> whiteListUrls =
+            List.of("/api/login", "/api/test/**", "/api/auth/**");
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -56,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests().antMatchers(whiteListUrls.toArray(new String[] {})).permitAll();
         http.authorizeRequests().antMatchers("/api/auth/users").hasAnyAuthority("EMPLOYEE");
+        http.authorizeRequests().antMatchers("/api/admin/**").hasAnyAuthority("ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

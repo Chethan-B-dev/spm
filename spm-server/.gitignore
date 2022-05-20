@@ -33,3 +33,5 @@ build/
 .vscode/
 
 spm-server/src/main/resources/application.properties
+
+!**/src/main/resources/application.properties
