@@ -11,12 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.Servlet;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -33,29 +30,27 @@ public class ManagerController {
                 managerService.getAllProjects(loggedInUser.getUser().getId()), HttpStatus.OK
         );
     }
-
-    @PostMapping("create-project")
+    @PostMapping("/create-project")
     public ResponseEntity<Project> createProject (
             @RequestBody @Valid CreateProjectDTO createProjectDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-        if(bindingResult.hasFieldErrors()) bindingResult.getFieldErrors().forEach(System.out::println);
+        managerService.handleProjectValidationErrors(bindingResult);
         return new ResponseEntity<>(
-                managerService.createProject(createProjectDTO, myAppUserDetails), HttpStatus.OK
+                managerService.createProject(createProjectDTO, loggedInUser), HttpStatus.OK
         );
     }
 
     @Transactional
-    @PutMapping("assign-user/{projectId}")
+    @PutMapping("/assign-user/{projectId}")
     public void addUserToProject (
             @PathVariable Integer projectId,
             @RequestBody List<Integer> userIds,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         System.out.println(userIds);
-
     }
     /*
     ** todo: create project

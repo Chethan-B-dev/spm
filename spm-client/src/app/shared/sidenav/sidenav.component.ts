@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { MatDialog } from "@angular/material";
+import { AddProjectComponent } from "src/app/manager/dialogs/add-project/add-project.component";
 import { EditProfileComponent } from "../dialogs/edit-profile/edit-profile.component";
 
 @Component({
@@ -24,5 +25,13 @@ export class SidenavComponent {
   toggleAuthButtons(): void {
     this.isLoginRoute = !this.isLoginRoute;
     this.isRegisterRoute = !this.isRegisterRoute;
+  }
+
+  openAddProjectDialog(): void {
+    const dialogRef = this.dialog.open(AddProjectComponent);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+    });
   }
 }

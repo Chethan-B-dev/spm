@@ -1,6 +1,7 @@
 package com.example.spm.exception;
 
 import com.example.spm.model.dto.GeneralExceptionResponseDTO;
+import com.example.spm.model.dto.ProjectValidationErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,6 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -55,6 +59,17 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = ProjectValidationException.class)
+    public ResponseEntity<ProjectValidationErrorResponseDTO> userNotLoggedInException(ProjectValidationException projectValidationException) {
+        String[] errors = projectValidationException.getMessage().split(",");
+        List<String> errorsList = new ArrayList<>(Arrays.asList(errors));
+        ProjectValidationErrorResponseDTO projectValidationErrorResponseDTO = ProjectValidationErrorResponseDTO.builder()
+                .errors(errorsList)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(projectValidationErrorResponseDTO, HttpStatus.NOT_ACCEPTABLE);
     }
 
     // todo: handle this error when token is invalid

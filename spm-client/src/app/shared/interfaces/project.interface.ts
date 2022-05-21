@@ -1,0 +1,17 @@
+import { IAppUser } from "./user.interface";
+
+export interface IProject {
+  id: number;
+  name: string;
+  manager: IAppUser;
+  fromDate: Date;
+  toDate: Date;
+  status: ProjectStatus;
+  description: string;
+  users: IAppUser[];
+}
+
+enum ProjectStatus {
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETE = "COMPLETE",
+}

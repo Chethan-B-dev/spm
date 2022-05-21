@@ -1,4 +1,7 @@
 import { Component, OnInit } from "@angular/core";
+import { BehaviorSubject, Subject } from "rxjs";
+import { switchMap, takeUntil } from "rxjs/operators";
+import { ManagerService } from "../services/manager.service";
 
 @Component({
   selector: "app-dashboard",
@@ -9,18 +12,21 @@ export class DashboardComponent implements OnInit {
   typesOfShoes: string[] = ["hello", "world"];
   createdDate: Date = new Date();
   deadLine: Date = new Date();
-  isLoading: boolean = false;
+  isLoadingSubject = new BehaviorSubject<boolean>(false);
+  private errorMessageSubject = new Subject<string>();
+  errorMessage$ = this.errorMessageSubject.asObservable();
+  private readonly destroy$ = new Subject();
 
-  constructor() {}
+  get isLoading$() {
+    return this.isLoadingSubject.asObservable();
+  }
+
+  projects$ = this.managerService.refresh.pipe(
+    takeUntil(this.destroy$),
+    switchMap(() => this.managerService.getAllProjects())
+  );
+
+  constructor(private managerService: ManagerService) {}
 
   ngOnInit() {}
-
-  loadMoreDate(): void {
-    this.isLoading = true;
-    setTimeout(() => {
-      let moreDate = ["lol", "dude", "how", "are", "you"];
-      this.typesOfShoes = [...this.typesOfShoes, ...moreDate];
-      this.isLoading = false;
-    }, 3000);
-  }
 }

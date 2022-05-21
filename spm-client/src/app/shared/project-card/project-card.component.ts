@@ -6,6 +6,7 @@ import {
   MAT_DIALOG_DATA,
 } from "@angular/material/dialog";
 import { CreateTaskComponent } from "src/app/manager/dialogs/create-task/create-task.component";
+import { IProject } from "../interfaces/project.interface";
 
 @Component({
   selector: "app-project-card",
@@ -13,6 +14,7 @@ import { CreateTaskComponent } from "src/app/manager/dialogs/create-task/create-
   styleUrls: ["./project-card.component.scss"],
 })
 export class ProjectCardComponent implements OnInit {
+  @Input() project: IProject;
   createdDate: Date = new Date();
   name: string = "testProject";
   deadLine: Date = new Date();
