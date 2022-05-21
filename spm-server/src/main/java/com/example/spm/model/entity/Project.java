@@ -35,9 +35,9 @@ public class Project {
     private AppUser manager;
     @Column(nullable = false, unique = true)
     private String name;
-    private LocalDate fromDate = LocalDate.now();
+    private LocalDate fromDate;
     private LocalDate toDate;
-    private ProjectStatus status = ProjectStatus.IN_PROGRESS;
+    private ProjectStatus status;
     private String description;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
