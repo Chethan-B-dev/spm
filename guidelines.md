@@ -4,7 +4,7 @@ BE - Backend
 1) when starting to work on the project always pull the latest copy from the repo
 
 ```bash
-git pull
+git pull origin main
 ```
 
 2) Whenever creating or working on a new Feature, create a new branch with the format given below
