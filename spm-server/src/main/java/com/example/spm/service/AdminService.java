@@ -1,5 +1,6 @@
 package com.example.spm.service;
 
+import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.UserNotFoundException;
 import com.example.spm.model.dto.AdminDecisionDTO;
 import com.example.spm.model.entity.AppUser;
@@ -48,7 +49,7 @@ public class AdminService {
     public AppUser enableUser (Integer userId) {
         AppUser appUser = checkIfUserExists(userId);
         if (!appUser.getStatus().equals(UserStatus.DISABLED)) {
-            throw new IllegalStateException("that action is not allowed");
+            throw new ActionNotAllowedException("that action is not allowed");
         }
         appUser.setStatus(UserStatus.UNVERIFIED);
         return appUserRepository.save(appUser);

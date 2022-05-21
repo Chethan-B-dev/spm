@@ -6,13 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = UserNotFoundException.class)
-    public ResponseEntity<GeneralExceptionResponseDTO> blogNotFoundException(UserNotFoundException userNotFoundException) {
+    public ResponseEntity<GeneralExceptionResponseDTO> userNotFoundException(UserNotFoundException userNotFoundException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
                 .error(userNotFoundException.getMessage())
@@ -30,7 +31,30 @@ public class GlobalExceptionHandler {
                 .timeStamp(LocalDateTime.now())
                 .build();
 
-        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(value = UserNotLoggedInException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> userNotLoggedInException(UserNotLoggedInException userNotLoggedInException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(userNotLoggedInException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.UNAUTHORIZED);
+    }
+
+    // todo: handle this error when token is invalid
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> accessDeniedException(AccessDeniedException accessDeniedException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(accessDeniedException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(value = Exception.class)

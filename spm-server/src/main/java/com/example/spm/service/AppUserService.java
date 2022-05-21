@@ -1,5 +1,6 @@
 package com.example.spm.service;
 
+import com.example.spm.exception.UserNotLoggedInException;
 import com.example.spm.model.dto.UserRegisterDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.enums.UserStatus;
@@ -50,4 +51,11 @@ public class AppUserService {
     public boolean deleteUserByEmail(String email) {
         return appUserRepository.deleteByEmail(email).equals(1);
     }
+
+    public static MyAppUserDetails checkIfUserIsLoggedIn(MyAppUserDetails myAppUserDetails) {
+        if (myAppUserDetails == null)
+            throw new UserNotLoggedInException("Please Log in");
+        return myAppUserDetails;
+    }
+
 }
