@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { LoginComponent } from "./auth/login/login.component";
 import { SignupComponent } from "./auth/signup/signup.component";
+import { EmployeeDashboardComponent } from "./employee/employee-dashboard/employee-dashboard.component";
 import { DashboardComponent } from "./manager/dashboard/dashboard.component";
 import { ManagerProjectDetailComponent } from "./manager/manager-project-detail/manager-project-detail.component";
 import { ManagerTaskDetailComponent } from "./manager/manager-task-detail/manager-task-detail.component";
@@ -20,6 +21,7 @@ const routes: Routes = [
     component: DashboardComponent,
   },
   { path: "task-detail/:id", component: ManagerTaskDetailComponent },
+  { path: "employee-dashboard", component: EmployeeDashboardComponent  },
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];
