@@ -32,6 +32,18 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.FORBIDDEN);
+
+    }
+
+    @ExceptionHandler(value = ProjectAlreadyExistsException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> projectAlreadyExistsException(ProjectAlreadyExistsException projectAlreadyExistsException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(projectAlreadyExistsException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(value = UserNotLoggedInException.class)
@@ -59,7 +71,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<GeneralExceptionResponseDTO> generalException(Exception exception) {
-
+        exception.printStackTrace();
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
                 .error(exception.getMessage())

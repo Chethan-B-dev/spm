@@ -33,6 +33,7 @@ public class AuthController {
             @RequestBody @Valid UserRegisterDTO userRegisterDTO,
             BindingResult bindingResult
     ) {
+        System.out.println(userRegisterDTO);
         if (bindingResult.hasFieldErrors()) bindingResult.getFieldErrors().forEach(System.out::println);
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
         return ResponseEntity.created(uri).body(appUserService.saveUser(userRegisterDTO));
