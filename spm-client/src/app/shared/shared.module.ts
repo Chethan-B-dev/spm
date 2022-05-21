@@ -18,6 +18,8 @@ import { TaskCardComponent } from "./task-card/task-card.component";
 import { MaterialModule } from "./material/material.module";
 import { NotifcationMenuComponent } from "./notifcation-menu/notifcation-menu.component";
 import { TopNavComponent } from "./top-nav/top-nav.component";
+import { AdminApiService } from "./services/admin-api.service";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -35,7 +37,13 @@ import { TopNavComponent } from "./top-nav/top-nav.component";
     TopNavComponent,
   ],
   entryComponents: [ConfirmDeleteComponent],
-  imports: [RouterModule, CommonModule, AuthModule, MaterialModule],
+  imports: [
+    RouterModule,
+    CommonModule,
+    AuthModule,
+    MaterialModule,
+    HttpClientModule,
+  ],
   exports: [
     SidenavComponent,
     AdminComponent,
@@ -49,5 +57,6 @@ import { TopNavComponent } from "./top-nav/top-nav.component";
     PieChartComponent,
     TopNavComponent,
   ],
+  providers: [AdminApiService],
 })
 export class SharedModule {}

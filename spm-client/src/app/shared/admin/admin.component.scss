@@ -1,4 +1,4 @@
-.push-to-right{
+.push-to-right {
   display: flex;
   justify-content: flex-end;
 }
@@ -11,4 +11,13 @@
 .left-and-right {
   display: flex;
   justify-content: space-between;
+}
+
+mat-chip {
+  padding: 4px 9px !important;
+  font-size: 0.7em;
+}
+
+.mat-badge-content {
+  font-family: "Material Icons";
 }

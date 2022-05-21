@@ -18,7 +18,7 @@ public class AdminController {
     // tested authorization working fine only for admin role
     private final AdminService adminService;
 
-    //tested working fine
+    //tested working fine, frontend done
     @GetMapping
     public ResponseEntity<List<AppUser>> getAllUsers() {
         return new ResponseEntity<>(
@@ -27,7 +27,7 @@ public class AdminController {
         );
     }
 
-    //tested working fine
+    //tested working fine, frontend done
     @GetMapping("/pending")
     public ResponseEntity<List<AppUser>> getPendingUsers() {
         return new ResponseEntity<>(

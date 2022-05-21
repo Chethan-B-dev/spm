@@ -17,9 +17,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -52,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(jwtTokenUtil,
                 authenticationManagerBean(), userService);
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+        http.cors();
         http.csrf().disable();
         http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
         http.sessionManagement().sessionCreationPolicy(STATELESS);
@@ -61,18 +59,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-    }
-
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
     }
 
     @Bean

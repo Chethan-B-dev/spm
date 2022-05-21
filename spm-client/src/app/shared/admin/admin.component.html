@@ -1,72 +1,100 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+  crossorigin="anonymous"
+/>
 
 <div class="container py-3">
-  <div>
-
-    <h4 style="display: inline-block;padding: 15px;">Users</h4>
-
-    <mat-form-field>
-      <mat-label>Select</mat-label>
-      <mat-select>
-        <mat-option value="one">First option</mat-option>
-        <mat-option value="two">Second option</mat-option>
-      </mat-select>
+  <div class="left-and-right">
+    <div>
+      <h4 style="display: inline-block; padding: 15px">Users</h4>
+      <mat-form-field>
+        <mat-label>Select</mat-label>
+        <mat-select
+          [(value)]="defaultUserCategory"
+          (selectionChange)="onUserCategoryChange($event.value)"
+        >
+          <mat-option value="UNVERIFIED" selected>Pending Users</mat-option>
+          <mat-option value="ALL">All Users</mat-option>
+          <mat-option value="VERIFIED">Verified Users</mat-option>
+          <mat-option value="DISABLED">Disabled Users</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Search</mat-label>
+      <input
+        (keyup)="searchUser($event.target.value)"
+        matInput
+        placeholder="Search by username"
+      />
     </mat-form-field>
-
   </div>
 
-<div class="row">
+  <div class="row" *ngIf="users$ | async as users">
+    <div class="col-md-4" *ngFor="let user of users">
+      <mat-card class="example-card">
+        <div class="left-and-right">
+          <div class="intro-header">
+            <div class="inner-header">
+              <mat-card-title
+                ><span
+                  [matBadge]="user.status === 'VERIFIED' ? 'check' : 'close'"
+                  [matBadgeColor]="
+                    user.status === 'VERIFIED' ? 'primary' : 'warn'
+                  "
+                  matBadgeOverlap="false"
+                  >{{ user.username }}</span
+                >
+              </mat-card-title>
+              <mat-card-subtitle>{{ user.role | titlecase }}</mat-card-subtitle>
+            </div>
+          </div>
+          <!-- todo: send the id to delete to the modal later -->
+          <button mat-mat-icon-button (click)="openDeleteConfirmDialog()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
 
-  <div class="col-md-4">
-    <mat-card class="example-card">
-      <div class="left-and-right">
-        <mat-card-title>Username </mat-card-title>
-        <button mat-button (click)="openDeleteConfirmDialog()">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-      <mat-card-subtitle>Role</mat-card-subtitle>
-      <mat-card-actions class="push-to-right">
-        <button mat-raised-button color="primary">Approve</button>
-        <button mat-raised-button color="warn">Reject</button>
-      </mat-card-actions>
-    </mat-card>
+        <mat-divider></mat-divider>
+
+        <mat-card-actions class="push-to-right">
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="
+              user.status === 'VERIFIED' || user.status === 'DISABLED'
+            "
+            (click)="takeDecision(user.id, 'APPROVE')"
+          >
+            Approve
+          </button>
+          <button
+            mat-raised-button
+            color="warn"
+            [disabled]="
+              user.status === 'UNVERIFIED' || user.status === 'DISABLED'
+            "
+            (click)="takeDecision(user.id, 'REJECT')"
+          >
+            Reject
+          </button>
+
+          <button
+            mat-raised-button
+            color="accent"
+            *ngIf="user.status === 'DISABLED'"
+            (click)="enableUser(user.id)"
+          >
+            Enable
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <div *ngIf="users.length === 0">
+      <mat-card>No users to display</mat-card>
+    </div>
   </div>
-
-  <div class="col-md-4">
-    <mat-card class="example-card">
-      <div class="left-and-right">
-        <mat-card-title>Username </mat-card-title>
-        <button mat-button>
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-      <mat-card-subtitle>Role</mat-card-subtitle>
-      <mat-card-actions class="push-to-right">
-        <button mat-raised-button color="primary">Approve</button>
-        <button mat-raised-button color="warn">Reject</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-
-  <div class="col-md-4">
-    <mat-card class="example-card">
-      <div class="left-and-right">
-        <mat-card-title>Username </mat-card-title>
-        <button mat-button>
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-      <mat-card-subtitle>Role</mat-card-subtitle>
-      <mat-card-actions class="push-to-right">
-        <button mat-raised-button color="primary">Approve</button>
-        <button mat-raised-button color="warn">Reject</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-
 </div>
-
-</div>
-
-

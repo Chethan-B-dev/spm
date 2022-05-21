@@ -39,8 +39,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        System.out.println("path is "+ path);
-
         if (path.equals("/api/login") || path.equals("/api/auth/user/save")){
             chain.doFilter(request, response);
             return;
@@ -56,7 +54,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 jwtToken = requestTokenHeader.substring(7);
                 try {
                     email = jwtTokenUtil.getUsernameFromToken(jwtToken);
-                    System.out.println("email is " + email);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Unable to get JWT Token");
                 } catch (ExpiredJwtException e) {
@@ -69,8 +66,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
-                System.out.println(userDetails);
 
                 // if token is valid configure Spring Security to manually set authentication
 
