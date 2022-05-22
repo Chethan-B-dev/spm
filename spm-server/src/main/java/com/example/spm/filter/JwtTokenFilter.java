@@ -1,7 +1,6 @@
 package com.example.spm.filter;
 
 import com.example.spm.utility.JwtTokenUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,11 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +23,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final UserDetailsService userDetailsService;
+
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     // todo: handle access denied exception properly
 
@@ -58,8 +54,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 //                } catch (ExpiredJwtException e) {
 //                    System.out.println("JWT Token has expired");
 //                }
-            } else {
-                System.out.println("came here inside to no token");
             }
             // Once we get the token validate it.
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -81,12 +75,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception exception) {
-            log.warn(exception.getMessage());
-            response.setStatus(FORBIDDEN.value());
-            Map<String, String> error = new HashMap<>();
-            error.put("error", exception.getMessage());
-            response.setContentType(APPLICATION_JSON_VALUE);
-            new ObjectMapper().writeValue(response.getOutputStream(), error);
+            log.error(exception.getMessage());
         }
         chain.doFilter(request, response);
     }

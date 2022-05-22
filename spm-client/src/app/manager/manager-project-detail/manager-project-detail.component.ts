@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog, MatSnackBar } from "@angular/material";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import { Observable, Subject } from "rxjs";
-import { switchMap, takeUntil } from "rxjs/operators";
+import { EMPTY, Observable, Subject } from "rxjs";
+import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { ManagerService } from "../services/manager.service";
 
@@ -36,6 +36,13 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
     });
     this.project$ = this.managerService.refresh.pipe(
       takeUntil(this.destroy$),
+      catchError((err) => {
+        err.error instanceof ErrorEvent
+          ? this.showSnackBar(JSON.stringify(err.error.message))
+          : this.showSnackBar(err.message);
+        this.errorMessageSubject.next(err.message);
+        return EMPTY;
+      }),
       switchMap(() => this.managerService.getProjectById(this.projectId))
     );
   }

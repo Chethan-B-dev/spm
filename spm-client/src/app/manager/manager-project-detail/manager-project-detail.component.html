@@ -11,6 +11,7 @@
   <div class="col-md-9 border-right">
     <div class="container my-3">
       <app-project-card
+        *ngIf="project$ | async as project"
         appSpacing
         [margin]="100"
         [padding]="10"
@@ -19,24 +20,21 @@
         [showAddTask]="true"
         [showIssueStats]="true"
         [showViewDetailsButton]="false"
-        [project]="project$ | async"
+        [project]="project"
       >
       </app-project-card>
     </div>
   </div>
-  <!-- stats -->
 
+  <!-- stats -->
   <div class="col-md-3 tasks">
     <div class="stats container my-3">
       <mat-card-title class="mb-3"> Tasks </mat-card-title>
 
       <mat-form-field appearance="fill">
-        <mat-label>Favorite Food</mat-label>
+        <mat-label>Task Progress</mat-label>
         <mat-select [(value)]="selectedFood">
           <mat-option></mat-option>
-          <mat-option [value]="option" *ngFor="let option of foods">{{
-            option
-          }}</mat-option>
         </mat-select>
       </mat-form-field>
 

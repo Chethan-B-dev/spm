@@ -2,6 +2,7 @@ package com.example.spm.utility;
 
 
 import com.example.spm.repository.AppUserRepository;
+import com.example.spm.repository.ProjectRepository;
 import com.example.spm.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -15,6 +16,8 @@ public class SeedClass implements CommandLineRunner {
     private final AppUserService appUserService;
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProjectRepository projectRepository;
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -52,5 +55,10 @@ public class SeedClass implements CommandLineRunner {
 //                .build();
 //
 //        appUserService.saveUser(admin);
+
+//        AppUser user = appUserRepository.getById(35);
+//        Project project = projectRepository.getById(3);
+//        project.getUsers().add(user);
+//        projectRepository.save(project);
     }
 }

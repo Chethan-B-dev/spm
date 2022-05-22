@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/manager")
@@ -56,14 +55,14 @@ public class ManagerController {
         );
     }
 
-    @GetMapping("/employees")
+    @GetMapping("/employees/{projectId}")
     public ResponseEntity<List<AppUser>> getAllEmployees (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable Integer projectId
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getAllVerifiedEmployees(), HttpStatus.OK
+                managerService.getAllVerifiedEmployees(projectId, loggedInUser), HttpStatus.OK
         );
     }
 
@@ -87,12 +86,12 @@ public class ManagerController {
             @RequestBody ProjectUserDTO projectUserDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-        System.out.println(projectUserDTO.getUserIds());
-        for (Integer userId : projectUserDTO.getUserIds()) {
-            managerService.addUserToProject(projectId, userId);
-            System.out.println(userId);
-        }
+//        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+//        System.out.println(projectUserDTO.getUserIds());
+//        for (Integer userId : projectUserDTO.getUserIds()) {
+//            managerService.addUserToProject(projectId, userId);
+//            System.out.println(userId);
+//        }
     }
     /*
     ** todo: create project

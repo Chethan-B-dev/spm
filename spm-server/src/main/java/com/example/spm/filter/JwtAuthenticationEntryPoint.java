@@ -26,15 +26,13 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException {
-
         response.setContentType(APPLICATION_JSON_VALUE);
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         GeneralAuthExceptionDTO generalExceptionResponseDTO = GeneralAuthExceptionDTO
                 .builder()
                 .error("User not authenticated or JWT is expired")
                 .timestamp(LocalDateTime.now().toString())
                 .build();
         new ObjectMapper().writeValue(response.getOutputStream(), generalExceptionResponseDTO);
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

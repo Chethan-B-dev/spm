@@ -7,6 +7,7 @@ import { Injectable } from "@angular/core";
 import { tap, catchError } from "rxjs/operators";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
 import { IProject } from "src/app/shared/interfaces/project.interface";
+import { IAppUser } from "src/app/shared/interfaces/user.interface";
 
 @Injectable({
   providedIn: "root",
@@ -32,7 +33,30 @@ export class ManagerService {
   getAllProjects(): Observable<IProject[]> {
     return this.http
       .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
-      .pipe(tap(console.log), catchError(this.handleError));
+      .pipe(catchError(this.handleError));
+  }
+
+  getAllEmployees(projectId: number): Observable<IAppUser[]> {
+    return this.http
+      .get<IAppUser[]>(`${this.managerUrl}/employees/${projectId}`, {
+        headers: this.headers,
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  addEmployees(projectId: number, userIds: number[]): Observable<IProject> {
+    const requestBody = {
+      projectId,
+      userIds,
+    };
+    return this.http
+      .post<IProject>(`${this.managerUrl}/assign-user`, requestBody, {
+        headers: this.headers,
+      })
+      .pipe(
+        tap(() => this.refreshSubject.next(null)),
+        catchError(this.handleError)
+      );
   }
 
   getProjectById(projectId: number): Observable<IProject> {
@@ -58,7 +82,7 @@ export class ManagerService {
         headers: this.headers,
       })
       .pipe(
-        tap((response) => this.refreshSubject.next(null)),
+        tap(() => this.refreshSubject.next(null)),
         catchError(this.handleError)
       );
   }

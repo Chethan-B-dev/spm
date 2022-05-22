@@ -2,8 +2,12 @@ package com.example.spm.exception;
 
 import com.example.spm.model.dto.GeneralExceptionResponseDTO;
 import com.example.spm.model.dto.ProjectValidationErrorResponseDTO;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -83,6 +87,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(projectValidationErrorResponseDTO, HttpStatus.NOT_ACCEPTABLE);
     }
 
+
+
     // todo: handle this error when token is invalid
     @ExceptionHandler(value = AccessDeniedException.class)
     public ResponseEntity<GeneralExceptionResponseDTO> accessDeniedException(AccessDeniedException accessDeniedException) {
@@ -93,6 +99,60 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.FORBIDDEN);
+    }
+    @ExceptionHandler(value = InsufficientAuthenticationException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> insufficientAuthException(InsufficientAuthenticationException insufficientAuthenticationException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(insufficientAuthenticationException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = MalformedJwtException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> malformedJWTException(MalformedJwtException malformedJwtException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(malformedJwtException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = JwtException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> jwtException(JwtException jwtException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(jwtException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = ExpiredJwtException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> jwtException(ExpiredJwtException jwtException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(jwtException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> illegalArgumentException(IllegalArgumentException illegalArgumentException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(illegalArgumentException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(value = Exception.class)

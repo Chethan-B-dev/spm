@@ -39,19 +39,28 @@
     <p>{{ project.description }}</p>
   </mat-card-content>
 
+  <!-- todo: calculate progress based on tasks completed -->
   <app-progress-bar [value]="65"></app-progress-bar>
 
   <div class="row">
-    <div class="col-md-4" *ngIf="showAddEmps">
-      <mat-form-field appearance="fill">
+    <div class="col-md-4 left" *ngIf="showAddEmps">
+      <mat-form-field appearance="fill" *ngIf="users$ | async as users">
         <mat-hint>Assign Employees to Project</mat-hint>
         <mat-label>Employees</mat-label>
-        <mat-select multiple>
-          <mat-option *ngFor="let topping of toppingList" [value]="topping">{{
-            topping
+        <mat-select multiple [(value)]="employees">
+          <mat-option *ngFor="let user of users" [value]="user.id">{{
+            user.username + " : " + user.email
           }}</mat-option>
         </mat-select>
       </mat-form-field>
+
+      <button
+        mat-icon-button
+        aria-label="Example icon button with a vertical three dot icon"
+        (click)="addEmployees()"
+      >
+        <mat-icon>sync</mat-icon>
+      </button>
     </div>
 
     <div class="col-md-8" *ngIf="showIssueStats">

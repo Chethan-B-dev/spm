@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @AllArgsConstructor
@@ -46,5 +47,18 @@ public class AppUser {
         this.role = role;
         this.phone = phone;
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppUser appUser = (AppUser) o;
+        return id.equals(appUser.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
