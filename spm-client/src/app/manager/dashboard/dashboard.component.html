@@ -8,18 +8,17 @@
 <div class="row row-height" *ngIf="projects$ | async as projects">
   <!-- project cards -->
 
-  <div class="col-md-9 border-right" *ngFor="let project of projects">
+  <div class="col-md-9 border-right">
     <div class="container my-3">
       <h4 class="py-2">Projects</h4>
 
       <app-project-card
+        *ngFor="let project of projects"
         appSpacing
         [margin]="100"
         [padding]="10"
         [project]="project"
       ></app-project-card>
-
-      <mat-divider></mat-divider>
 
       <div class="center my-3">
         <button mat-button color="accent" class="content-center">

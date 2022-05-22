@@ -27,6 +27,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = ProjectNotFoundException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> projectNotFoundException(ProjectNotFoundException projectNotFoundException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(projectNotFoundException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(value = ActionNotAllowedException.class)
     public ResponseEntity<GeneralExceptionResponseDTO> actionNotAllowedException(ActionNotAllowedException actionNotAllowedException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO

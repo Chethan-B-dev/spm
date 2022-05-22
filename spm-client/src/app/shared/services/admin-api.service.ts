@@ -29,7 +29,7 @@ export class AdminApiService {
   headers = new HttpHeaders({
     "Content-Type": "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJFTVBMT1lFRSIsImV4cCI6MTY1MzE0MDk0MCwiaWF0IjoxNjUzMTIyOTQwfQ.sATfhxTqgq4NzhrElR9mL4zKrFURWhyCHPil9cIy0HhFJeDEL883UrYRxnIHsDS2jh9zg0Tj5wJr6D2SNncvOA",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTY1MzIwNDY0MCwiaWF0IjoxNjUzMTg2NjQwfQ.FdK4r-iaUvDehytbgHsCBFWcNikhiHIxJycUS6AJNnRWGFmS5VdvRU9ItIpsF4svlu-fl8-cfVoVcy17fOZLMA",
   });
 
   constructor(private http: HttpClient) {}

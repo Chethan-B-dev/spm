@@ -24,7 +24,7 @@ export class ManagerService {
   headers = new HttpHeaders({
     "Content-Type": "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjUzMTY4MjE5LCJpYXQiOjE2NTMxNTAyMTl9.DypLGxBxBuhj3UiBDZk3Iq7ajvmxeA7LWGLkahBS-xU0tYUOvGi4p5ur1zqViz7xZJ_y61yI5aNi2sCp35cu5w",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjUzMjA0NjEyLCJpYXQiOjE2NTMxODY2MTJ9.g0beD-KixUiyBTskBlqPBmMAbkSwRzyipgvbjiwTP7EjtHHjbwZgv0fTVynbrq2FrtoB3G6cOEB4rb8rtLArEQ",
   });
 
   constructor(private http: HttpClient) {}
@@ -32,6 +32,14 @@ export class ManagerService {
   getAllProjects(): Observable<IProject[]> {
     return this.http
       .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
+      .pipe(tap(console.log), catchError(this.handleError));
+  }
+
+  getProjectById(projectId: number): Observable<IProject> {
+    return this.http
+      .get<IProject>(`${this.managerUrl}/project/${projectId}`, {
+        headers: this.headers,
+      })
       .pipe(tap(console.log), catchError(this.handleError));
   }
 

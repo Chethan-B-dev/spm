@@ -66,7 +66,7 @@
 
   <mat-card-actions *ngIf="showViewDetailsButton">
     <button
-      [routerLink]="['/project-detail', 1]"
+      [routerLink]="['/project-detail', project.id]"
       mat-raised-button
       color="primary"
     >
@@ -74,3 +74,5 @@
     </button>
   </mat-card-actions>
 </mat-card>
+
+<mat-divider></mat-divider>

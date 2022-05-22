@@ -2,7 +2,6 @@ package com.example.spm.filter;
 
 import com.example.spm.utility.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,13 +51,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
             if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
                 jwtToken = requestTokenHeader.substring(7);
-                try {
+//                try {
                     email = jwtTokenUtil.getUsernameFromToken(jwtToken);
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Unable to get JWT Token");
-                } catch (ExpiredJwtException e) {
-                    System.out.println("JWT Token has expired");
-                }
+//                } catch (IllegalArgumentException e) {
+//                    System.out.println("Unable to get JWT Token");
+//                } catch (ExpiredJwtException e) {
+//                    System.out.println("JWT Token has expired");
+//                }
             } else {
                 System.out.println("came here inside to no token");
             }
