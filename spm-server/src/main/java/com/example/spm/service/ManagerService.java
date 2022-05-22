@@ -1,10 +1,7 @@
 package com.example.spm.service;
 
 
-import com.example.spm.exception.ActionNotAllowedException;
-import com.example.spm.exception.ProjectAlreadyExistsException;
-import com.example.spm.exception.ProjectNotFoundException;
-import com.example.spm.exception.ProjectValidationException;
+import com.example.spm.exception.*;
 import com.example.spm.model.dto.CreateProjectDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,29 +62,26 @@ public class ManagerService {
         return projectRepository.save(project);
     }
 
-//    public void addUserToProject(Integer projectId, Integer userId) {
-//        AppUser appUser = appUserRepository.getById(userId);
-//        Project project = projectRepository.getById(projectId)
-//        if(appUser == null){
-//            throw new UserNotFoundException("User with ID '"+userId+"' does not exists");
-//        }
-//        if (project == null){
-//
-//        }
-//        if ( && appUser.getRole().equals(UserRole.EMPLOYEE)) {
-//            Project project = projectRepository.getById(projectId);
-//            System.out.println("Ele to be ins is "+appUser);
-////            project.setUsers(Arrays.asList(appUser));
-//            if(project.getUsers() == null){
-//                project.setUsers(new ArrayList<>());
-//            }
-//            project.getUsers().add(appUser);
-//            System.out.println(project);
-//            projectRepository.save(project);
-//        }
-////        System.out.println(project);
-////        return projectRepository.save(project);
-//    }
+    public void addUserToProject(Integer projectId, Integer userId) {
+        AppUser appUser = adminService.checkIfUserExists(userId);
+        Project project = checkIfProjectExists(projectId);
+        if(appUser == null){
+            throw new UserNotFoundException("User with ID '"+userId+"' does not exists");
+        }
+        if (project == null){
+            throw new ProjectNotFoundException("Project with id '"+projectId+"' does not exists");
+        }
+        if (appUser.getRole().equals(UserRole.EMPLOYEE)) {
+            if(project.getUsers() == null){
+                project.setUsers(new ArrayList<>());
+            }
+            project.getUsers().add(appUser);
+            System.out.println(project);
+            projectRepository.save(project);
+        }else {
+            throw new RoleNotAcceptableException("Role '"+appUser.getRole()+"' is not acceptable for the current action");
+        }
+    }
 
     public List<AppUser> getAllEmployeesOfTheProject (Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);

@@ -86,12 +86,12 @@ public class ManagerController {
             @RequestBody ProjectUserDTO projectUserDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
-//        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-//        System.out.println(projectUserDTO.getUserIds());
-//        for (Integer userId : projectUserDTO.getUserIds()) {
-//            managerService.addUserToProject(projectId, userId);
-//            System.out.println(userId);
-//        }
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        System.out.println(projectUserDTO.getUserIds());
+        for (Integer userId : projectUserDTO.getUserIds()) {
+            managerService.addUserToProject(projectId, userId);
+            System.out.println(userId);
+        }
     }
     /*
     ** todo: create project

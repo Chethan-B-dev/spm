@@ -42,6 +42,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = RoleNotAcceptableException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> roleNotAcceptableException(RoleNotAcceptableException roleNotAcceptableException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .error(roleNotAcceptableException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(value = ActionNotAllowedException.class)
     public ResponseEntity<GeneralExceptionResponseDTO> actionNotAllowedException(ActionNotAllowedException actionNotAllowedException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
