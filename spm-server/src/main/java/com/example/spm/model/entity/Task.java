@@ -35,8 +35,8 @@ public class Task {
     @Column(nullable = false)
     private String name;
     private String description;
-    private TaskStatus status = TaskStatus.CREATED;
-    private LocalDate createdDate = LocalDate.now();
+    private TaskStatus status;
+    private LocalDate createdDate;
     private LocalDate deadLine;
     private TaskPriority priority;
     @ManyToOne(cascade = CascadeType.ALL)

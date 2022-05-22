@@ -1,9 +1,11 @@
 package com.example.spm.controller;
 
 import com.example.spm.model.dto.CreateProjectDTO;
+import com.example.spm.model.dto.CreateTaskDTO;
 import com.example.spm.model.dto.ProjectUserDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
+import com.example.spm.model.entity.Task;
 import com.example.spm.service.AppUserService;
 import com.example.spm.service.ManagerService;
 import com.example.spm.service.MyAppUserDetails;
@@ -105,5 +107,19 @@ public class ManagerController {
     ** update project
     ** delete Project - very complex
      */
+
+    @PostMapping("/{projectId}/create-task")
+    public ResponseEntity<Task> createTask (
+            @RequestBody @Valid CreateTaskDTO createTaskDTO,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer projectId
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+//        managerService.handleProjectValidationErrors(bindingResult);
+        return new ResponseEntity<>(
+                managerService.createTask(createTaskDTO, loggedInUser, projectId), HttpStatus.OK
+        );
+    }
 
 }
