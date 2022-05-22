@@ -1,9 +1,10 @@
 package com.example.spm.model.dto;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,7 +15,8 @@ import javax.validation.constraints.NotNull;
 public class CreateProjectDTO {
     @NotNull
     private String projectName;
-    private String toDate;
-    @Min(3)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime toDate;
+    @NotNull
     private String description;
 }

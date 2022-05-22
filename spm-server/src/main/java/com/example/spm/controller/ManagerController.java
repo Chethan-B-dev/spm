@@ -2,6 +2,7 @@ package com.example.spm.controller;
 
 import com.example.spm.model.dto.CreateProjectDTO;
 import com.example.spm.model.dto.ProjectUserDTO;
+import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.service.AppUserService;
 import com.example.spm.service.ManagerService;
@@ -12,12 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.Servlet;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -36,21 +34,54 @@ public class ManagerController {
         );
     }
 
-    @PostMapping("create-project")
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<Project> getProjectById (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer projectId
+    ) {
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                managerService.getProjectById(projectId, loggedInUser), HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/project/{projectId}/employees")
+    public ResponseEntity<List<AppUser>> getEmployeesProjectById (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer projectId
+    ) {
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                managerService.getAllEmployeesOfTheProject(projectId, loggedInUser), HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/employees")
+    public ResponseEntity<List<AppUser>> getAllEmployees (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer projectId
+    ) {
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                managerService.getAllVerifiedEmployees(), HttpStatus.OK
+        );
+    }
+
+    @PostMapping("/create-project")
     public ResponseEntity<Project> createProject (
             @RequestBody @Valid CreateProjectDTO createProjectDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-        if(bindingResult.hasFieldErrors()) bindingResult.getFieldErrors().forEach(System.out::println);
+        managerService.handleProjectValidationErrors(bindingResult);
         return new ResponseEntity<>(
-                managerService.createProject(createProjectDTO, myAppUserDetails), HttpStatus.OK
+                managerService.createProject(createProjectDTO, loggedInUser), HttpStatus.OK
         );
     }
 
     @Transactional
-    @PutMapping("assign-user/{projectId}")
+    @PutMapping("/assign-user/{projectId}")
     public void addUserToProject (
             @PathVariable Integer projectId,
             @RequestBody ProjectUserDTO projectUserDTO,
@@ -62,7 +93,6 @@ public class ManagerController {
             managerService.addUserToProject(projectId, userId);
             System.out.println(userId);
         }
-
     }
     /*
     ** todo: create project

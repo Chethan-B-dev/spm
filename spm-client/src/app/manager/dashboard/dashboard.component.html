@@ -5,7 +5,7 @@
   crossorigin="anonymous"
 />
 
-<div class="row row-height">
+<div class="row row-height" *ngIf="projects$ | async as projects">
   <!-- project cards -->
 
   <div class="col-md-9 border-right">
@@ -13,34 +13,20 @@
       <h4 class="py-2">Projects</h4>
 
       <app-project-card
+        *ngFor="let project of projects"
         appSpacing
         [margin]="100"
         [padding]="10"
+        [project]="project"
       ></app-project-card>
-
-      <app-project-card
-        appSpacing
-        [margin]="100"
-        [padding]="10"
-      ></app-project-card>
-
-      <mat-divider></mat-divider>
-
-      <!-- <app-project-card></app-project-card> -->
 
       <div class="center my-3">
-        <button
-          mat-button
-          color="accent"
-          class="content-center"
-          (click)="loadMoreDate()"
-          *ngIf="!isLoading"
-        >
+        <button mat-button color="accent" class="content-center">
           Load More <mat-icon>arrow_downward</mat-icon>
         </button>
         <app-loading-spinner
           color="warn"
-          *ngIf="isLoading"
+          *ngIf="isLoading$ | async"
         ></app-loading-spinner>
       </div>
     </div>
@@ -63,18 +49,12 @@
       <!-- <a routerLink="/project-detail">click me</a> -->
 
       <div class="center my-3">
-        <button
-          mat-button
-          color="accent"
-          class="content-center"
-          (click)="loadMoreDate()"
-          *ngIf="!isLoading"
-        >
+        <button mat-button color="accent" class="content-center">
           Load More <mat-icon>arrow_downward</mat-icon>
         </button>
         <app-loading-spinner
           color="primary"
-          *ngIf="isLoading"
+          *ngIf="isLoading$ | async"
         ></app-loading-spinner>
       </div>
     </div>

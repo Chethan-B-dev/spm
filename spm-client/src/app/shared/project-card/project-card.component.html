@@ -5,7 +5,9 @@
         <mat-icon>keyboard_backspace</mat-icon>
       </button>
 
-      <mat-card-title class="mb-3 push-down"> Project title </mat-card-title>
+      <mat-card-title class="mb-3 push-down">
+        {{ project.name }}
+      </mat-card-title>
     </div>
     <button
       *ngIf="showAddTask"
@@ -18,19 +20,23 @@
   </div>
 
   <mat-chip-list aria-label="Fish selection">
-    <mat-chip color="primary" selected>Status</mat-chip>
-    <mat-chip color="warn" selected>Deadline - {{ deadLine | date }}</mat-chip>
+    <mat-chip color="primary" selected>{{ project.status }}</mat-chip>
+    <mat-chip color="warn" selected
+      >Deadline - {{ project.toDate | date }}</mat-chip
+    >
     <mat-chip>Employees - 10</mat-chip>
     <mat-chip>Tasks - 6</mat-chip>
     <mat-chip>Backlogs - 3</mat-chip>
     <mat-chip>Completed - 3</mat-chip>
-    <mat-chip color="accent" selected>Manager</mat-chip>
+    <mat-chip color="accent" selected>{{ project.manager?.username }}</mat-chip>
   </mat-chip-list>
 
-  <mat-card-subtitle class="py-2">{{ createdDate | date }}</mat-card-subtitle>
+  <mat-card-subtitle class="py-2">{{
+    project.fromDate | date
+  }}</mat-card-subtitle>
 
   <mat-card-content>
-    <p>This card indeterminates progress bar description.</p>
+    <p>{{ project.description }}</p>
   </mat-card-content>
 
   <app-progress-bar [value]="65"></app-progress-bar>
@@ -60,7 +66,7 @@
 
   <mat-card-actions *ngIf="showViewDetailsButton">
     <button
-      [routerLink]="['/project-detail', 1]"
+      [routerLink]="['/project-detail', project.id]"
       mat-raised-button
       color="primary"
     >
@@ -68,3 +74,5 @@
     </button>
   </mat-card-actions>
 </mat-card>
+
+<mat-divider></mat-divider>

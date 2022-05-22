@@ -1,8 +1,10 @@
 package com.example.spm.service;
 
+import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.UserNotLoggedInException;
 import com.example.spm.model.dto.UserRegisterDTO;
 import com.example.spm.model.entity.AppUser;
+import com.example.spm.model.enums.UserRole;
 import com.example.spm.model.enums.UserStatus;
 import com.example.spm.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +25,22 @@ public class AppUserService {
     private final PasswordEncoder passwordEncoder;
 
     public AppUser saveUser(UserRegisterDTO userRegisterDTO) {
+
+        if (userRegisterDTO.getUserRole() != null && userRegisterDTO.getUserRole().equals(UserRole.ADMIN))
+            throw new ActionNotAllowedException("Cannot register as an admin");
+
         AppUser user = AppUser.builder()
                 .email(userRegisterDTO.getEmail())
                 .username(userRegisterDTO.getUsername())
                 .password(passwordEncoder.encode(userRegisterDTO.getPassword()))
+                // todo: change this later to unverified
                 .status(UserStatus.VERIFIED)
                 .phone(userRegisterDTO.getPhone())
                 .role(userRegisterDTO.getUserRole())
                 .build();
+
         log.info("Saving new user {} to the database", user.getEmail());
+
         return appUserRepository.save(user);
     }
 

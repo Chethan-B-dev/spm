@@ -22,6 +22,8 @@ import { MatCommonModule } from "@angular/material";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 const materialModules = [
   MatToolbarModule,
@@ -45,6 +47,8 @@ const materialModules = [
   MatDatepickerModule,
   MatNativeDateModule,
   MatSnackBarModule,
+  MatGridListModule,
+  MatProgressBarModule
 ];
 
 @NgModule({

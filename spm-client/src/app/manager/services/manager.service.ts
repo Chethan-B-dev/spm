@@ -1,23 +1,18 @@
-import { Injectable } from "@angular/core";
 import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
 } from "@angular/common/http";
-import { IAppUser } from "../interfaces/user.interface";
-
+import { Injectable } from "@angular/core";
 import { tap, catchError } from "rxjs/operators";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
+import { IProject } from "src/app/shared/interfaces/project.interface";
 
 @Injectable({
   providedIn: "root",
 })
-export class AdminApiService {
-  private usersUrl = "http://localhost:8080/api/admin";
-  private userCategorySelectedSubject = new BehaviorSubject<string>(
-    "UNVERIFIED"
-  );
-  userCategorySelectedAction = this.userCategorySelectedSubject.asObservable();
+export class ManagerService {
+  private managerUrl = "http://localhost:8080/api/manager";
 
   private refreshSubject = new BehaviorSubject(null);
 
@@ -29,36 +24,37 @@ export class AdminApiService {
   headers = new HttpHeaders({
     "Content-Type": "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTY1MzIwNDY0MCwiaWF0IjoxNjUzMTg2NjQwfQ.FdK4r-iaUvDehytbgHsCBFWcNikhiHIxJycUS6AJNnRWGFmS5VdvRU9ItIpsF4svlu-fl8-cfVoVcy17fOZLMA",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjUzMjA0NjEyLCJpYXQiOjE2NTMxODY2MTJ9.g0beD-KixUiyBTskBlqPBmMAbkSwRzyipgvbjiwTP7EjtHHjbwZgv0fTVynbrq2FrtoB3G6cOEB4rb8rtLArEQ",
   });
 
   constructor(private http: HttpClient) {}
 
-  getAllUsers(): Observable<IAppUser[]> {
+  getAllProjects(): Observable<IProject[]> {
     return this.http
-      .get<IAppUser[]>(this.usersUrl, { headers: this.headers })
-      .pipe(catchError(this.handleError));
+      .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
+      .pipe(tap(console.log), catchError(this.handleError));
   }
 
-  selectUserCategory(selectedUserCategory: string): void {
-    this.userCategorySelectedSubject.next(selectedUserCategory);
-  }
-
-  takeDecision(userId: number, adminDecision: string): Observable<IAppUser> {
-    const requestBody = { userId, adminDecision };
+  getProjectById(projectId: number): Observable<IProject> {
     return this.http
-      .post<IAppUser>(`${this.usersUrl}/take-decision`, requestBody, {
+      .get<IProject>(`${this.managerUrl}/project/${projectId}`, {
         headers: this.headers,
       })
-      .pipe(
-        tap((response) => this.refreshSubject.next(null)),
-        catchError(this.handleError)
-      );
+      .pipe(tap(console.log), catchError(this.handleError));
   }
 
-  enableUser(userId: number): Observable<IAppUser> {
+  createProject(
+    projectName: string,
+    projectDescription: string,
+    projectDeadLine: Date
+  ): Observable<IProject> {
+    const requestBody = {
+      projectName,
+      description: projectDescription,
+      toDate: projectDeadLine.toISOString(),
+    };
     return this.http
-      .get<IAppUser>(`${this.usersUrl}/enable/${userId}`, {
+      .post<IProject>(`${this.managerUrl}/create-project`, requestBody, {
         headers: this.headers,
       })
       .pipe(

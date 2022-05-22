@@ -23,10 +23,10 @@ import { AdminApiService } from "../services/admin-api.service";
 })
 export class AdminComponent implements OnInit, OnDestroy {
   defaultUserCategory: string = "UNVERIFIED";
-  private errorMessageSubject = new Subject<string>();
-  errorMessage$ = this.errorMessageSubject.asObservable();
   private searchTermSubject = new BehaviorSubject<string>("");
   searchTerm$ = this.searchTermSubject.asObservable();
+  private errorMessageSubject = new Subject<string>();
+  errorMessage$ = this.errorMessageSubject.asObservable();
   private readonly destroy$ = new Subject();
 
   users$ = this.adminApiService.refresh.pipe(

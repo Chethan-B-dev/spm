@@ -18,7 +18,8 @@ export class CreateTaskComponent implements OnInit {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CreateTaskComponent>,
     @Inject(MAT_DIALOG_DATA) data
-  ) {
+  )
+   {
     this.projectName = data.projectName;
   }
 
