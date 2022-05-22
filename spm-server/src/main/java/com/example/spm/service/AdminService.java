@@ -66,7 +66,7 @@ public class AdminService {
         return appUserRepository.save(appUser);
     }
 
-    private AppUser checkIfUserExists (Integer userId) {
+    public AppUser checkIfUserExists (Integer userId) {
         Optional<AppUser> userOptional = appUserRepository.findById(userId);
         if (userOptional.isEmpty())
             throw new UserNotFoundException("user with id " + userId + " not found");
