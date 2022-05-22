@@ -3,6 +3,7 @@ package com.example.spm.service;
 
 import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.ProjectAlreadyExistsException;
+import com.example.spm.exception.UserNotFoundException;
 import com.example.spm.exception.ProjectNotFoundException;
 import com.example.spm.exception.ProjectValidationException;
 import com.example.spm.model.dto.CreateProjectDTO;
@@ -10,13 +11,17 @@ import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.enums.ProjectStatus;
 import com.example.spm.model.enums.UserRole;
+import com.example.spm.repository.AppUserRepository;
 import com.example.spm.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import javax.validation.constraints.Null;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,8 +31,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerService {
     private final ProjectRepository projectRepository;
+    private final AppUserRepository appUserRepository;
     private final AdminService adminService;
-
     private final AppUserService appUserService;
     public List<Project> getAllProjects(Integer managerId) {
         return projectRepository.findByManagerId(managerId);
@@ -58,6 +63,30 @@ public class ManagerService {
                 .build();
 
         return projectRepository.save(project);
+    }
+
+    public void addUserToProject(Integer projectId, Integer userId) {
+        AppUser appUser = appUserRepository.getById(userId);
+        Project project = projectRepository.getById(projectId)
+        if(appUser == null){
+            throw new UserNotFoundException("User with ID '"+userId+"' does not exists");
+        }
+        if (project == null){
+
+        }
+        if ( && appUser.getRole().equals(UserRole.EMPLOYEE)) {
+            Project project = projectRepository.getById(projectId);
+            System.out.println("Ele to be ins is "+appUser);
+//            project.setUsers(Arrays.asList(appUser));
+            if(project.getUsers() == null){
+                project.setUsers(new ArrayList<>());
+            }
+            project.getUsers().add(appUser);
+            System.out.println(project);
+            projectRepository.save(project);
+        }
+//        System.out.println(project);
+//        return projectRepository.save(project);
     }
 
     public List<AppUser> getAllEmployeesOfTheProject (Integer projectId, MyAppUserDetails loggedInUser) {

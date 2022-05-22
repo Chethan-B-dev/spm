@@ -1,6 +1,7 @@
 package com.example.spm.controller;
 
 import com.example.spm.model.dto.CreateProjectDTO;
+import com.example.spm.model.dto.ProjectUserDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.service.AppUserService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/manager")
@@ -82,10 +84,15 @@ public class ManagerController {
     @PutMapping("/assign-user/{projectId}")
     public void addUserToProject (
             @PathVariable Integer projectId,
-            @RequestBody List<Integer> userIds,
+            @RequestBody ProjectUserDTO projectUserDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
-        System.out.println(userIds);
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        System.out.println(projectUserDTO.getUserIds());
+        for (Integer userId : projectUserDTO.getUserIds()) {
+            managerService.addUserToProject(projectId, userId);
+            System.out.println(userId);
+        }
     }
     /*
     ** todo: create project
