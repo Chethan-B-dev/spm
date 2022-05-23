@@ -28,7 +28,9 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getAllProjects (@AuthenticationPrincipal MyAppUserDetails myAppUserDetails) {
+    public ResponseEntity<List<Project>> getAllProjects (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 managerService.getAllProjects(loggedInUser.getUser().getId()), HttpStatus.OK
