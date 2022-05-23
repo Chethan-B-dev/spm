@@ -10,6 +10,6 @@ import lombok.*;
 @ToString
 @Builder
 public class GeneralAuthExceptionDTO {
-    private String error;
+    private String message;
     private String timestamp;
 }

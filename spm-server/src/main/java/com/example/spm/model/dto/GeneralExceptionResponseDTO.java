@@ -12,6 +12,6 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 public class GeneralExceptionResponseDTO {
-    private String error;
+    private String message;
     private LocalDateTime timeStamp;
 }

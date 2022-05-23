@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> userNotFoundException(UserNotFoundException userNotFoundException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(userNotFoundException.getMessage())
+                .message(userNotFoundException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> projectNotFoundException(ProjectNotFoundException projectNotFoundException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(projectNotFoundException.getMessage())
+                .message(projectNotFoundException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> taskNotFoundException(TaskNotFoundException taskNotFoundException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(taskNotFoundException.getMessage())
+                .message(taskNotFoundException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> roleNotAcceptableException(RoleNotAcceptableException roleNotAcceptableException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(roleNotAcceptableException.getMessage())
+                .message(roleNotAcceptableException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> actionNotAllowedException(ActionNotAllowedException actionNotAllowedException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(actionNotAllowedException.getMessage())
+                .message(actionNotAllowedException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -80,7 +80,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> projectAlreadyExistsException(ProjectAlreadyExistsException projectAlreadyExistsException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(projectAlreadyExistsException.getMessage())
+                .message(projectAlreadyExistsException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> userNotLoggedInException(UserNotLoggedInException userNotLoggedInException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(userNotLoggedInException.getMessage())
+                .message(userNotLoggedInException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> accessDeniedException(AccessDeniedException accessDeniedException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(accessDeniedException.getMessage())
+                .message(accessDeniedException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -126,7 +126,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> insufficientAuthException(InsufficientAuthenticationException insufficientAuthenticationException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(insufficientAuthenticationException.getMessage())
+                .message(insufficientAuthenticationException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -137,7 +137,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> malformedJWTException(MalformedJwtException malformedJwtException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(malformedJwtException.getMessage())
+                .message(malformedJwtException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -148,7 +148,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> jwtException(JwtException jwtException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(jwtException.getMessage())
+                .message(jwtException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -159,7 +159,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> jwtException(ExpiredJwtException jwtException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(jwtException.getMessage())
+                .message(jwtException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -170,7 +170,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralExceptionResponseDTO> illegalArgumentException(IllegalArgumentException illegalArgumentException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(illegalArgumentException.getMessage())
+                .message(illegalArgumentException.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 
@@ -182,7 +182,7 @@ public class GlobalExceptionHandler {
         exception.printStackTrace();
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
                 .builder()
-                .error(exception.getMessage())
+                .message(exception.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 

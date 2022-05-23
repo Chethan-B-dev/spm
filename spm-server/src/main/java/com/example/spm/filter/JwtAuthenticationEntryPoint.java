@@ -30,7 +30,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         GeneralAuthExceptionDTO generalExceptionResponseDTO = GeneralAuthExceptionDTO
                 .builder()
-                .error("User not authenticated or JWT is expired")
+                .message("User not authenticated or JWT is expired")
                 .timestamp(LocalDateTime.now().toString())
                 .build();
         new ObjectMapper().writeValue(response.getOutputStream(), generalExceptionResponseDTO);
