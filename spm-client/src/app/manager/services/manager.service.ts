@@ -30,6 +30,7 @@ import {
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { handleError } from "src/app/shared/utility/error";
+import { IPageResult } from "src/app/shared/interfaces/page.interface";
 
 @Injectable({
   providedIn: "root",
