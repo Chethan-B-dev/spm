@@ -4,6 +4,7 @@ import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { IProject } from "src/app/shared/interfaces/project.interface";
+import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../services/manager.service";
 
 @Component({
@@ -18,8 +19,6 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   foods: string[] = ["dosa", "lol"];
   deadLine: Date = new Date();
   project$: Observable<IProject>;
-  private errorMessageSubject = new Subject<string>();
-  errorMessage$ = this.errorMessageSubject.asObservable();
   private readonly destroy$ = new Subject();
 
   constructor(
@@ -27,7 +26,7 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private managerService: ManagerService,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit() {
@@ -37,19 +36,12 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
 
     this.project$ = this.managerService.refresh.pipe(
       takeUntil(this.destroy$),
+      switchMap(() => this.managerService.getProjectById(this.projectId)),
       catchError((err) => {
-        this.showSnackBar(err);
-        this.errorMessageSubject.next(err.message);
+        this.snackbarService.showSnackBar(err);
         return EMPTY;
-      }),
-      switchMap(() => this.managerService.getProjectById(this.projectId))
+      })
     );
-  }
-
-  private showSnackBar(message: string, duration?: number) {
-    this.snackBar.open(message, "Close", {
-      duration: duration ? duration : 3000,
-    });
   }
 
   ngOnDestroy() {

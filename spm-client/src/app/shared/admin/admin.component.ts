@@ -16,6 +16,7 @@ import {
 import { ConfirmDeleteComponent } from "../dialogs/confirm-delete/confirm-delete.component";
 import { IAppUser } from "../interfaces/user.interface";
 import { AdminApiService } from "../services/admin-api.service";
+import { SnackbarService } from "../services/snackbar.service";
 @Component({
   selector: "app-admin",
   templateUrl: "./admin.component.html",
@@ -25,15 +26,12 @@ export class AdminComponent implements OnInit, OnDestroy {
   defaultUserCategory: string = "UNVERIFIED";
   private searchTermSubject = new BehaviorSubject<string>("");
   searchTerm$ = this.searchTermSubject.asObservable();
-  private errorMessageSubject = new Subject<string>();
-  errorMessage$ = this.errorMessageSubject.asObservable();
   private readonly destroy$ = new Subject();
 
   users$ = this.adminApiService.refresh.pipe(
     takeUntil(this.destroy$),
     catchError((err) => {
-      this.showSnackBar(err);
-      this.errorMessageSubject.next(err.message);
+      this.snackbarService.showSnackBar(err);
       return EMPTY;
     }),
     switchMap(() => this.usersWithoutRefresh$)
@@ -69,8 +67,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       })
     ),
     catchError((err) => {
-      this.showSnackBar(err);
-      this.errorMessageSubject.next(err.message);
+      this.snackbarService.showSnackBar(err);
       return EMPTY;
     })
   );
@@ -78,7 +75,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private adminApiService: AdminApiService,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit() {}
@@ -106,18 +103,11 @@ export class AdminComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          this.showSnackBar(err);
-          this.errorMessageSubject.next(err.message);
+          this.snackbarService.showSnackBar(err);
           return EMPTY;
         })
       )
       .subscribe();
-  }
-
-  private showSnackBar(message: string, duration?: number) {
-    this.snackBar.open(message, "Close", {
-      duration: duration ? duration : 3000,
-    });
   }
 
   enableUser(userId: number): void {
@@ -126,8 +116,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          this.showSnackBar(err);
-          this.errorMessageSubject.next(err.message);
+          this.snackbarService.showSnackBar(err);
           return EMPTY;
         })
       )

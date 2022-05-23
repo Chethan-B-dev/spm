@@ -27,6 +27,7 @@ import { CreateTaskComponent } from "src/app/manager/dialogs/create-task/create-
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "../interfaces/project.interface";
 import { IAppUser } from "../interfaces/user.interface";
+import { SnackbarService } from "../services/snackbar.service";
 
 @Component({
   selector: "app-project-card",
@@ -42,14 +43,12 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   @Input() showViewDetailsButton: boolean = true;
   users$: Observable<IAppUser[]>;
   employees: number[];
-  private errorMessageSubject = new Subject<string>();
-  errorMessage$ = this.errorMessageSubject.asObservable();
   private readonly destroy$ = new Subject();
 
   constructor(
     public dialog: MatDialog,
     private managerService: ManagerService,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit() {
@@ -59,8 +58,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
           this.managerService.getAllEmployees(this.project.id).pipe()
         ),
         catchError((err) => {
-          this.showSnackBar(err);
-          this.errorMessageSubject.next(err.message);
+          this.snackbarService.showSnackBar(err);
           return EMPTY;
         })
       );
@@ -73,23 +71,23 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   addEmployees(): void {
+    if (!!!this.employees || this.employees.length === 0) {
+      this.snackbarService.showSnackBar("Please add Employees before syncing");
+      return;
+    }
+
     this.managerService
       .addEmployees(this.project.id, this.employees)
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          this.showSnackBar(err);
-          this.errorMessageSubject.next(err.message);
+          this.snackbarService.showSnackBar(err);
           return EMPTY;
         })
       )
-      .subscribe();
-  }
-
-  private showSnackBar(message: string, duration?: number) {
-    this.snackBar.open(message, "Close", {
-      duration: duration ? duration : 3000,
-    });
+      .subscribe(() => {
+        this.employees = [];
+      });
   }
 
   goBack(): void {

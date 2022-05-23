@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
-    List<Project> findByManagerId (Integer managerId);
-
+    List<Project> findByManagerIdOrderByFromDateDesc (Integer managerId);
     Boolean existsByName(String name);
 }
