@@ -38,24 +38,27 @@
   <div class="col-md-3 users">
     <div class="stats container my-3">
       <h4>Employee Rankings</h4>
-      <mat-list role="list">
-        <mat-list-item
-          matRipple
-          role="listitem"
-          *ngFor="let user of typesOfShoes"
-          >{{ user }} -- 1 of 10</mat-list-item
+      <mat-list role="list" *ngIf="users$ | async as users">
+        <mat-list-item matRipple role="listitem" *ngFor="let user of users"
+          >{{ user.username }} -- 1 of 10</mat-list-item
         >
       </mat-list>
       <!-- <a routerLink="/project-detail">click me</a> -->
 
       <div class="center my-3">
-        <button mat-button color="accent" class="content-center">
+        <button
+          *ngIf="showLoadMoreButton"
+          mat-button
+          color="accent"
+          class="content-center"
+          (click)="getMoreUsers()"
+        >
           Load More <mat-icon>arrow_downward</mat-icon>
         </button>
-        <app-loading-spinner
+        <!-- <app-loading-spinner
           color="primary"
           *ngIf="isLoading$ | async"
-        ></app-loading-spinner>
+        ></app-loading-spinner> -->
       </div>
     </div>
   </div>

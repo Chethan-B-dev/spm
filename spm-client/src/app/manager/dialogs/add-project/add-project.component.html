@@ -62,11 +62,12 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="push-right">
-  <button class="mat-button" (click)="close()" style="margin-right: 8px">
+  <button mat-button color="warn" (click)="close()" style="margin-right: 8px">
     Close
   </button>
   <button
-    class="mat-button mat-primary"
+    mat-raised-button
+    color="primary"
     [disabled]="
       this.createProjectForm.invalid &&
       (this.createProjectForm.dirty || !this.createProjectForm.touched)

@@ -8,6 +8,7 @@ import {
 } from "@angular/material/dialog";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
+import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
 
 @Component({
@@ -16,8 +17,6 @@ import { ManagerService } from "../../services/manager.service";
   styleUrls: ["./add-project.component.scss"],
 })
 export class AddProjectComponent implements OnInit, OnDestroy {
-  private errorMessageSubject = new Subject<string>();
-  errorMessage$ = this.errorMessageSubject.asObservable();
   private readonly destroy$ = new Subject();
   createProjectForm: FormGroup;
 
@@ -26,7 +25,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<AddProjectComponent>,
     @Inject(MAT_DIALOG_DATA) data,
     private managerService: ManagerService,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -51,24 +50,17 @@ export class AddProjectComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          this.showSnackBar(err);
-          this.errorMessageSubject.next(err.message);
+          this.snackbarService.showSnackBar(err);
           return EMPTY;
         })
       )
       .subscribe((project) => {
-        this.showSnackBar("Project has been created");
+        this.snackbarService.showSnackBar("Project has been created");
         this.close();
       });
   }
 
   close(): void {
     this.dialogRef.close();
-  }
-
-  private showSnackBar(message: string, duration?: number): void {
-    this.snackBar.open(message, "Close", {
-      duration: duration ? duration : 3000,
-    });
   }
 }

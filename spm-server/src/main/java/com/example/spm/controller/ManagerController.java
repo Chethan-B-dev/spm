@@ -40,7 +40,6 @@ public class ManagerController {
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @RequestParam(required = false) Integer pageNumber
     ) {
-        System.out.println("came here");
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         pageNumber = pageNumber != null ? pageNumber : 0;
         return new ResponseEntity<>(

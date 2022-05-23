@@ -20,7 +20,7 @@ import { NotifcationMenuComponent } from "./notifcation-menu/notifcation-menu.co
 import { TopNavComponent } from "./top-nav/top-nav.component";
 import { AdminApiService } from "./services/admin-api.service";
 import { HttpClientModule } from "@angular/common/http";
-
+import { SnackbarService } from "./services/snackbar.service";
 
 @NgModule({
   declarations: [
@@ -58,6 +58,6 @@ import { HttpClientModule } from "@angular/common/http";
     PieChartComponent,
     TopNavComponent,
   ],
-  providers: [AdminApiService],
+  providers: [AdminApiService, SnackbarService],
 })
 export class SharedModule {}

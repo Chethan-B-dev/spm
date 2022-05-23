@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,5 +47,5 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id")
     )
     @ToString.Exclude
-    private List<AppUser> users;
+    private List<AppUser> users = new ArrayList<>();
 }

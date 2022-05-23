@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,7 +37,7 @@ public class ManagerService {
     private final int pageSize = 2;
 
     public List<Project> getAllProjects(Integer managerId) {
-        return projectRepository.findByManagerId(managerId);
+        return projectRepository.findByManagerIdOrderByFromDateDesc(managerId);
     }
 
     public List<AppUser> getAllVerifiedEmployees(Integer projectId, MyAppUserDetails loggedInUser) {
@@ -75,10 +74,9 @@ public class ManagerService {
         Project project = checkIfProjectExists(projectId);
         userIds.forEach(userId -> {
             AppUser appUser = adminService.checkIfUserExists(userId);
-            if (appUser.getRole().equals(UserRole.EMPLOYEE)) {
-                if (project.getUsers() == null) project.setUsers(new ArrayList<>());
+            if (appUser.getRole().equals(UserRole.EMPLOYEE))
                 project.getUsers().add(appUser);
-            } else
+            else
                 throw new RoleNotAcceptableException("Role '" + appUser.getRole() + "' is not acceptable for the current action");
         });
 
