@@ -24,7 +24,11 @@
     <mat-chip color="warn" selected
       >Deadline - {{ project.toDate | date }}</mat-chip
     >
-    <mat-chip>Employees - {{ project.users?.length }}</mat-chip>
+    <mat-chip
+      matTooltip="click here to view employees"
+      (click)="openShowEmployeesDialog(project.users)"
+      >Employees - {{ project.users?.length }}</mat-chip
+    >
     <mat-chip>Tasks - 6</mat-chip>
     <mat-chip>Backlogs - 3</mat-chip>
     <mat-chip>Completed - 3</mat-chip>
@@ -38,10 +42,8 @@
   <mat-card-content>
     <p>{{ project.description }}</p>
   </mat-card-content>
-
   <!-- todo: calculate progress based on tasks completed -->
   <app-progress-bar [value]="65"></app-progress-bar>
-
   <div class="row">
     <div class="col-md-4 left" *ngIf="showAddEmps">
       <mat-form-field appearance="fill" *ngIf="users$ | async as users">

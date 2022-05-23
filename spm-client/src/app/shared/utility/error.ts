@@ -7,9 +7,7 @@ export function handleError(err: HttpErrorResponse): Observable<never> {
     // A client-side or network error occurred. Handle it accordingly.
     errorMessage = err.error.message;
   } else {
-    if (err.error.hasOwnProperty("message")) errorMessage = err.error.message;
-    // The backend returned an unsuccessful response code.
-    // The response body may contain clues as to what went wrong,
+    if (err.error && err.error.message) errorMessage = err.error.message;
     else errorMessage = `Backend returned code ${err.status}: ${err.message}`;
   }
 

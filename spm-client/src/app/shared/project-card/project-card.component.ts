@@ -24,6 +24,7 @@ import {
   tap,
 } from "rxjs/operators";
 import { CreateTaskComponent } from "src/app/manager/dialogs/create-task/create-task.component";
+import { ShowEmployeesComponent } from "src/app/manager/dialogs/show-employees/show-employees.component";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "../interfaces/project.interface";
 import { IAppUser } from "../interfaces/user.interface";
@@ -86,6 +87,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(() => {
+        this.snackbarService.showSnackBar("Employees have been added");
         this.employees = [];
       });
   }
@@ -106,6 +108,22 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     };
 
     const dialogRef = this.dialog.open(CreateTaskComponent, dialogConfig);
+
+    dialogRef
+      .afterClosed()
+      .subscribe((data) => console.log("Dialog output:", data));
+  }
+
+  openShowEmployeesDialog(employees: IAppUser[]): void {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    // dialogConfig.width = "400px";
+
+    dialogConfig.data = employees;
+
+    const dialogRef = this.dialog.open(ShowEmployeesComponent, dialogConfig);
 
     dialogRef
       .afterClosed()
