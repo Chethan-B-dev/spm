@@ -12,7 +12,7 @@ export class EmployeeScrumBoardComponent implements OnInit {
 
   ngOnInit() {
   }
-  todo = ['Get to work', 'Pick up groceries', 'Go home', 'Fall asleep'];
+  todo = ['1.Get to work', '2.Pick up groceries', '3.Go home', '4.Fall asleep'];
 
   in_progress = ['Pick up groceries', 'Go home', 'Fall asleep'];
 
@@ -28,8 +28,9 @@ export class EmployeeScrumBoardComponent implements OnInit {
         event.previousIndex,
         event.currentIndex,
       );
+
     }
   }
-
+  panelOpenState = false;
 
 }
