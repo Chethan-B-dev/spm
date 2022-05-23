@@ -5,6 +5,7 @@ import { SignupComponent } from "./auth/signup/signup.component";
 import { EmployeeDashboardComponent } from "./employee/employee-dashboard/employee-dashboard.component";
 import { EmployeeIssueDetailComponent } from "./employee/employee-issue-detail/employee-issue-detail.component";
 import { EmployeeProjectDetailComponent } from "./employee/employee-project-detail/employee-project-detail.component";
+import { EmployeeScrumBoardComponent } from "./employee/employee-scrum-board/employee-scrum-board.component";
 import { DashboardComponent } from "./manager/dashboard/dashboard.component";
 import { ManagerProjectDetailComponent } from "./manager/manager-project-detail/manager-project-detail.component";
 import { ManagerTaskDetailComponent } from "./manager/manager-task-detail/manager-task-detail.component";
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: "employee-dashboard", component: EmployeeDashboardComponent  },
   { path: "employee-project-detail", component: EmployeeProjectDetailComponent   },
   { path: "employee-issue-detail", component: EmployeeIssueDetailComponent   },
+  { path: "employee-scrum-board", component: EmployeeScrumBoardComponent   },
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];

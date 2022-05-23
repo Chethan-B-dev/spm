@@ -1,0 +1,86 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+
+<mat-card class="mx-3 my-2">
+  <div class="row">
+    <div class="col-3"><mat-card-title>Scrum Board</mat-card-title>
+      <mat-card-subtitle>Project Name:</mat-card-subtitle>
+      <mat-card-subtitle>Manager:</mat-card-subtitle>
+    </div>
+    <div class="col-8 p-2">
+    <div class="p-2">
+      <mat-chip-list aria-label="Fish selection">
+      <mat-chip color="primary" selected>Total tasks: 10</mat-chip>
+      <mat-chip color="warn" selected>To Do: 4</mat-chip>
+      <mat-chip color="accent" selected>In Progress: 2</mat-chip>
+      <mat-chip class="bg-success" selected>Done: 2</mat-chip>
+    </mat-chip-list>
+  </div>
+    <mat-progress-bar mode="determinate" value="60"></mat-progress-bar>Tasks Complete: 6/10</div>
+  </div>
+</mat-card>
+
+
+<!-- header -->
+<div class="mx-4">
+  <div class="row">
+    <div class="col">
+      <mat-card>
+        <mat-chip color="warn" selected>To-Do</mat-chip><mat-icon>error</mat-icon>
+      </mat-card>
+    </div>
+    <div class="col">
+      <mat-card><mat-chip color="accent" selected>In Progress</mat-chip><mat-icon>poll</mat-icon>
+    </mat-card>
+    </div>
+    <div class="col">
+      <mat-card><mat-chip class="bg-success" selected>Done</mat-chip> <mat-icon>check_circle</mat-icon></mat-card>
+    </div>
+  </div>
+</div>
+<!-- header end -->
+
+
+<!-- scrum board -->
+<div class="mx-4">
+
+  <div class="row">
+    <div class="col">
+      <div
+      cdkDropList
+      #todoList="cdkDropList"
+      [cdkDropListData]="todo"
+      [cdkDropListConnectedTo]="[inProgressList,doneList]"
+      class="example-list"
+      (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let item of todo" cdkDrag>{{item}}</div>
+    </div>
+    </div>
+    <div class="col">
+      <div
+    cdkDropList
+    #inProgressList="cdkDropList"
+    [cdkDropListData]="in_progress"
+    [cdkDropListConnectedTo]="[todoList,doneList]"
+    class="example-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let item of in_progress" cdkDrag>{{item}}</div>
+  </div>
+    </div>
+    <div class="col">
+      <div
+      cdkDropList
+      #doneList="cdkDropList"
+      [cdkDropListData]="done"
+      [cdkDropListConnectedTo]="[inProgressList,todoList]"
+      class="example-list"
+      (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let item of done" cdkDrag>{{item}}</div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- scrum board end-->
+
+
