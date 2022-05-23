@@ -3,13 +3,17 @@ package com.example.spm.service;
 
 import com.example.spm.exception.*;
 import com.example.spm.model.dto.CreateProjectDTO;
+import com.example.spm.model.dto.CreateTaskDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
+import com.example.spm.model.entity.Task;
 import com.example.spm.model.enums.ProjectStatus;
+import com.example.spm.model.enums.TaskStatus;
 import com.example.spm.model.enums.UserRole;
 import com.example.spm.model.enums.UserStatus;
 import com.example.spm.repository.AppUserRepository;
 import com.example.spm.repository.ProjectRepository;
+import com.example.spm.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerService {
     private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
     private final AppUserRepository appUserRepository;
     private final AdminService adminService;
     private final AppUserService appUserService;
@@ -121,5 +126,37 @@ public class ManagerService {
         if (projectOptional.isEmpty())
             throw new ProjectNotFoundException("Project with the id " + projectId + " not found");
         return projectOptional.get();
+    }
+
+    public Task createTask(CreateTaskDTO createTaskDTO, MyAppUserDetails loggedInUser, Integer projectId) {
+        if (!projectRepository.existsById(projectId)){
+            throw new ProjectNotFoundException("Project with id '" + projectId + "' does not exists exists");
+        }
+        Task task = Task.builder()
+                .name(createTaskDTO.getTaskName())
+                .createdDate(LocalDate.now())
+                .description(createTaskDTO.getDescription())
+                .project(projectRepository.getById(projectId))
+                .priority(createTaskDTO.getPriority())
+                .status(TaskStatus.CREATED)
+                .user(appUserRepository.getById(createTaskDTO.getUserId()))
+                .deadLine(createTaskDTO.getDeadline().toLocalDate())
+                .build();
+
+        return taskRepository.save(task);
+    }
+
+    public Task getTaskById (Integer taskId) {
+        Task task = checkIfTaskExists(taskId);
+        return task;
+    }
+
+
+    private Task checkIfTaskExists(Integer taskId) {
+        Optional<Task> taskOptional = taskRepository.findById(taskId);
+        if(taskOptional.isEmpty()){
+            throw new TaskNotFoundException("Task with id '"+taskId+"' does not exists");
+        }
+        return taskOptional.get();
     }
 }
