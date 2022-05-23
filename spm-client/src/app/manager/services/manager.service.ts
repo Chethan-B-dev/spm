@@ -8,6 +8,7 @@ import { tap, catchError } from "rxjs/operators";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { handleError } from "src/app/shared/utility/error";
 
 @Injectable({
   providedIn: "root",
@@ -25,7 +26,7 @@ export class ManagerService {
   headers = new HttpHeaders({
     "Content-Type": "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjUzMjMwNTM2LCJpYXQiOjE2NTMyMTI1MzZ9.sVmc4lr9Hjnw6w3xMI7qYUiIQsv2D6AvWRwy90mmC7tfolP-8opEMXxGrD7QnVoV2CNzw-7xJ8x8CqkJlN479g",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjU0MzU1ODYxLCJpYXQiOjE2NTMyNzU4NjF9.EGJLB4va1thGRQhrGav5l9S8LX3M8XPJTBhvhpKnEeo_qRDj_hm46ze0C3ff-1GcvOzgs3JJvT4eTRVNkUa1jQ",
   });
 
   constructor(private http: HttpClient) {}
@@ -33,7 +34,7 @@ export class ManagerService {
   getAllProjects(): Observable<IProject[]> {
     return this.http
       .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleError));
   }
 
   getAllEmployees(projectId: number): Observable<IAppUser[]> {
@@ -41,7 +42,7 @@ export class ManagerService {
       .get<IAppUser[]>(`${this.managerUrl}/employees/${projectId}`, {
         headers: this.headers,
       })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleError));
   }
 
   addEmployees(projectId: number, userIds: number[]): Observable<IProject> {
@@ -58,7 +59,7 @@ export class ManagerService {
       )
       .pipe(
         tap(() => this.refreshSubject.next(null)),
-        catchError(this.handleError)
+        catchError(handleError)
       );
   }
 
@@ -67,7 +68,7 @@ export class ManagerService {
       .get<IProject>(`${this.managerUrl}/project/${projectId}`, {
         headers: this.headers,
       })
-      .pipe(tap(console.log), catchError(this.handleError));
+      .pipe(tap(console.log), catchError(handleError));
   }
 
   createProject(
@@ -86,24 +87,7 @@ export class ManagerService {
       })
       .pipe(
         tap(() => this.refreshSubject.next(null)),
-        catchError(this.handleError)
+        catchError(handleError)
       );
-  }
-
-  private handleError(err: HttpErrorResponse): Observable<never> {
-    // in a real world app, we may send the server to some remote logging infrastructure
-    // instead of just logging it to the console
-    // let errorMessage: string;
-    // if (err.error instanceof ErrorEvent) {
-    //   // A client-side or network error occurred. Handle it accordingly.
-    //   errorMessage = `An error occurred: ${err.error.message}`;
-    // } else {
-    //   // The backend returned an unsuccessful response code.
-    //   // The response body may contain clues as to what went wrong,
-    //   errorMessage = `Backend returned code ${err.status}: ${err.message}`;
-    // }
-
-    console.error(err);
-    return throwError(err);
   }
 }

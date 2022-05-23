@@ -59,9 +59,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
           this.managerService.getAllEmployees(this.project.id).pipe()
         ),
         catchError((err) => {
-          "error" in err.error
-            ? this.showSnackBar(err.error!.error)
-            : this.showSnackBar(err.message);
+          this.showSnackBar(err);
           this.errorMessageSubject.next(err.message);
           return EMPTY;
         })
@@ -80,9 +78,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          "error" in err.error
-            ? this.showSnackBar(err.error!.error)
-            : this.showSnackBar(err.message);
+          this.showSnackBar(err);
           this.errorMessageSubject.next(err.message);
           return EMPTY;
         })

@@ -32,9 +32,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   users$ = this.adminApiService.refresh.pipe(
     takeUntil(this.destroy$),
     catchError((err) => {
-      "error" in err.error
-        ? this.showSnackBar(err.error!.error)
-        : this.showSnackBar(err.message);
+      this.showSnackBar(err);
       this.errorMessageSubject.next(err.message);
       return EMPTY;
     }),
@@ -71,9 +69,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       })
     ),
     catchError((err) => {
-      "error" in err.error
-        ? this.showSnackBar(err.error!.error)
-        : this.showSnackBar(err.message);
+      this.showSnackBar(err);
       this.errorMessageSubject.next(err.message);
       return EMPTY;
     })
@@ -110,9 +106,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          "error" in err.error
-            ? this.showSnackBar(err.error!.error)
-            : this.showSnackBar(err.message);
+          this.showSnackBar(err);
           this.errorMessageSubject.next(err.message);
           return EMPTY;
         })
@@ -132,9 +126,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          "error" in err.error
-            ? this.showSnackBar(err.error!.error)
-            : this.showSnackBar(err.message);
+          this.showSnackBar(err);
           this.errorMessageSubject.next(err.message);
           return EMPTY;
         })

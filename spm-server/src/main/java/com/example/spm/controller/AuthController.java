@@ -5,13 +5,12 @@ import com.example.spm.model.entity.AppUser;
 import com.example.spm.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -33,10 +32,8 @@ public class AuthController {
             @RequestBody @Valid UserRegisterDTO userRegisterDTO,
             BindingResult bindingResult
     ) {
-        System.out.println(userRegisterDTO);
         if (bindingResult.hasFieldErrors()) bindingResult.getFieldErrors().forEach(System.out::println);
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
-        return ResponseEntity.created(uri).body(appUserService.saveUser(userRegisterDTO));
+        return new ResponseEntity<>(appUserService.saveUser(userRegisterDTO), HttpStatus.CREATED);
     }
 
 }

@@ -8,6 +8,7 @@ import { IAppUser } from "../interfaces/user.interface";
 
 import { tap, catchError } from "rxjs/operators";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
+import { handleError } from "../utility/error";
 
 @Injectable({
   providedIn: "root",
@@ -29,7 +30,7 @@ export class AdminApiService {
   headers = new HttpHeaders({
     "Content-Type": "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTY1MzIzMDU3OSwiaWF0IjoxNjUzMjEyNTc5fQ.PkBE0aIlBky4dqam1WIFZ9ORWsIt011i_FRJ-v7o4X73VGAnVgBJw46nXap952njVZxNbBo8SaIKqX-mk27n6A",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTY1NDM1NTgyOSwiaWF0IjoxNjUzMjc1ODI5fQ._T9mPMiWotf93PCZvtXJJjrWgqObs1E6YQtmKUwdr7qGWlzgjSXtFqHK70Abm5iZKL9_suuonqf8oxfYIhEkpw",
   });
 
   constructor(private http: HttpClient) {}
@@ -37,7 +38,7 @@ export class AdminApiService {
   getAllUsers(): Observable<IAppUser[]> {
     return this.http
       .get<IAppUser[]>(this.usersUrl, { headers: this.headers })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(handleError));
   }
 
   selectUserCategory(selectedUserCategory: string): void {
@@ -52,7 +53,7 @@ export class AdminApiService {
       })
       .pipe(
         tap((response) => this.refreshSubject.next(null)),
-        catchError(this.handleError)
+        catchError(handleError)
       );
   }
 
@@ -63,24 +64,7 @@ export class AdminApiService {
       })
       .pipe(
         tap((response) => this.refreshSubject.next(null)),
-        catchError(this.handleError)
+        catchError(handleError)
       );
-  }
-
-  private handleError(err: HttpErrorResponse): Observable<never> {
-    // in a real world app, we may send the server to some remote logging infrastructure
-    // instead of just logging it to the console
-    // let errorMessage: string;
-    // if (err.error instanceof ErrorEvent) {
-    //   // A client-side or network error occurred. Handle it accordingly.
-    //   errorMessage = `An error occurred: ${err.error.message}`;
-    // } else {
-    //   // The backend returned an unsuccessful response code.
-    //   // The response body may contain clues as to what went wrong,
-    //   errorMessage = `Backend returned code ${err.status}: ${err.message}`;
-    // }
-
-    console.error(err);
-    return throwError(err);
   }
 }
