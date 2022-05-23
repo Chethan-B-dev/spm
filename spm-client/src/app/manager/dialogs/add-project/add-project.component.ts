@@ -19,9 +19,8 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   private errorMessageSubject = new Subject<string>();
   errorMessage$ = this.errorMessageSubject.asObservable();
   private readonly destroy$ = new Subject();
-
-  toppingList: string[] = ["hello", "world"];
   createProjectForm: FormGroup;
+
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AddProjectComponent>,
@@ -29,34 +28,6 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     private managerService: ManagerService,
     private snackBar: MatSnackBar
   ) {}
-
-  createProject(): void {
-    let projectName: string = this.createProjectForm.value.name;
-    let projectDescription: string = this.createProjectForm.value.description;
-    let projectDeadLine: Date = this.createProjectForm.value.toDate;
-    this.managerService
-      .createProject(projectName, projectDescription, projectDeadLine)
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((err) => {
-          err.error instanceof ErrorEvent
-            ? this.showSnackBar(JSON.stringify(err.error.message))
-            : this.showSnackBar(err.message);
-          this.errorMessageSubject.next(err.message);
-          return EMPTY;
-        })
-      )
-      .subscribe((project) => {
-        this.showSnackBar("Project has been created");
-        this.close();
-      });
-  }
-
-  private showSnackBar(message: string, duration?: number): void {
-    this.snackBar.open(message, "Close", {
-      duration: duration ? duration : 3000,
-    });
-  }
 
   ngOnInit(): void {
     this.createProjectForm = this.fb.group({
@@ -71,7 +42,35 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  createProject(): void {
+    let projectName: string = this.createProjectForm.value.name;
+    let projectDescription: string = this.createProjectForm.value.description;
+    let projectDeadLine: Date = this.createProjectForm.value.toDate;
+    this.managerService
+      .createProject(projectName, projectDescription, projectDeadLine)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          "error" in err.error
+            ? this.showSnackBar(err.error!.error)
+            : this.showSnackBar(err.message);
+          this.errorMessageSubject.next(err.message);
+          return EMPTY;
+        })
+      )
+      .subscribe((project) => {
+        this.showSnackBar("Project has been created");
+        this.close();
+      });
+  }
+
   close(): void {
     this.dialogRef.close();
+  }
+
+  private showSnackBar(message: string, duration?: number): void {
+    this.snackBar.open(message, "Close", {
+      duration: duration ? duration : 3000,
+    });
   }
 }

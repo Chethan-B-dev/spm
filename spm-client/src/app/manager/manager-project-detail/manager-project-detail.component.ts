@@ -34,11 +34,12 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
     });
+
     this.project$ = this.managerService.refresh.pipe(
       takeUntil(this.destroy$),
       catchError((err) => {
-        err.error instanceof ErrorEvent
-          ? this.showSnackBar(JSON.stringify(err.error.message))
+        "error" in err.error
+          ? this.showSnackBar(err.error!.error)
           : this.showSnackBar(err.message);
         this.errorMessageSubject.next(err.message);
         return EMPTY;

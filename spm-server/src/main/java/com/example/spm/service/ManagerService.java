@@ -7,10 +7,14 @@ import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.enums.ProjectStatus;
 import com.example.spm.model.enums.UserRole;
+import com.example.spm.model.enums.UserStatus;
 import com.example.spm.repository.AppUserRepository;
 import com.example.spm.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -28,6 +32,8 @@ public class ManagerService {
     private final AppUserRepository appUserRepository;
     private final AdminService adminService;
     private final AppUserService appUserService;
+
+    private final int pageSize = 2;
     public List<Project> getAllProjects(Integer managerId) {
         return projectRepository.findByManagerId(managerId);
     }
@@ -62,25 +68,18 @@ public class ManagerService {
         return projectRepository.save(project);
     }
 
-    public void addUserToProject(Integer projectId, Integer userId) {
-        AppUser appUser = adminService.checkIfUserExists(userId);
+    public Project addUsersToProject(Integer projectId, List<Integer> userIds) {
         Project project = checkIfProjectExists(projectId);
-        if(appUser == null){
-            throw new UserNotFoundException("User with ID '"+userId+"' does not exists");
-        }
-        if (project == null){
-            throw new ProjectNotFoundException("Project with id '"+projectId+"' does not exists");
-        }
-        if (appUser.getRole().equals(UserRole.EMPLOYEE)) {
-            if(project.getUsers() == null){
-                project.setUsers(new ArrayList<>());
-            }
-            project.getUsers().add(appUser);
-            System.out.println(project);
-            projectRepository.save(project);
-        }else {
-            throw new RoleNotAcceptableException("Role '"+appUser.getRole()+"' is not acceptable for the current action");
-        }
+        userIds.forEach(userId ->{
+            AppUser appUser = adminService.checkIfUserExists(userId);
+            if (appUser.getRole().equals(UserRole.EMPLOYEE)) {
+                if (project.getUsers() == null) project.setUsers(new ArrayList<>());
+                project.getUsers().add(appUser);
+            } else
+                throw new RoleNotAcceptableException("Role '" + appUser.getRole() + "' is not acceptable for the current action");
+        });
+
+        return projectRepository.save(project);
     }
 
     public List<AppUser> getAllEmployeesOfTheProject (Integer projectId, MyAppUserDetails loggedInUser) {
@@ -88,6 +87,11 @@ public class ManagerService {
         // if the project does not belong to that manager
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         return project.getUsers();
+    }
+
+    public List<AppUser> getAllPagedEmployees (int pageNumber) {
+        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("id").ascending());
+        return appUserRepository.findAllByStatusAndRole(UserStatus.VERIFIED, UserRole.EMPLOYEE, paging);
     }
 
     public Project getProjectById (Integer projectId, MyAppUserDetails loggedInUser) {

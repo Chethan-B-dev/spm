@@ -25,7 +25,7 @@ export class ManagerService {
   headers = new HttpHeaders({
     "Content-Type": "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjUzMjA0NjEyLCJpYXQiOjE2NTMxODY2MTJ9.g0beD-KixUiyBTskBlqPBmMAbkSwRzyipgvbjiwTP7EjtHHjbwZgv0fTVynbrq2FrtoB3G6cOEB4rb8rtLArEQ",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjUzMjMwNTM2LCJpYXQiOjE2NTMyMTI1MzZ9.sVmc4lr9Hjnw6w3xMI7qYUiIQsv2D6AvWRwy90mmC7tfolP-8opEMXxGrD7QnVoV2CNzw-7xJ8x8CqkJlN479g",
   });
 
   constructor(private http: HttpClient) {}
@@ -46,13 +46,16 @@ export class ManagerService {
 
   addEmployees(projectId: number, userIds: number[]): Observable<IProject> {
     const requestBody = {
-      projectId,
       userIds,
     };
     return this.http
-      .post<IProject>(`${this.managerUrl}/assign-user`, requestBody, {
-        headers: this.headers,
-      })
+      .put<IProject>(
+        `${this.managerUrl}/assign-user/${projectId}`,
+        requestBody,
+        {
+          headers: this.headers,
+        }
+      )
       .pipe(
         tap(() => this.refreshSubject.next(null)),
         catchError(this.handleError)

@@ -13,7 +13,7 @@
       *ngIf="showAddTask"
       mat-button
       color="primary"
-      (click)="openCreateTaskDialog()"
+      (click)="openCreateTaskDialog(project)"
     >
       Add Task
     </button>
@@ -24,7 +24,7 @@
     <mat-chip color="warn" selected
       >Deadline - {{ project.toDate | date }}</mat-chip
     >
-    <mat-chip>Employees - 10</mat-chip>
+    <mat-chip>Employees - {{ project.users.length }}</mat-chip>
     <mat-chip>Tasks - 6</mat-chip>
     <mat-chip>Backlogs - 3</mat-chip>
     <mat-chip>Completed - 3</mat-chip>
@@ -59,7 +59,7 @@
         aria-label="Example icon button with a vertical three dot icon"
         (click)="addEmployees()"
       >
-        <mat-icon>sync</mat-icon>
+        <mat-icon style="color: green">sync</mat-icon>
       </button>
     </div>
 

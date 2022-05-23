@@ -59,8 +59,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
           this.managerService.getAllEmployees(this.project.id).pipe()
         ),
         catchError((err) => {
-          err.error instanceof ErrorEvent
-            ? this.showSnackBar(JSON.stringify(err.error.message))
+          "error" in err.error
+            ? this.showSnackBar(err.error!.error)
             : this.showSnackBar(err.message);
           this.errorMessageSubject.next(err.message);
           return EMPTY;
@@ -80,8 +80,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          err.error instanceof ErrorEvent
-            ? this.showSnackBar(JSON.stringify(err.error.message))
+          "error" in err.error
+            ? this.showSnackBar(err.error!.error)
             : this.showSnackBar(err.message);
           this.errorMessageSubject.next(err.message);
           return EMPTY;
@@ -100,14 +100,16 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     window.history.go(-1);
   }
 
-  openCreateTaskDialog(): void {
+  openCreateTaskDialog(project: IProject): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     // dialogConfig.width = "400px";
 
-    dialogConfig.data = {};
+    dialogConfig.data = {
+      project,
+    };
 
     const dialogRef = this.dialog.open(CreateTaskComponent, dialogConfig);
 

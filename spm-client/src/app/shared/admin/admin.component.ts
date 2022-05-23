@@ -32,8 +32,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   users$ = this.adminApiService.refresh.pipe(
     takeUntil(this.destroy$),
     catchError((err) => {
-      err.error instanceof ErrorEvent
-        ? this.showSnackBar(JSON.stringify(err.error.message))
+      "error" in err.error
+        ? this.showSnackBar(err.error!.error)
         : this.showSnackBar(err.message);
       this.errorMessageSubject.next(err.message);
       return EMPTY;
@@ -71,8 +71,8 @@ export class AdminComponent implements OnInit, OnDestroy {
       })
     ),
     catchError((err) => {
-      err.error instanceof ErrorEvent
-        ? this.showSnackBar(JSON.stringify(err.error.message))
+      "error" in err.error
+        ? this.showSnackBar(err.error!.error)
         : this.showSnackBar(err.message);
       this.errorMessageSubject.next(err.message);
       return EMPTY;
@@ -110,8 +110,8 @@ export class AdminComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          err.error instanceof ErrorEvent
-            ? this.showSnackBar(JSON.stringify(err.error.message))
+          "error" in err.error
+            ? this.showSnackBar(err.error!.error)
             : this.showSnackBar(err.message);
           this.errorMessageSubject.next(err.message);
           return EMPTY;
@@ -132,8 +132,8 @@ export class AdminComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          err.error instanceof ErrorEvent
-            ? this.showSnackBar(JSON.stringify(err.error.message))
+          "error" in err.error
+            ? this.showSnackBar(err.error!.error)
             : this.showSnackBar(err.message);
           this.errorMessageSubject.next(err.message);
           return EMPTY;

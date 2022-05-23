@@ -1,16 +1,16 @@
 <h2 mat-dialog-title>
-  Create Task for <span style="color: red">{{ projectName }}</span>
+  Create Task for <span style="color: red">{{ project.name }}</span>
 </h2>
 
 <mat-dialog-content [formGroup]="createTaskForm">
   <p>
     <mat-form-field style="width: 50%; padding: 10px">
-      <input matInput placeholder="Task Name" formControlName="taskName" />
+      <input matInput placeholder="Task Name" formControlName="name" />
     </mat-form-field>
 
     <mat-form-field appearance="fill" style="width: 50%">
       <mat-label>Choose a date</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="taskDeadLine" />
+      <input matInput [matDatepicker]="picker" formControlName="deadLine" />
       <mat-hint>MM/DD/YYYY</mat-hint>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
@@ -20,7 +20,7 @@
   <p>
     <mat-form-field appearance="fill" style="width: 50%; padding: 10px">
       <mat-label>Priority</mat-label>
-      <mat-select formControlName="taskPriority">
+      <mat-select formControlName="priority">
         <mat-option value="LOW">
           <mat-icon>keyboard_arrow_down</mat-icon> Low</mat-option
         >
@@ -35,11 +35,10 @@
 
     <mat-form-field appearance="fill" style="width: 50%">
       <mat-label>Assign Employee</mat-label>
-      <mat-select formControlName="taskEmployee">
-        <mat-option value="volvo">Volvo</mat-option>
-        <mat-option value="saab">Saab</mat-option>
-        <mat-option value="mercedes">Mercedes</mat-option>
-        <mat-option value="audi">Audi</mat-option>
+      <mat-select formControlName="employee">
+        <mat-option [value]="user.id" *ngFor="let user of project.users">{{
+          user.username + " : " + user.email
+        }}</mat-option>
       </mat-select>
     </mat-form-field>
   </p>
@@ -56,17 +55,22 @@
       <textarea
         matInput
         placeholder="Add Description"
-        formControlName="taskDescription"
+        formControlName="description"
       ></textarea>
     </mat-form-field>
   </p>
 </mat-dialog-content>
 
 <mat-dialog-actions class="push-right">
-  <button class="mat-raised-button" (click)="close()" style="margin-right: 8px">
+  <button
+    mat-raised-button
+    color="warn"
+    (click)="close()"
+    style="margin-right: 8px"
+  >
     Close
   </button>
-  <button class="mat-raised-button mat-primary" (click)="createTask()">
+  <button mat-raised-button color="primary" (click)="createTask()">
     Create
   </button>
 </mat-dialog-actions>

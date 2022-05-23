@@ -33,6 +33,19 @@ public class ManagerController {
         );
     }
 
+    @GetMapping("/employees")
+    public ResponseEntity<List<AppUser>> getAllPagedEmployees (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @RequestParam(required = false) Integer pageNumber
+    ) {
+        System.out.println("came here");
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        pageNumber = pageNumber != null ? pageNumber : 0;
+        return new ResponseEntity<>(
+                managerService.getAllPagedEmployees(pageNumber), HttpStatus.OK
+        );
+    }
+
     @GetMapping("/project/{projectId}")
     public ResponseEntity<Project> getProjectById (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
@@ -56,7 +69,7 @@ public class ManagerController {
     }
 
     @GetMapping("/employees/{projectId}")
-    public ResponseEntity<List<AppUser>> getAllEmployees (
+    public ResponseEntity<List<AppUser>> getAllProjectEmployees (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable Integer projectId
     ) {
@@ -81,17 +94,15 @@ public class ManagerController {
 
     @Transactional
     @PutMapping("/assign-user/{projectId}")
-    public void addUserToProject (
+    public ResponseEntity<Project> addUserToProject (
             @PathVariable Integer projectId,
             @RequestBody ProjectUserDTO projectUserDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-        System.out.println(projectUserDTO.getUserIds());
-        for (Integer userId : projectUserDTO.getUserIds()) {
-            managerService.addUserToProject(projectId, userId);
-            System.out.println(userId);
-        }
+        return new ResponseEntity<>(
+                managerService.addUsersToProject(projectId, projectUserDTO.getUserIds()), HttpStatus.OK
+        );
     }
     /*
     ** todo: create project

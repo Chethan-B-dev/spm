@@ -5,7 +5,6 @@ export interface IAppUser {
   email: string;
   status: UserStatus;
   role: UserRole;
-  belongsToProject?: boolean;
 }
 
 export enum UserStatus {

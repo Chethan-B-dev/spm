@@ -33,11 +33,14 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Task Progress</mat-label>
-        <mat-select [(value)]="selectedFood">
-          <mat-option></mat-option>
+        <mat-select>
+          <mat-option value="CREATED">Created</mat-option>
+          <mat-option value="IN_PROGRESS">In Progress</mat-option>
+          <mat-option value="COMPLETED">Completed</mat-option>
         </mat-select>
       </mat-form-field>
 
+      <!-- task -->
       <mat-card class="my-2">
         <div class="left-and-right">
           <mat-card-title>Task Name</mat-card-title>
@@ -66,62 +69,7 @@
         </mat-card-actions>
       </mat-card>
 
-      <mat-card class="my-2">
-        <mat-card-title>Task Name</mat-card-title>
-        <mat-chip-list aria-label="Fish selection">
-          <mat-chip color="primary">
-            <mat-chip-avatar>
-              <mat-icon>person</mat-icon>
-            </mat-chip-avatar>
-            Assignee
-          </mat-chip>
-          <mat-chip color="warn" selected
-            >Deadline - {{ deadLine | date }}</mat-chip
-          >
-        </mat-chip-list>
-        <mat-card-subtitle class="my-2"
-          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
-          alias?</mat-card-subtitle
-        >
-        <mat-card-actions>
-          <button mat-button color="warn">View Details</button>
-        </mat-card-actions>
-      </mat-card>
-
-      <mat-card class="my-2">
-        <mat-card-title>Task Name</mat-card-title>
-        <mat-chip-list aria-label="Fish selection">
-          <mat-chip color="primary" selected>Assignee</mat-chip>
-          <mat-chip color="warn" selected
-            >Deadline - {{ deadLine | date }}</mat-chip
-          >
-        </mat-chip-list>
-        <mat-card-subtitle class="my-2"
-          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
-          alias?</mat-card-subtitle
-        >
-        <mat-card-actions>
-          <button mat-button color="warn">View Details</button>
-        </mat-card-actions>
-      </mat-card>
-
-      <mat-card class="my-2">
-        <mat-card-title>Task Name</mat-card-title>
-        <mat-chip-list aria-label="Fish selection">
-          <mat-chip color="primary" selected>Assignee</mat-chip>
-          <mat-chip color="warn" selected
-            >Deadline - {{ deadLine | date }}</mat-chip
-          >
-        </mat-chip-list>
-        <mat-card-subtitle class="my-2"
-          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
-          alias?</mat-card-subtitle
-        >
-        <mat-card-actions>
-          <button mat-button color="warn">View Details</button>
-        </mat-card-actions>
-      </mat-card>
-
+      <!-- load more and loading spinner -->
       <div class="center my-3">
         <button
           mat-button
