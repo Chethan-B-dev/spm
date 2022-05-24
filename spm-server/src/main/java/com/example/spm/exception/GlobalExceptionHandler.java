@@ -53,6 +53,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = TodoNotFoundException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> todoNotFoundException(TodoNotFoundException todoNotFoundException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .message(todoNotFoundException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(value = RoleNotAcceptableException.class)
     public ResponseEntity<GeneralExceptionResponseDTO> roleNotAcceptableException(RoleNotAcceptableException roleNotAcceptableException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
