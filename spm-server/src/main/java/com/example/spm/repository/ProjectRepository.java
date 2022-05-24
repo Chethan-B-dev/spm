@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
     List<Project> findByManagerIdOrderByFromDateDesc (Integer managerId);
-    Boolean existsByName(String name);
+    Boolean existsByName (String name);
 }

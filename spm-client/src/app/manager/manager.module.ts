@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-detail.component";
 import { MaterialModule } from "../shared/material/material.module";
 import { AddProjectComponent } from "./dialogs/add-project/add-project.component";
+import { ShowEmployeesComponent } from "./dialogs/show-employees/show-employees.component";
 @NgModule({
   declarations: [
     DashboardComponent,
@@ -17,8 +18,13 @@ import { AddProjectComponent } from "./dialogs/add-project/add-project.component
     CreateTaskComponent,
     ManagerTaskDetailComponent,
     AddProjectComponent,
+    ShowEmployeesComponent,
   ],
-  entryComponents: [CreateTaskComponent, AddProjectComponent],
+  entryComponents: [
+    CreateTaskComponent,
+    AddProjectComponent,
+    ShowEmployeesComponent,
+  ],
 
   imports: [
     CommonModule,

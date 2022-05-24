@@ -1,32 +1,7 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-  HttpParams,
-} from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import {
-  tap,
-  catchError,
-  scan,
-  map,
-  shareReplay,
-  switchMap,
-  concatMap,
-  mergeScan,
-  filter,
-  takeUntil,
-} from "rxjs/operators";
-import {
-  BehaviorSubject,
-  combineLatest,
-  from,
-  merge,
-  Observable,
-  of,
-  Subject,
-  throwError,
-} from "rxjs";
+import { BehaviorSubject, merge, Observable, Subject } from "rxjs";
+import { catchError, concatMap, scan, tap } from "rxjs/operators";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { handleError } from "src/app/shared/utility/error";
@@ -78,9 +53,7 @@ export class ManagerService {
     }),
     concatMap((pageNumber) => this.getMoreUsers(pageNumber)),
     tap((data) => {
-      if (data.length === 0) {
-        this.usersOverSubject.next(true);
-      }
+      if (data.length === 0) this.usersOverSubject.next(true);
     }),
     scan((acc, value) => [...acc, ...value], [] as IAppUser[]),
     catchError(handleError)

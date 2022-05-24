@@ -3,6 +3,7 @@ package com.example.spm.controller;
 import com.example.spm.model.dto.CreateProjectDTO;
 import com.example.spm.model.dto.CreateTaskDTO;
 import com.example.spm.model.dto.ProjectUserDTO;
+import com.example.spm.model.dto.UpdateTaskDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.entity.Task;
@@ -28,7 +29,9 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getAllProjects (@AuthenticationPrincipal MyAppUserDetails myAppUserDetails) {
+    public ResponseEntity<List<Project>> getAllProjects (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 managerService.getAllProjects(loggedInUser.getUser().getId()), HttpStatus.OK
@@ -129,6 +132,40 @@ public class ManagerController {
 //        managerService.handleProjectValidationErrors(bindingResult);
         return new ResponseEntity<>(
                 managerService.createTask(createTaskDTO, loggedInUser, projectId), HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/tasks/{projectId}")
+    public ResponseEntity<List<Task>> getAllProjectTasks (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer projectId
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                managerService.getAllProjectTasks(projectId, loggedInUser), HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/task/{taskId}")
+    public ResponseEntity<Task> getTaskByTaskId(
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer taskId
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                managerService.getTaskById(taskId), HttpStatus.OK
+        );
+    }
+    @Transactional
+    @PutMapping("/edit-task/{taskId}")
+    public ResponseEntity<Task> updateTask (
+            @PathVariable Integer taskId,
+            @RequestBody UpdateTaskDTO updateTaskDTO,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ){
+        MyAppUserDetails loggeInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+            managerService.updateTask(taskId, updateTaskDTO), HttpStatus.OK
         );
     }
 

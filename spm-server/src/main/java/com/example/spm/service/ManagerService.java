@@ -4,6 +4,7 @@ package com.example.spm.service;
 import com.example.spm.exception.*;
 import com.example.spm.model.dto.CreateProjectDTO;
 import com.example.spm.model.dto.CreateTaskDTO;
+import com.example.spm.model.dto.UpdateTaskDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.entity.Task;
@@ -158,5 +159,20 @@ public class ManagerService {
             throw new TaskNotFoundException("Task with id '" + taskId + "' does not exists");
         }
         return taskOptional.get();
+    }
+
+    public List<Task> getAllProjectTasks(Integer projectId, MyAppUserDetails loggedInUser) {
+        Project project = checkIfProjectExists(projectId);
+        checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
+        return taskRepository.findAllByProjectId(projectId);
+    }
+
+    public Task updateTask(Integer taskId, UpdateTaskDTO updateTaskDTO) {
+        Task task = checkIfTaskExists(taskId);
+        task.setName(updateTaskDTO.getTaskName());
+        task.setDeadLine(updateTaskDTO.getDeadline().toLocalDate());
+        task.setPriority(updateTaskDTO.getPriority());
+        task.setDescription(updateTaskDTO.getDescription());
+        return task;
     }
 }
