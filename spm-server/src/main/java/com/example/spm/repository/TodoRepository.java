@@ -1,0 +1,12 @@
+package com.example.spm.repository;
+
+import com.example.spm.model.entity.Task;
+import com.example.spm.model.entity.Todo;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface TodoRepository extends JpaRepository<Todo, Integer> {
+
+    List<Todo> findAllByTaskId(Integer taskId);
+}

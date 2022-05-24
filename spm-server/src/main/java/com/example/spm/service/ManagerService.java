@@ -2,16 +2,16 @@ package com.example.spm.service;
 
 
 import com.example.spm.exception.*;
-import com.example.spm.model.dto.CreateProjectDTO;
-import com.example.spm.model.dto.CreateTaskDTO;
-import com.example.spm.model.dto.UpdateTaskDTO;
+import com.example.spm.model.dto.*;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.entity.Task;
+import com.example.spm.model.entity.Todo;
 import com.example.spm.model.enums.*;
 import com.example.spm.repository.AppUserRepository;
 import com.example.spm.repository.ProjectRepository;
 import com.example.spm.repository.TaskRepository;
+import com.example.spm.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 public class ManagerService {
     private final ProjectRepository projectRepository;
     private final TaskRepository taskRepository;
+    private final TodoRepository todoRepository;
     private final AppUserRepository appUserRepository;
     private final AdminService adminService;
     private final AppUserService appUserService;
@@ -174,5 +175,47 @@ public class ManagerService {
         task.setPriority(updateTaskDTO.getPriority());
         task.setDescription(updateTaskDTO.getDescription());
         return task;
+    }
+
+    public Todo createTodo(CreateTodoDTO createTodoDTO, MyAppUserDetails loggedInUser, Integer taskId) {
+        Task task = checkIfTaskExists(taskId);
+        Todo todo = Todo.builder()
+                .name(createTodoDTO.getTodoName())
+                .status(TodoStatus.ASSIGNED)
+                .task(task)
+                .build();
+
+        return todoRepository.save(todo);
+    }
+
+    public Todo getTodoById(Integer todoId) {
+        return checkIfTodoExists(todoId);
+    }
+
+    private Todo checkIfTodoExists(Integer todoId) {
+        Optional<Todo> todoOptional = todoRepository.findById(todoId);
+        if (todoOptional.isEmpty()) {
+            throw new TodoNotFoundException("Todo with id '" + todoId + "' does not exists");
+        }
+        return todoOptional.get();
+    }
+
+    public List<Todo> getAllTaskTodos(Integer taskId, MyAppUserDetails loggedInUser) {
+        Task task = checkIfTaskExists(taskId);
+        checkIfTaskBelongsToEmployee(task, loggedInUser.getUser().getId());
+        return todoRepository.findAllByTaskId(taskId);
+    }
+
+    private void checkIfTaskBelongsToEmployee(Task task, Integer employeeId) {
+        if(!task.getUser().getId().equals(employeeId))
+            throw new ActionNotAllowedException("Cannot access this task resource");
+    }
+
+    public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
+        Todo todo = checkIfTodoExists(todoId);
+        todo.setName(updateTodoDTO.getTodoName());
+        todo.setStatus(updateTodoDTO.getStatus());
+        todo.setTask(checkIfTaskExists(updateTodoDTO.getTaskId()));
+        return todo;
     }
 }
