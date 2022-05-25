@@ -25,6 +25,9 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatExpansionModule} from '@angular/material/expansion';
+
+
 const materialModules = [
   MatToolbarModule,
   MatIconModule,
@@ -49,7 +52,8 @@ const materialModules = [
   MatSnackBarModule,
   MatGridListModule,
   MatProgressBarModule,
-  DragDropModule
+  DragDropModule,
+  MatExpansionModule
 ];
 
 @NgModule({

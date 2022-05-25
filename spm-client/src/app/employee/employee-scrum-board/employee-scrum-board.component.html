@@ -51,31 +51,34 @@
       #todoList="cdkDropList"
       [cdkDropListData]="todo"
       [cdkDropListConnectedTo]="[inProgressList,doneList]"
-      class="example-list"
+      class="example-list my-2"
       (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of todo" cdkDrag>{{item}}</div>
+      <div class="example-box" *ngFor="let item of todo" cdkDrag>{{item}}<span class="float-right"><mat-chip class="bg-warning" selected>Priority Medium</mat-chip> <mat-icon>keyboard_arrow_up</mat-icon></span></div>
     </div>
+
     </div>
+    <mat-divider [vertical]="true"></mat-divider>
     <div class="col">
       <div
     cdkDropList
     #inProgressList="cdkDropList"
     [cdkDropListData]="in_progress"
     [cdkDropListConnectedTo]="[todoList,doneList]"
-    class="example-list"
+    class="example-list m-2"
     (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let item of in_progress" cdkDrag>{{item}}</div>
+    <div class="example-box " *ngFor="let item of in_progress" cdkDrag>{{item}} <span class="float-right"><mat-chip color="accent" selected>Priority High</mat-chip> <mat-icon>priority_high</mat-icon></span> </div>
   </div>
     </div>
+    <mat-divider [vertical]="true"></mat-divider>
     <div class="col">
       <div
       cdkDropList
       #doneList="cdkDropList"
       [cdkDropListData]="done"
       [cdkDropListConnectedTo]="[inProgressList,todoList]"
-      class="example-list"
+      class="example-list my-2"
       (cdkDropListDropped)="drop($event)">
-      <div class="example-box" *ngFor="let item of done" cdkDrag>{{item}}</div>
+      <div class="example-box" *ngFor="let item of done" cdkDrag>{{item}} <span class="float-right"><mat-chip class="bg-success" selected>Priority Low</mat-chip> <mat-icon>keyboard_arrow_down</mat-icon></span></div>
     </div>
     </div>
   </div>
@@ -83,4 +86,20 @@
 
 <!-- scrum board end-->
 
+<!-- <div
+      cdkDropList
+      #doneList="cdkDropList"
+      [cdkDropListData]="done"
+      [cdkDropListConnectedTo]="[inProgressList,todoList]"
+      class="example-list"
+      (cdkDropListDropped)="drop($event)">
+<mat-expansion-panel class="example-box" (opened)="panelOpenState = true" (closed)="panelOpenState = false"  *ngFor="let item of done" cdkDrag>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{item}}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>I'm visible because I am open</p>
+  </mat-expansion-panel>
 
+</div> -->
