@@ -18,7 +18,7 @@ import { EmployeeModule } from "./employee/employee.module";
     SharedModule,
     AuthModule,
     ManagerModule,
-    EmployeeModule
+    EmployeeModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -21,7 +21,6 @@ import { TopNavComponent } from "./top-nav/top-nav.component";
 import { AdminApiService } from "./services/admin-api.service";
 import { HttpClientModule } from "@angular/common/http";
 import { SnackbarService } from "./services/snackbar.service";
-
 @NgModule({
   declarations: [
     SidenavComponent,
