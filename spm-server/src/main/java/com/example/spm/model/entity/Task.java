@@ -2,6 +2,7 @@ package com.example.spm.model.entity;
 
 import com.example.spm.model.enums.TaskPriority;
 import com.example.spm.model.enums.TaskStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,6 +32,7 @@ public class Task {
             name = "project_id",
             referencedColumnName = "id"
     )
+    @JsonIgnore
     private Project project;
     @Column(nullable = false)
     private String name;

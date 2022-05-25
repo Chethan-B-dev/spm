@@ -1,8 +1,12 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, merge, Observable, Subject } from "rxjs";
-import { catchError, concatMap, scan, tap } from "rxjs/operators";
+import { BehaviorSubject, concat, merge, Observable, Subject } from "rxjs";
+import { catchError, concatMap, scan, switchMap, tap } from "rxjs/operators";
 import { IProject } from "src/app/shared/interfaces/project.interface";
+import {
+  ITask,
+  ITaskRequestDTO,
+} from "src/app/shared/interfaces/task.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { handleError } from "src/app/shared/utility/error";
 
@@ -16,14 +20,25 @@ export class ManagerService {
   private projectInsertedSubject = new Subject<IProject>();
   projectInsertedAction$ = this.projectInsertedSubject.asObservable();
 
+  private taskInsertedSubject = new Subject<ITask>();
+  taskInsertedAction$ = this.taskInsertedSubject.asObservable();
+
   private userPageNumberSubject = new BehaviorSubject<number>(0);
   userPageNumber$ = this.userPageNumberSubject.asObservable();
 
   private readonly usersOverSubject = new BehaviorSubject<boolean>(false);
   usersOver$ = this.usersOverSubject.asObservable();
 
+  // todo: might need a subject for projectId to get the tasks of that project
+  private projectIdSubject = new Subject<number>();
+  projectId$ = this.projectIdSubject.asObservable();
+
   get refresh() {
     return this.refreshSubject.asObservable();
+  }
+
+  setProjectId(projectId: number): void {
+    this.projectIdSubject.next(projectId);
   }
 
   // todo: headers for temp testing of jwt, later replace with HTTP interceptor
@@ -59,6 +74,27 @@ export class ManagerService {
     catchError(handleError)
   );
 
+  tasks$ = this.projectId$.pipe(
+    switchMap((projectId) => this.getAllTasks(projectId)),
+    catchError(handleError)
+  );
+
+  tasksWithAdd$ = merge(this.tasks$, this.taskInsertedAction$).pipe(
+    scan(
+      (acc, value) => (value instanceof Array ? [...value] : [value, ...acc]),
+      [] as ITask[]
+    ),
+    catchError(handleError)
+  );
+
+  getAllTasks(projectId: number): Observable<ITask[]> {
+    return this.http
+      .get<ITask[]>(`${this.managerUrl}/tasks/${projectId}`, {
+        headers: this.headers,
+      })
+      .pipe(catchError(handleError));
+  }
+
   getMoreUsers(pageNumber: number): Observable<IAppUser[]> {
     let params: HttpParams = new HttpParams().set(
       "pageNumber",
@@ -78,6 +114,10 @@ export class ManagerService {
 
   addProject(newProject?: IProject) {
     this.projectInsertedSubject.next(newProject);
+  }
+
+  addTask(newTask?: ITask) {
+    this.taskInsertedSubject.next(newTask);
   }
 
   getAllProjects(): Observable<IProject[]> {
@@ -136,6 +176,23 @@ export class ManagerService {
       })
       .pipe(
         tap((project) => this.addProject(project)),
+        catchError(handleError)
+      );
+  }
+
+  createTask(
+    taskRequestDTO: ITaskRequestDTO,
+    projectId: number
+  ): Observable<ITask> {
+    const requestBody = {
+      ...taskRequestDTO,
+    };
+    return this.http
+      .post<ITask>(`${this.managerUrl}/${projectId}/create-task`, requestBody, {
+        headers: this.headers,
+      })
+      .pipe(
+        tap((task) => this.addTask(task)),
         catchError(handleError)
       );
   }

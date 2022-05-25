@@ -3,14 +3,8 @@ import { Observable, throwError } from "rxjs";
 
 export function handleError(err: HttpErrorResponse): Observable<never> {
   let errorMessage: string;
-  if (err.error instanceof ErrorEvent) {
-    // A client-side or network error occurred. Handle it accordingly.
-    errorMessage = err.error.message;
-  } else {
-    if (err.error && err.error.message) errorMessage = err.error.message;
-    else errorMessage = `Backend returned code ${err.status}: ${err.message}`;
-  }
-
+  if (err.error && err.error.message) errorMessage = err.error.message;
+  else errorMessage = `Backend returned code ${err.status}: ${err.message}`;
   console.error(err);
   return throwError(errorMessage);
 }

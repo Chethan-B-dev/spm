@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog, MatSnackBar } from "@angular/material";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
-import { catchError, switchMap, takeUntil } from "rxjs/operators";
+import { catchError, switchMap, takeUntil, tap } from "rxjs/operators";
 import { IProject } from "src/app/shared/interfaces/project.interface";
+import { ITask } from "src/app/shared/interfaces/task.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../services/manager.service";
 
@@ -13,12 +14,10 @@ import { ManagerService } from "../services/manager.service";
   styleUrls: ["./manager-project-detail.component.scss"],
 })
 export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
-  isLoading: boolean = false;
   projectId: number;
-  selectedFood: string = "dosai guess";
-  foods: string[] = ["dosa", "lol"];
   deadLine: Date = new Date();
   project$: Observable<IProject>;
+  tasks$: Observable<ITask[]>;
   private readonly destroy$ = new Subject();
 
   constructor(
@@ -37,6 +36,18 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
     this.project$ = this.managerService.refresh.pipe(
       takeUntil(this.destroy$),
       switchMap(() => this.managerService.getProjectById(this.projectId)),
+      tap((project) => {
+        this.projectId = project.id;
+        this.managerService.setProjectId(this.projectId);
+      }),
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
+    );
+
+    this.tasks$ = this.managerService.tasksWithAdd$.pipe(
+      takeUntil(this.destroy$),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
@@ -50,7 +61,6 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   navigateToTaskDetail(taskId: number): void {
-    console.log("came here");
     this.router.navigate(["task-detail", taskId]);
   }
 }

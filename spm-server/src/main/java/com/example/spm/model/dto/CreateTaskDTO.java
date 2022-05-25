@@ -3,7 +3,6 @@ package com.example.spm.model.dto;
 import com.example.spm.model.enums.TaskPriority;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.scheduling.config.Task;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -16,9 +15,9 @@ import java.time.LocalDateTime;
 @Builder
 public class CreateTaskDTO {
     @NotNull
-    private String taskName;
+    private String name;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime deadline;
+    private LocalDateTime deadLine;
     @NotNull
     private String description;
     private TaskPriority priority;

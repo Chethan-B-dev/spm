@@ -48,4 +48,8 @@ public class Project {
     )
     @ToString.Exclude
     private List<AppUser> users = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project")
+    private List<Task> tasks = new ArrayList<>();
+
 }

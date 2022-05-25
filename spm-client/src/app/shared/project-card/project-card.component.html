@@ -15,7 +15,7 @@
       color="primary"
       (click)="openCreateTaskDialog(project)"
     >
-      Add Task
+      <mat-icon>add</mat-icon> Add Task
     </button>
   </div>
 
@@ -46,7 +46,11 @@
   <app-progress-bar [value]="65"></app-progress-bar>
   <div class="row">
     <div class="col-md-4 left" *ngIf="showAddEmps">
-      <mat-form-field appearance="fill" *ngIf="users$ | async as users">
+      <mat-form-field
+        appearance="fill"
+        *ngIf="users$ | async as users"
+        (click)="users.length === 0 && showNoEmployeesSnackbar()"
+      >
         <mat-hint>Assign Employees to Project</mat-hint>
         <mat-label>Employees</mat-label>
         <mat-select multiple [(value)]="employees">

@@ -135,7 +135,7 @@ public class ManagerService {
             throw new ActionNotAllowedException("You can assign a task only to an employee");
 
         Task task = Task.builder()
-                .name(createTaskDTO.getTaskName())
+                .name(createTaskDTO.getName())
                 .createdDate(LocalDate.now())
                 .description(createTaskDTO.getDescription())
                 .project(project)
@@ -143,7 +143,7 @@ public class ManagerService {
                 .priority(createTaskDTO.getPriority() != null ? createTaskDTO.getPriority() : TaskPriority.LOW)
                 .status(TaskStatus.CREATED)
                 .user(employee)
-                .deadLine(createTaskDTO.getDeadline().toLocalDate())
+                .deadLine(createTaskDTO.getDeadLine().toLocalDate())
                 .build();
 
         return taskRepository.save(task);

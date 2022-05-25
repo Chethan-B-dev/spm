@@ -1,3 +1,4 @@
+import { ThrowStmt } from "@angular/compiler";
 import {
   Component,
   ElementRef,
@@ -96,6 +97,12 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     window.history.go(-1);
   }
 
+  showNoEmployeesSnackbar(): void {
+    this.snackbarService.showSnackBar(
+      "There are no more employees for you to add"
+    );
+  }
+
   openCreateTaskDialog(project: IProject): void {
     const dialogConfig = new MatDialogConfig();
 
@@ -103,9 +110,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     dialogConfig.autoFocus = true;
     // dialogConfig.width = "400px";
 
-    dialogConfig.data = {
-      project,
-    };
+    dialogConfig.data = project;
 
     const dialogRef = this.dialog.open(CreateTaskComponent, dialogConfig);
 

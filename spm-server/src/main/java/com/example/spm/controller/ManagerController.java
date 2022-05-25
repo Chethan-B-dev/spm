@@ -161,7 +161,7 @@ public class ManagerController {
             @RequestBody UpdateTaskDTO updateTaskDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
-        MyAppUserDetails loggeInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
             managerService.updateTask(taskId, updateTaskDTO), HttpStatus.OK
         );

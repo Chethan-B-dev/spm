@@ -6,12 +6,31 @@
   <p>
     <mat-form-field style="width: 50%; padding: 10px">
       <input matInput placeholder="Task Name" formControlName="name" />
+      <mat-hint
+        style="color: red"
+        *ngIf="
+          (this.createTaskForm.get('name').dirty ||
+            this.createTaskForm.get('name').touched) &&
+          this.createTaskForm.get('name').errors?.required
+        "
+      >
+        Task name is required
+      </mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="fill" style="width: 50%">
       <mat-label>Choose a date</mat-label>
       <input matInput [matDatepicker]="picker" formControlName="deadLine" />
-      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-hint
+        style="color: red"
+        *ngIf="
+          (this.createTaskForm.get('deadLine').dirty ||
+            this.createTaskForm.get('deadLine').touched) &&
+          this.createTaskForm.get('deadLine').errors?.required
+        "
+      >
+        Task deadline is required
+      </mat-hint>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
@@ -31,15 +50,39 @@
           <mat-icon>keyboard_arrow_up</mat-icon> High</mat-option
         >
       </mat-select>
+      <mat-hint
+        style="color: red"
+        *ngIf="
+          (this.createTaskForm.get('priority').dirty ||
+            this.createTaskForm.get('priority').touched) &&
+          this.createTaskForm.get('priority').errors?.required
+        "
+      >
+        Task priority is required
+      </mat-hint>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" style="width: 50%">
+    <mat-form-field
+      appearance="fill"
+      style="width: 50%"
+      (click)="project.users.length === 0 && showNoEmployeesSnackbar()"
+    >
       <mat-label>Assign Employee</mat-label>
-      <mat-select formControlName="employee">
+      <mat-select formControlName="userId">
         <mat-option [value]="user.id" *ngFor="let user of project.users">{{
           user.username + " : " + user.email
         }}</mat-option>
       </mat-select>
+      <mat-hint
+        style="color: red"
+        *ngIf="
+          (this.createTaskForm.get('userId').dirty ||
+            this.createTaskForm.get('userId').touched) &&
+          this.createTaskForm.get('userId').errors?.required
+        "
+      >
+        Employee for this task is required
+      </mat-hint>
     </mat-form-field>
   </p>
 
@@ -51,12 +94,21 @@
       appearance="fill"
       style="width: 100%"
     >
-      <mat-label>Leave a comment</mat-label>
+      <mat-label>Task Discription</mat-label>
       <textarea
         matInput
         placeholder="Add Description"
         formControlName="description"
       ></textarea>
+      <mat-hint
+        style="color: red"
+        *ngIf="
+          (this.createTaskForm.get('description').dirty ||
+            this.createTaskForm.get('description').touched) &&
+          this.createTaskForm.get('description').errors?.required
+        "
+        >Task Description is required
+      </mat-hint>
     </mat-form-field>
   </p>
 </mat-dialog-content>
@@ -70,7 +122,15 @@
   >
     Close
   </button>
-  <button mat-raised-button color="primary" (click)="createTask()">
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="
+      this.createTaskForm.invalid &&
+      (this.createTaskForm.dirty || !this.createTaskForm.touched)
+    "
+    (click)="createTask()"
+  >
     Create
   </button>
 </mat-dialog-actions>

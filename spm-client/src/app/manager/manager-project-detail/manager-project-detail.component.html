@@ -41,48 +41,56 @@
       </mat-form-field>
 
       <!-- task -->
-      <mat-card class="my-2">
-        <div class="left-and-right">
-          <mat-card-title>Task Name</mat-card-title>
-
-          <mat-icon>keyboard_arrow_down</mat-icon>
-        </div>
-        <mat-chip-list aria-label="Fish selection">
-          <mat-chip color="primary">
-            <mat-chip-avatar>
-              <mat-icon>person</mat-icon>
-            </mat-chip-avatar>
-            Assignee
-          </mat-chip>
-          <mat-chip color="warn" selected
-            >Deadline - {{ deadLine | date }}</mat-chip
-          >
-        </mat-chip-list>
-        <mat-card-subtitle class="my-2"
-          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
-          alias?</mat-card-subtitle
-        >
-        <mat-card-actions>
-          <button mat-button color="warn" (click)="navigateToTaskDetail(1)">
-            View Details
-          </button>
-        </mat-card-actions>
-      </mat-card>
+      <div *ngIf="tasks$ | async as tasks">
+        <mat-card class="my-2" *ngFor="let task of tasks">
+          <div class="left-and-right">
+            <mat-card-title>{{ task.name }}</mat-card-title>
+            <mat-icon *ngIf="task.priority === 'LOW'" matTooltip="Low Priority"
+              >keyboard_arrow_down</mat-icon
+            >
+            <mat-icon
+              *ngIf="task.priority === 'MEDIUM'"
+              matTooltip="Medium Priority"
+              >unfold_more</mat-icon
+            >
+            <mat-icon
+              *ngIf="task.priority === 'HIGH'"
+              matTooltip="High Priority"
+              >keyboard_arrow_up</mat-icon
+            >
+          </div>
+          <mat-chip-list aria-label="Fish selection">
+            <mat-chip color="primary">
+              <mat-chip-avatar>
+                <mat-icon>person</mat-icon>
+              </mat-chip-avatar>
+              {{ task.user.username }}
+            </mat-chip>
+            <mat-chip color="warn" selected
+              >Deadline - {{ task.deadLine | date }}</mat-chip
+            >
+          </mat-chip-list>
+          <mat-card-subtitle class="my-2">{{
+            task.description
+          }}</mat-card-subtitle>
+          <mat-card-actions>
+            <button
+              mat-button
+              color="warn"
+              (click)="navigateToTaskDetail(task.id)"
+            >
+              View Details
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
 
       <!-- load more and loading spinner -->
       <div class="center my-3">
-        <button
-          mat-button
-          color="accent"
-          class="content-center"
-          *ngIf="!isLoading"
-        >
+        <button mat-button color="accent" class="content-center">
           Load More <mat-icon>arrow_downward</mat-icon>
         </button>
-        <app-loading-spinner
-          color="accent"
-          *ngIf="isLoading"
-        ></app-loading-spinner>
+        <!-- <app-loading-spinner color="accent"></app-loading-spinner> -->
       </div>
     </div>
   </div>
