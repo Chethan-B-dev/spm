@@ -1,35 +1,23 @@
-import { ThrowStmt } from "@angular/compiler";
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  Renderer2,
-} from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { MatSnackBar } from "@angular/material";
-import {
-  MatDialog,
-  MatDialogConfig,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from "@angular/material/dialog";
+// angular
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import { Router } from "@angular/router";
+
+// rxjs
 import { EMPTY, Observable, Subject } from "rxjs";
-import {
-  catchError,
-  map,
-  mapTo,
-  switchMap,
-  takeUntil,
-  tap,
-} from "rxjs/operators";
+import { catchError, switchMap, takeUntil } from "rxjs/operators";
+
+// components
 import { CreateTaskComponent } from "src/app/manager/dialogs/create-task/create-task.component";
 import { ShowEmployeesComponent } from "src/app/manager/dialogs/show-employees/show-employees.component";
+
+// services
 import { ManagerService } from "src/app/manager/services/manager.service";
+import { SnackbarService } from "../services/snackbar.service";
+
+// interfaces
 import { IProject } from "../interfaces/project.interface";
 import { IAppUser } from "../interfaces/user.interface";
-import { SnackbarService } from "../services/snackbar.service";
 
 @Component({
   selector: "app-project-card",

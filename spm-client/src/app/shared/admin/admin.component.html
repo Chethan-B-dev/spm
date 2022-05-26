@@ -44,6 +44,7 @@
                   [matBadgeColor]="
                     user.status === 'VERIFIED' ? 'primary' : 'warn'
                   "
+                  [matTooltip]="user.status | titlecase"
                   matBadgeOverlap="false"
                   >{{ user.username }}</span
                 >

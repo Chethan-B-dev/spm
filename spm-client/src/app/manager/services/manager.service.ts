@@ -1,20 +1,28 @@
+// angular
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, concat, merge, Observable, Subject } from "rxjs";
+
+// rxjs
+import { BehaviorSubject, merge, Observable, of, Subject } from "rxjs";
 import { catchError, concatMap, scan, switchMap, tap } from "rxjs/operators";
+
+// interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   ITask,
   ITaskRequestDTO,
 } from "src/app/shared/interfaces/task.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
+
+// utility
 import { handleError } from "src/app/shared/utility/error";
 
 @Injectable({
   providedIn: "root",
 })
 export class ManagerService {
-  private managerUrl = "http://localhost:8080/api/manager";
+  //todo: get this url from env variable
+  private managerUrl = "http://localhost:8081/api/manager";
   private refreshSubject = new BehaviorSubject(null);
 
   private projectInsertedSubject = new Subject<IProject>();
@@ -29,17 +37,14 @@ export class ManagerService {
   private readonly usersOverSubject = new BehaviorSubject<boolean>(false);
   usersOver$ = this.usersOverSubject.asObservable();
 
-  // todo: might need a subject for projectId to get the tasks of that project
   private projectIdSubject = new Subject<number>();
   projectId$ = this.projectIdSubject.asObservable();
 
-  get refresh() {
-    return this.refreshSubject.asObservable();
-  }
+  private taskCategorySelectedSubject = new BehaviorSubject<string>("ALL");
+  taskCategorySelectedAction$ = this.taskCategorySelectedSubject.asObservable();
 
-  setProjectId(projectId: number): void {
-    this.projectIdSubject.next(projectId);
-  }
+  private selectedProjectSubject = new Subject<IProject>();
+  selectedProject$ = this.selectedProjectSubject.asObservable();
 
   // todo: headers for temp testing of jwt, later replace with HTTP interceptor
   headers = new HttpHeaders({
@@ -47,8 +52,6 @@ export class ManagerService {
     Authorization:
       "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjU0MzU1ODYxLCJpYXQiOjE2NTMyNzU4NjF9.EGJLB4va1thGRQhrGav5l9S8LX3M8XPJTBhvhpKnEeo_qRDj_hm46ze0C3ff-1GcvOzgs3JJvT4eTRVNkUa1jQ",
   });
-
-  constructor(private http: HttpClient) {}
 
   projects$ = this.http
     .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
@@ -74,8 +77,8 @@ export class ManagerService {
     catchError(handleError)
   );
 
-  tasks$ = this.projectId$.pipe(
-    switchMap((projectId) => this.getAllTasks(projectId)),
+  tasks$ = this.selectedProject$.pipe(
+    switchMap((project) => of(project.tasks)),
     catchError(handleError)
   );
 
@@ -86,6 +89,24 @@ export class ManagerService {
     ),
     catchError(handleError)
   );
+
+  constructor(private http: HttpClient) {}
+
+  get refresh() {
+    return this.refreshSubject.asObservable();
+  }
+
+  selectTaskCategory(selectedTaskCategory: string): void {
+    this.taskCategorySelectedSubject.next(selectedTaskCategory);
+  }
+
+  setProjectId(projectId: number): void {
+    this.projectIdSubject.next(projectId);
+  }
+
+  setProject(project: IProject): void {
+    this.selectedProjectSubject.next(project);
+  }
 
   getAllTasks(projectId: number): Observable<ITask[]> {
     return this.http

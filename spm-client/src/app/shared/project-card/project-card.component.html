@@ -29,7 +29,7 @@
       (click)="openShowEmployeesDialog(project.users)"
       >Employees - {{ project.users?.length }}</mat-chip
     >
-    <mat-chip>Tasks - 6</mat-chip>
+    <mat-chip>Tasks - {{ project.tasks?.length }}</mat-chip>
     <mat-chip>Backlogs - 3</mat-chip>
     <mat-chip>Completed - 3</mat-chip>
     <mat-chip color="accent" selected>{{ project.manager?.username }}</mat-chip>

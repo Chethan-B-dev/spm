@@ -24,10 +24,13 @@ const routes: Routes = [
     component: DashboardComponent,
   },
   { path: "task-detail/:id", component: ManagerTaskDetailComponent },
-  { path: "employee-dashboard", component: EmployeeDashboardComponent  },
-  { path: "employee-project-detail", component: EmployeeProjectDetailComponent   },
-  { path: "employee-issue-detail", component: EmployeeIssueDetailComponent   },
-  { path: "employee-scrum-board", component: EmployeeScrumBoardComponent   },
+  { path: "employee-dashboard", component: EmployeeDashboardComponent },
+  {
+    path: "employee-project-detail",
+    component: EmployeeProjectDetailComponent,
+  },
+  { path: "employee-issue-detail", component: EmployeeIssueDetailComponent },
+  { path: "employee-scrum-board", component: EmployeeScrumBoardComponent },
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];

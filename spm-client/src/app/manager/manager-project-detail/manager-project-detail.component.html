@@ -33,7 +33,11 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Task Progress</mat-label>
-        <mat-select>
+        <mat-select
+          [(value)]="defaultTaskCategory"
+          (selectionChange)="onTaskCategoryChange($event.value)"
+        >
+          <mat-option value="ALL">All</mat-option>
           <mat-option value="CREATED">Created</mat-option>
           <mat-option value="IN_PROGRESS">In Progress</mat-option>
           <mat-option value="COMPLETED">Completed</mat-option>
@@ -83,14 +87,15 @@
             </button>
           </mat-card-actions>
         </mat-card>
-      </div>
+        <mat-card *ngIf="tasks.length === 0">There are no tasks</mat-card>
 
-      <!-- load more and loading spinner -->
-      <div class="center my-3">
-        <button mat-button color="accent" class="content-center">
-          Load More <mat-icon>arrow_downward</mat-icon>
-        </button>
-        <!-- <app-loading-spinner color="accent"></app-loading-spinner> -->
+        <!-- load more and loading spinner -->
+        <div class="center my-3" *ngIf="!(tasks.length === 0)">
+          <button mat-button color="accent" class="content-center">
+            Load More <mat-icon>arrow_downward</mat-icon>
+          </button>
+          <!-- <app-loading-spinner color="accent"></app-loading-spinner> -->
+        </div>
       </div>
     </div>
   </div>
