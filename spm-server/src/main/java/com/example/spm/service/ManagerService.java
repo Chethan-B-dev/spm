@@ -31,10 +31,11 @@ public class ManagerService {
     private final ProjectRepository projectRepository;
     private final ProjectService projectService;
     private final TaskRepository taskRepository;
+    private final TaskService taskService;
     private final TodoRepository todoRepository;
+    private final TodoService todoService;
     private final AppUserRepository appUserRepository;
     private final AdminService adminService;
-    private final AppUserService appUserService;
 
     private final int pageSize = 2;
 
@@ -104,30 +105,17 @@ public class ManagerService {
     }
 
     public Task createTask(CreateTaskDTO createTaskDTO, MyAppUserDetails loggedInUser, Integer projectId) {
-
         Project project = checkIfProjectExists(projectId);
         AppUser employee = adminService.checkIfUserExists(createTaskDTO.getUserId());
 
         if (!employee.getRole().equals(UserRole.EMPLOYEE))
             throw new ActionNotAllowedException("You can assign a task only to an employee");
 
-        Task task = Task.builder()
-                .name(createTaskDTO.getName())
-                .createdDate(LocalDate.now())
-                .description(createTaskDTO.getDescription())
-                .project(project)
-                // if task priority is not provided let us default it to LOW
-                .priority(createTaskDTO.getPriority() != null ? createTaskDTO.getPriority() : TaskPriority.LOW)
-                .status(TaskStatus.CREATED)
-                .user(employee)
-                .deadLine(createTaskDTO.getDeadLine().toLocalDate())
-                .build();
-
-        return taskRepository.save(task);
+        return taskService.createTask(createTaskDTO, project, employee);
     }
 
     public Task getTaskById(Integer taskId) {
-        return checkIfTaskExists(taskId);
+        return taskService.getTaskById(taskId);
     }   
 
 
@@ -140,32 +128,19 @@ public class ManagerService {
     public List<Task> getAllProjectTasks(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
-        return taskRepository.findAllByProjectId(projectId);
+        return taskService.getAllProjectTasks(projectId);
     }
 
     public Task updateTask(Integer taskId, UpdateTaskDTO updateTaskDTO) {
-        Task task = checkIfTaskExists(taskId);
-        task.setName(updateTaskDTO.getTaskName());
-        task.setDeadLine(updateTaskDTO.getDeadline().toLocalDate());
-        task.setPriority(updateTaskDTO.getPriority());
-        task.setDescription(updateTaskDTO.getDescription());
-        return task;
+        return taskService.updateTask(taskId, updateTaskDTO);
     }
 
     public Todo createTodo(CreateTodoDTO createTodoDTO, MyAppUserDetails loggedInUser, Integer taskId) {
-        Task task = checkIfTaskExists(taskId);
-        Todo todo = Todo.builder()
-                .name(createTodoDTO.getTodoName())
-                .status(TodoStatus.ASSIGNED)
-                .task(task)
-                .createdOn(LocalDate.now())
-                .build();
-
-        return todoRepository.save(todo);
+        return todoService.createTodo(createTodoDTO, loggedInUser, taskId);
     }
 
     public Todo getTodoById(Integer todoId) {
-        return checkIfTodoExists(todoId);
+        return todoService.getTodoById(todoId);
     }
 
     private Todo checkIfTodoExists(Integer todoId) {
@@ -177,7 +152,7 @@ public class ManagerService {
     public List<Todo> getAllTaskTodos(Integer taskId, MyAppUserDetails loggedInUser) {
         Task task = checkIfTaskExists(taskId);
         checkIfTaskBelongsToEmployee(task, loggedInUser.getUser().getId());
-        return todoRepository.findAllByTaskId(taskId);
+        return todoService.getAllTaskTodos(taskId);
     }
 
     private void checkIfTaskBelongsToEmployee(Task task, Integer employeeId) {
@@ -187,9 +162,6 @@ public class ManagerService {
 
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
         Todo todo = checkIfTodoExists(todoId);
-        todo.setName(updateTodoDTO.getTodoName());
-        todo.setStatus(updateTodoDTO.getStatus());
-        todo.setTask(checkIfTaskExists(updateTodoDTO.getTaskId()));
-        return todo;
+        return todoService.updateTodo(todoId, updateTodoDTO);
     }
 }
