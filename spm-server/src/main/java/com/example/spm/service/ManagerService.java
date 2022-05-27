@@ -1,6 +1,5 @@
 package com.example.spm.service;
 
-
 import com.example.spm.exception.*;
 import com.example.spm.model.dto.*;
 import com.example.spm.model.entity.AppUser;
@@ -29,66 +28,45 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerService {
     private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
     private final TaskRepository taskRepository;
+    private final TaskService taskService;
     private final TodoRepository todoRepository;
+    private final TodoService todoService;
     private final AppUserRepository appUserRepository;
     private final AdminService adminService;
-    private final AppUserService appUserService;
 
     private final int pageSize = 2;
 
     public List<Project> getAllProjects(Integer managerId) {
-        return projectRepository.findByManagerIdOrderByFromDateDesc(managerId);
+        return projectService.getAllProjects(managerId);
+    }
+
+    public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
+        if (projectRepository.existsByName(createProjectDTO.getProjectName())) {
+            throw new ProjectAlreadyExistsException(
+                    "Project with the name '" + createProjectDTO.getProjectName() + "' already exists");
+        }
+        return projectService.createProject(createProjectDTO, myAppUserDetails);
     }
 
     public List<AppUser> getAllVerifiedEmployees(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         // returning all employees who are not part of the project
-        return adminService.getVerifiedUsers().stream().filter(
-                appUser -> (appUser.getRole().equals(UserRole.EMPLOYEE) && !project.getUsers().contains(appUser))
-        ).collect(Collectors.toList());
-    }
-
-    public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
-
-        if (projectRepository.existsByName(createProjectDTO.getProjectName())) {
-            throw new ProjectAlreadyExistsException(
-                    "Project with the name '" + createProjectDTO.getProjectName() + "' already exists"
-            );
-        }
-
-
-        Project project = Project.builder()
-                .description(createProjectDTO.getDescription())
-                .name(createProjectDTO.getProjectName())
-                .manager(appUserService.getUser(myAppUserDetails.getUsername()))
-                .fromDate(LocalDate.now())
-                .toDate(createProjectDTO.getToDate().toLocalDate())
-                .status(ProjectStatus.IN_PROGRESS)
-                .build();
-
-        return projectRepository.save(project);
+        return projectService.getAllVerifiedEmployees(project);
     }
 
     public Project addUsersToProject(Integer projectId, List<Integer> userIds) {
         Project project = checkIfProjectExists(projectId);
-        userIds.forEach(userId -> {
-            AppUser appUser = adminService.checkIfUserExists(userId);
-            if (appUser.getRole().equals(UserRole.EMPLOYEE))
-                project.getUsers().add(appUser);
-            else
-                throw new RoleNotAcceptableException("Role '" + appUser.getRole() + "' is not acceptable for the current action");
-        });
-
-        return projectRepository.save(project);
+        return projectService.addUsersToProject(project, userIds);
     }
 
     public List<AppUser> getAllEmployeesOfTheProject(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);
         // if the project does not belong to that manager
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
-        return project.getUsers();
+        return projectService.getAllEmployeesOfTheProject(project);
     }
 
     public List<AppUser> getAllPagedEmployees(int pageNumber) {
@@ -100,7 +78,7 @@ public class ManagerService {
         Project project = checkIfProjectExists(projectId);
         // if the project does not belong to that manager
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
-        return project;
+        return projectService.getProjectById(projectId);
     }
 
     private void checkIfProjectBelongsToManager(Project project, Integer managerId) {
@@ -111,9 +89,8 @@ public class ManagerService {
     public void handleProjectValidationErrors(BindingResult bindingResult) {
         StringBuilder errors = new StringBuilder();
         if (bindingResult.hasFieldErrors()) {
-            bindingResult.getFieldErrors().forEach(fieldError ->
-                    errors.append(fieldError.getField()).append(" : ").append(fieldError.getDefaultMessage()).append(",")
-            );
+            bindingResult.getFieldErrors().forEach(fieldError -> errors.append(fieldError.getField()).append(" : ")
+                    .append(fieldError.getDefaultMessage()).append(","));
             throw new ProjectValidationException(errors.substring(0, errors.length() - 1));
         }
     }
@@ -123,8 +100,8 @@ public class ManagerService {
                 .findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project with the id '" + projectId + "' not found"));
     }
-    public Task createTask(CreateTaskDTO createTaskDTO, MyAppUserDetails loggedInUser, Integer projectId) {
 
+    public Task createTask(CreateTaskDTO createTaskDTO, MyAppUserDetails loggedInUser, Integer projectId) {
         Project project = checkIfProjectExists(projectId);
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         AppUser employee = adminService.checkIfUserExists(createTaskDTO.getUserId());
@@ -132,25 +109,12 @@ public class ManagerService {
         if (!employee.getRole().equals(UserRole.EMPLOYEE))
             throw new ActionNotAllowedException("You can assign a task only to an employee");
 
-        Task task = Task.builder()
-                .name(createTaskDTO.getName())
-                .createdDate(LocalDate.now())
-                .description(createTaskDTO.getDescription())
-                .project(project)
-                //! if task priority is not provided let us default it to LOW
-                .priority(createTaskDTO.getPriority() != null ? createTaskDTO.getPriority() : TaskPriority.LOW)
-                .status(TaskStatus.CREATED)
-                .user(employee)
-                .deadLine(createTaskDTO.getDeadLine().toLocalDate())
-                .build();
-
-        return taskRepository.save(task);
+        return taskService.createTask(createTaskDTO, project, employee);
     }
 
     public Task getTaskById(Integer taskId) {
-        return checkIfTaskExists(taskId);
-    }   
-
+        return taskService.getTaskById(taskId);
+    }
 
     private Task checkIfTaskExists(Integer taskId) {
         return taskRepository
@@ -161,32 +125,19 @@ public class ManagerService {
     public List<Task> getAllProjectTasks(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
-        return taskRepository.findAllByProjectId(projectId);
+        return taskService.getAllProjectTasks(projectId);
     }
 
     public Task updateTask(Integer taskId, UpdateTaskDTO updateTaskDTO) {
-        Task task = checkIfTaskExists(taskId);
-        task.setName(updateTaskDTO.getTaskName());
-        task.setDeadLine(updateTaskDTO.getDeadline().toLocalDate());
-        task.setPriority(updateTaskDTO.getPriority());
-        task.setDescription(updateTaskDTO.getDescription());
-        return task;
+        return taskService.updateTask(taskId, updateTaskDTO);
     }
 
     public Todo createTodo(CreateTodoDTO createTodoDTO, MyAppUserDetails loggedInUser, Integer taskId) {
-        Task task = checkIfTaskExists(taskId);
-        Todo todo = Todo.builder()
-                .name(createTodoDTO.getTodoName())
-                .status(TodoStatus.ASSIGNED)
-                .task(task)
-                .createdOn(LocalDate.now())
-                .build();
-
-        return todoRepository.save(todo);
+        return todoService.createTodo(createTodoDTO, loggedInUser, taskId);
     }
 
     public Todo getTodoById(Integer todoId) {
-        return checkIfTodoExists(todoId);
+        return todoService.getTodoById(todoId);
     }
 
     private Todo checkIfTodoExists(Integer todoId) {
@@ -198,19 +149,16 @@ public class ManagerService {
     public List<Todo> getAllTaskTodos(Integer taskId, MyAppUserDetails loggedInUser) {
         Task task = checkIfTaskExists(taskId);
         checkIfTaskBelongsToEmployee(task, loggedInUser.getUser().getId());
-        return todoRepository.findAllByTaskId(taskId);
+        return todoService.getAllTaskTodos(taskId);
     }
 
     private void checkIfTaskBelongsToEmployee(Task task, Integer employeeId) {
-        if(!task.getUser().getId().equals(employeeId))
+        if (!task.getUser().getId().equals(employeeId))
             throw new ActionNotAllowedException("Cannot access this task resource");
     }
 
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
         Todo todo = checkIfTodoExists(todoId);
-        todo.setName(updateTodoDTO.getTodoName());
-        todo.setStatus(updateTodoDTO.getStatus());
-        todo.setTask(checkIfTaskExists(updateTodoDTO.getTaskId()));
-        return todo;
+        return todoService.updateTodo(todoId, updateTodoDTO);
     }
 }
