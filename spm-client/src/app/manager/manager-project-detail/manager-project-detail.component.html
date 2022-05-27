@@ -44,7 +44,7 @@
       <div *ngIf="tasks$ | async as tasks">
         <mat-card class="my-2" *ngFor="let task of tasks">
           <div class="left-and-right">
-            <mat-card-title>{{ task.name }}</mat-card-title>
+            <mat-card-title class="reduce-font">{{ task.name }}</mat-card-title>
             <mat-icon *ngIf="task.priority === 'LOW'" matTooltip="Low Priority"
               >keyboard_arrow_down</mat-icon
             >
