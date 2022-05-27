@@ -39,7 +39,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       tap((_) => this.isLoadingSubject.next(false)),
       catchError((err) => {
-        // this.isLoadingSubject.next(false);
         stopLoading(this.isLoadingSubject);
         this.snackbarService.showSnackBar(err);
         return EMPTY;

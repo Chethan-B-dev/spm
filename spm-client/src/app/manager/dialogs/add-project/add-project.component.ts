@@ -56,7 +56,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((_) => {
-        this.snackbarService.showSnackBar("Project has been created");
+        this.snackbarService.showSnackBar(`${projectName} has been created`);
         this.close();
       });
   }

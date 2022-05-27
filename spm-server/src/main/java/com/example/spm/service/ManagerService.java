@@ -6,11 +6,11 @@ import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.entity.Task;
 import com.example.spm.model.entity.Todo;
-import com.example.spm.model.enums.*;
+import com.example.spm.model.enums.UserRole;
+import com.example.spm.model.enums.UserStatus;
 import com.example.spm.repository.AppUserRepository;
 import com.example.spm.repository.ProjectRepository;
 import com.example.spm.repository.TaskRepository;
-import com.example.spm.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -19,22 +19,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class ManagerService {
-    private final ProjectRepository projectRepository;
     private final ProjectService projectService;
-    private final TaskRepository taskRepository;
     private final TaskService taskService;
-    private final TodoRepository todoRepository;
     private final TodoService todoService;
-    private final AppUserRepository appUserRepository;
     private final AdminService adminService;
+    private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
+    private final AppUserRepository appUserRepository;
 
     private final int pageSize = 2;
 
@@ -140,12 +137,6 @@ public class ManagerService {
         return todoService.getTodoById(todoId);
     }
 
-    private Todo checkIfTodoExists(Integer todoId) {
-        return todoRepository
-                .findById(todoId)
-                .orElseThrow(() -> new TodoNotFoundException("Todo with id '" + todoId + "' does not exists"));
-    }
-
     public List<Todo> getAllTaskTodos(Integer taskId, MyAppUserDetails loggedInUser) {
         Task task = checkIfTaskExists(taskId);
         checkIfTaskBelongsToEmployee(task, loggedInUser.getUser().getId());
@@ -158,7 +149,7 @@ public class ManagerService {
     }
 
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
-        Todo todo = checkIfTodoExists(todoId);
+        todoService.checkIfTodoExists(todoId);
         return todoService.updateTodo(todoId, updateTodoDTO);
     }
 }

@@ -1,16 +1,17 @@
 package com.example.spm.service;
 
 
-import com.example.spm.exception.*;
-import com.example.spm.model.dto.*;
+import com.example.spm.exception.ProjectNotFoundException;
+import com.example.spm.exception.RoleNotAcceptableException;
+import com.example.spm.model.dto.CreateProjectDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
-import com.example.spm.model.enums.*;
+import com.example.spm.model.enums.ProjectStatus;
+import com.example.spm.model.enums.UserRole;
 import com.example.spm.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -65,8 +66,7 @@ public class ProjectService {
     }
 
     public Project getProjectById(Integer projectId) {
-        Project project = checkIfProjectExists(projectId);
-        return project;
+        return checkIfProjectExists(projectId);
     }
 
 

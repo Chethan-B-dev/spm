@@ -120,7 +120,11 @@ export class AdminComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe();
+      .subscribe((_) =>
+        this.snackbarService.showSnackBar(
+          `user has been ${adminDecision.toLowerCase()}ed`
+        )
+      );
   }
 
   enableUser(userId: number): void {
@@ -133,7 +137,9 @@ export class AdminComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe();
+      .subscribe((_) =>
+        this.snackbarService.showSnackBar(`user has been enabled`)
+      );
   }
 
   openDeleteConfirmDialog(): void {

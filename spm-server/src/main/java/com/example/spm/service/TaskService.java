@@ -42,7 +42,7 @@ public class TaskService {
     }   
 
 
-    private Task checkIfTaskExists(Integer taskId) {
+    public Task checkIfTaskExists(Integer taskId) {
         return taskRepository
                 .findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id '" + taskId + "' does not exists"));
