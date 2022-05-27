@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 
 // rxjs
 import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
-import { catchError, takeUntil } from "rxjs/operators";
+import { catchError, takeUntil, tap } from "rxjs/operators";
 
 // services
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
@@ -22,7 +22,8 @@ import { IAppUser } from "src/app/shared/interfaces/user.interface";
 export class DashboardComponent implements OnInit, OnDestroy {
   currentUserPageNumber: number = 0;
   showLoadMoreButton: boolean;
-  isLoadingSubject = new BehaviorSubject<boolean>(false);
+  isLoadingSubject = new BehaviorSubject<boolean>(true);
+  isLoading$ = this.isLoadingSubject.asObservable();
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
   private readonly destroy$ = new Subject();
@@ -35,7 +36,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.projects$ = this.managerService.projectsWithAdd$.pipe(
       takeUntil(this.destroy$),
+      tap((_) => this.isLoadingSubject.next(false)),
       catchError((err) => {
+        this.isLoadingSubject.next(false);
         this.snackbarService.showSnackBar(err);
         return EMPTY;
       })
@@ -59,10 +62,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.managerService.changeUserPageNumber(0);
-  }
-
-  get isLoading$() {
-    return this.isLoadingSubject.asObservable();
   }
 
   getMoreUsers(): void {

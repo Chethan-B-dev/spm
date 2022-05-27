@@ -4,7 +4,13 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 
 //rxjs
-import { BehaviorSubject, combineLatest, EMPTY, Subject } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  EMPTY,
+  Observable,
+  Subject,
+} from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -12,6 +18,7 @@ import {
   map,
   switchMap,
   takeUntil,
+  tap,
 } from "rxjs/operators";
 
 // components
@@ -34,18 +41,28 @@ export class AdminComponent implements OnInit, OnDestroy {
   private searchTermSubject = new BehaviorSubject<string>("");
   searchTerm$ = this.searchTermSubject.asObservable();
 
+  private isInitialLoadingSubject = new BehaviorSubject<boolean>(true);
+  isInitialLoading$ = this.isInitialLoadingSubject.asObservable();
+
   private readonly destroy$ = new Subject();
 
-  users$ = this.adminApiService.refresh.pipe(
+  users$: Observable<IAppUser[]> = this.adminApiService.refresh.pipe(
     takeUntil(this.destroy$),
     catchError((err) => {
+      this.isInitialLoadingSubject.next(false);
       this.snackbarService.showSnackBar(err);
       return EMPTY;
     }),
-    switchMap(() => this.usersWithoutRefresh$)
+    switchMap(() => this.usersWithoutRefresh$),
+    tap((_) => this.isInitialLoadingSubject.next(false)),
+    catchError((err) => {
+      this.isInitialLoadingSubject.next(false);
+      this.snackbarService.showSnackBar(err);
+      return EMPTY;
+    })
   );
 
-  usersWithoutRefresh$ = combineLatest([
+  usersWithoutRefresh$: Observable<IAppUser[]> = combineLatest([
     this.adminApiService.getAllUsers(),
     this.adminApiService.userCategorySelectedAction$,
     this.searchTerm$.pipe(debounceTime(500), distinctUntilChanged()),
@@ -71,6 +88,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       })
     ),
     catchError((err) => {
+      this.isInitialLoadingSubject.next(false);
       this.snackbarService.showSnackBar(err);
       return EMPTY;
     })
@@ -82,14 +100,14 @@ export class AdminComponent implements OnInit, OnDestroy {
     private snackbarService: SnackbarService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {}
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  searchUser(searchTerm: string) {
+  searchUser(searchTerm: string): void {
     this.searchTermSubject.next(searchTerm);
   }
 
@@ -133,7 +151,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     });
   }
 
-  private filterUserBySearchTerm(user: IAppUser, searchTerm: string) {
+  private filterUserBySearchTerm(user: IAppUser, searchTerm: string): boolean {
     return (
       user.username!.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||

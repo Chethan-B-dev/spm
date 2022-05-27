@@ -31,8 +31,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   @Input() showAddEmps: boolean = false;
   @Input() showIssueStats: boolean = false;
   @Input() showViewDetailsButton: boolean = true;
-  users$: Observable<IAppUser[]>;
-  employees: number[];
+  users$?: Observable<IAppUser[]> | undefined;
+  employees: number[] = [];
   private readonly destroy$ = new Subject();
 
   constructor(
@@ -41,12 +41,10 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     private snackbarService: SnackbarService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (this.showAddEmps) {
       this.users$ = this.managerService.refresh.pipe(
-        switchMap(() =>
-          this.managerService.getAllEmployees(this.project.id).pipe()
-        ),
+        switchMap(() => this.managerService.getAllEmployees(this.project.id)),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
           return EMPTY;
@@ -55,13 +53,13 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   addEmployees(): void {
-    if (!!!this.employees || this.employees.length === 0) {
+    if (this.employees.length === 0) {
       this.snackbarService.showSnackBar("Please add Employees before syncing");
       return;
     }

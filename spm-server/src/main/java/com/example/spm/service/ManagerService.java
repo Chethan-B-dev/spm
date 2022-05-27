@@ -22,7 +22,6 @@ import org.springframework.validation.BindingResult;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -120,10 +119,9 @@ public class ManagerService {
     }
 
     private Project checkIfProjectExists(Integer projectId) {
-        Optional<Project> projectOptional = projectRepository.findById(projectId);
-        if (projectOptional.isEmpty())
-            throw new ProjectNotFoundException("Project with the id '" + projectId + "' not found");
-        return projectOptional.get();
+        return projectRepository
+                .findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("Project with the id '" + projectId + "' not found"));
     }
 
     public Task createTask(CreateTaskDTO createTaskDTO, MyAppUserDetails loggedInUser, Integer projectId) {
@@ -151,15 +149,13 @@ public class ManagerService {
 
     public Task getTaskById(Integer taskId) {
         return checkIfTaskExists(taskId);
-    }
+    }   
 
 
     private Task checkIfTaskExists(Integer taskId) {
-        Optional<Task> taskOptional = taskRepository.findById(taskId);
-        if (taskOptional.isEmpty()) {
-            throw new TaskNotFoundException("Task with id '" + taskId + "' does not exists");
-        }
-        return taskOptional.get();
+        return taskRepository
+                .findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task with id '" + taskId + "' does not exists"));
     }
 
     public List<Task> getAllProjectTasks(Integer projectId, MyAppUserDetails loggedInUser) {
@@ -183,6 +179,7 @@ public class ManagerService {
                 .name(createTodoDTO.getTodoName())
                 .status(TodoStatus.ASSIGNED)
                 .task(task)
+                .createdOn(LocalDate.now())
                 .build();
 
         return todoRepository.save(todo);
@@ -193,11 +190,9 @@ public class ManagerService {
     }
 
     private Todo checkIfTodoExists(Integer todoId) {
-        Optional<Todo> todoOptional = todoRepository.findById(todoId);
-        if (todoOptional.isEmpty()) {
-            throw new TodoNotFoundException("Todo with id '" + todoId + "' does not exists");
-        }
-        return todoOptional.get();
+        return todoRepository
+                .findById(todoId)
+                .orElseThrow(() -> new TodoNotFoundException("Todo with id '" + todoId + "' does not exists"));
     }
 
     public List<Todo> getAllTaskTodos(Integer taskId, MyAppUserDetails loggedInUser) {
