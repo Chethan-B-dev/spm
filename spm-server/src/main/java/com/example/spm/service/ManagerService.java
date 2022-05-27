@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ManagerService {
     private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
     private final TaskRepository taskRepository;
     private final TodoRepository todoRepository;
     private final AppUserRepository appUserRepository;
@@ -38,57 +39,35 @@ public class ManagerService {
     private final int pageSize = 2;
 
     public List<Project> getAllProjects(Integer managerId) {
-        return projectRepository.findByManagerIdOrderByFromDateDesc(managerId);
+        return projectService.getAllProjects(managerId);
+    }
+
+    public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
+        if (projectRepository.existsByName(createProjectDTO.getProjectName())) {
+            throw new ProjectAlreadyExistsException(
+                    "Project with the name '" + createProjectDTO.getProjectName() + "' already exists"
+            );
+        }
+        return projectService.createProject(createProjectDTO, myAppUserDetails);
     }
 
     public List<AppUser> getAllVerifiedEmployees(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         // returning all employees who are not part of the project
-        return adminService.getVerifiedUsers().stream().filter(
-                appUser -> (appUser.getRole().equals(UserRole.EMPLOYEE) && !project.getUsers().contains(appUser))
-        ).collect(Collectors.toList());
-    }
-
-    public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
-
-        if (projectRepository.existsByName(createProjectDTO.getProjectName())) {
-            throw new ProjectAlreadyExistsException(
-                    "Project with the name '" + createProjectDTO.getProjectName() + "' already exists"
-            );
-        }
-
-
-        Project project = Project.builder()
-                .description(createProjectDTO.getDescription())
-                .name(createProjectDTO.getProjectName())
-                .manager(appUserService.getUser(myAppUserDetails.getUsername()))
-                .fromDate(LocalDate.now())
-                .toDate(createProjectDTO.getToDate().toLocalDate())
-                .status(ProjectStatus.IN_PROGRESS)
-                .build();
-
-        return projectRepository.save(project);
+        return projectService.getAllVerifiedEmployees(project);
     }
 
     public Project addUsersToProject(Integer projectId, List<Integer> userIds) {
         Project project = checkIfProjectExists(projectId);
-        userIds.forEach(userId -> {
-            AppUser appUser = adminService.checkIfUserExists(userId);
-            if (appUser.getRole().equals(UserRole.EMPLOYEE))
-                project.getUsers().add(appUser);
-            else
-                throw new RoleNotAcceptableException("Role '" + appUser.getRole() + "' is not acceptable for the current action");
-        });
-
-        return projectRepository.save(project);
+        return projectService.addUsersToProject(project, userIds);
     }
 
     public List<AppUser> getAllEmployeesOfTheProject(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);
         // if the project does not belong to that manager
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
-        return project.getUsers();
+        return projectService.getAllEmployeesOfTheProject(project);
     }
 
     public List<AppUser> getAllPagedEmployees(int pageNumber) {
@@ -100,7 +79,7 @@ public class ManagerService {
         Project project = checkIfProjectExists(projectId);
         // if the project does not belong to that manager
         checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
-        return project;
+        return projectService.getProjectById(projectId);
     }
 
     private void checkIfProjectBelongsToManager(Project project, Integer managerId) {
