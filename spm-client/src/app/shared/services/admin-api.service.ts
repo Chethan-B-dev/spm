@@ -14,11 +14,11 @@ import { handleError } from "../utility/error";
   providedIn: "root",
 })
 export class AdminApiService {
-  private usersUrl = "http://localhost:8080/api/admin";
+  private usersUrl = "http://localhost:8081/api/admin";
   private userCategorySelectedSubject = new BehaviorSubject<string>(
     "UNVERIFIED"
   );
-  userCategorySelectedAction = this.userCategorySelectedSubject.asObservable();
+  userCategorySelectedAction$ = this.userCategorySelectedSubject.asObservable();
 
   private refreshSubject = new BehaviorSubject(null);
 
@@ -52,7 +52,7 @@ export class AdminApiService {
         headers: this.headers,
       })
       .pipe(
-        tap((response) => this.refreshSubject.next(null)),
+        tap((_) => this.refreshSubject.next(null)),
         catchError(handleError)
       );
   }
@@ -63,7 +63,7 @@ export class AdminApiService {
         headers: this.headers,
       })
       .pipe(
-        tap((response) => this.refreshSubject.next(null)),
+        tap((_) => this.refreshSubject.next(null)),
         catchError(handleError)
       );
   }

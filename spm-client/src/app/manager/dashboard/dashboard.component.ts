@@ -1,10 +1,18 @@
+// angular
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+
+// rxjs
 import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
-import { catchError, switchMap, takeUntil } from "rxjs/operators";
-import { IProject } from "src/app/shared/interfaces/project.interface";
-import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { catchError, takeUntil, tap } from "rxjs/operators";
+
+// services
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../services/manager.service";
+
+// interfaces
+import { IProject } from "src/app/shared/interfaces/project.interface";
+import { IAppUser } from "src/app/shared/interfaces/user.interface";
 
 @Component({
   selector: "app-dashboard",
@@ -12,21 +20,13 @@ import { ManagerService } from "../services/manager.service";
   styleUrls: ["./dashboard.component.scss"],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  currentUserPageNumber: number = 0;
+  showLoadMoreButton: boolean;
+  isLoadingSubject = new BehaviorSubject<boolean>(true);
+  isLoading$ = this.isLoadingSubject.asObservable();
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
-  currentUserPageNumber: number = 0;
-  isLoadingSubject = new BehaviorSubject<boolean>(false);
   private readonly destroy$ = new Subject();
-  showLoadMoreButton: boolean;
-
-  get isLoading$() {
-    return this.isLoadingSubject.asObservable();
-  }
-
-  getMoreUsers(): void {
-    this.currentUserPageNumber += 1;
-    this.managerService.changeUserPageNumber(this.currentUserPageNumber);
-  }
 
   constructor(
     private managerService: ManagerService,
@@ -36,7 +36,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.projects$ = this.managerService.projectsWithAdd$.pipe(
       takeUntil(this.destroy$),
+      tap((_) => this.isLoadingSubject.next(false)),
       catchError((err) => {
+        this.isLoadingSubject.next(false);
         this.snackbarService.showSnackBar(err);
         return EMPTY;
       })
@@ -45,14 +47,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.users$ = this.managerService.users$.pipe(
       takeUntil(this.destroy$),
       catchError((err) => {
-        this.snackbarService.showSnackBar(err);
+        // this.snackbarService.showSnackBar(err);
         return EMPTY;
       })
     );
 
     this.managerService.usersOver$.subscribe({
       next: (usersOver) => (this.showLoadMoreButton = usersOver ? false : true),
-      error: (err) => this.snackbarService.showSnackBar(err.message),
+      // error: (err) => this.snackbarService.showSnackBar(err.message),
     });
   }
 
@@ -60,5 +62,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.managerService.changeUserPageNumber(0);
+  }
+
+  getMoreUsers(): void {
+    this.currentUserPageNumber += 1;
+    this.managerService.changeUserPageNumber(this.currentUserPageNumber);
   }
 }

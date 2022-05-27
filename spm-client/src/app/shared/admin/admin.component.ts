@@ -1,10 +1,16 @@
 // angular
 import { Component, OnDestroy, OnInit } from "@angular/core";
 // material
-import { MatDialog, MatSnackBar } from "@angular/material";
+import { MatDialog } from "@angular/material";
 
 //rxjs
-import { BehaviorSubject, combineLatest, EMPTY, Subject } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  EMPTY,
+  Observable,
+  Subject,
+} from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -12,11 +18,18 @@ import {
   map,
   switchMap,
   takeUntil,
+  tap,
 } from "rxjs/operators";
+
+// components
 import { ConfirmDeleteComponent } from "../dialogs/confirm-delete/confirm-delete.component";
-import { IAppUser } from "../interfaces/user.interface";
+
+// services
 import { AdminApiService } from "../services/admin-api.service";
 import { SnackbarService } from "../services/snackbar.service";
+
+// interfaces
+import { IAppUser } from "../interfaces/user.interface";
 @Component({
   selector: "app-admin",
   templateUrl: "./admin.component.html",
@@ -24,26 +37,34 @@ import { SnackbarService } from "../services/snackbar.service";
 })
 export class AdminComponent implements OnInit, OnDestroy {
   defaultUserCategory: string = "UNVERIFIED";
+
   private searchTermSubject = new BehaviorSubject<string>("");
   searchTerm$ = this.searchTermSubject.asObservable();
+
+  private isInitialLoadingSubject = new BehaviorSubject<boolean>(true);
+  isInitialLoading$ = this.isInitialLoadingSubject.asObservable();
+
   private readonly destroy$ = new Subject();
 
-  users$ = this.adminApiService.refresh.pipe(
+  users$: Observable<IAppUser[]> = this.adminApiService.refresh.pipe(
     takeUntil(this.destroy$),
     catchError((err) => {
+      this.isInitialLoadingSubject.next(false);
       this.snackbarService.showSnackBar(err);
       return EMPTY;
     }),
-    switchMap(() => this.usersWithoutRefresh$)
+    switchMap(() => this.usersWithoutRefresh$),
+    tap((_) => this.isInitialLoadingSubject.next(false)),
+    catchError((err) => {
+      this.isInitialLoadingSubject.next(false);
+      this.snackbarService.showSnackBar(err);
+      return EMPTY;
+    })
   );
 
-  searchUser(searchTerm: string) {
-    this.searchTermSubject.next(searchTerm);
-  }
-
-  usersWithoutRefresh$ = combineLatest([
+  usersWithoutRefresh$: Observable<IAppUser[]> = combineLatest([
     this.adminApiService.getAllUsers(),
-    this.adminApiService.userCategorySelectedAction,
+    this.adminApiService.userCategorySelectedAction$,
     this.searchTerm$.pipe(debounceTime(500), distinctUntilChanged()),
   ]).pipe(
     takeUntil(this.destroy$),
@@ -67,6 +88,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       })
     ),
     catchError((err) => {
+      this.isInitialLoadingSubject.next(false);
       this.snackbarService.showSnackBar(err);
       return EMPTY;
     })
@@ -78,19 +100,15 @@ export class AdminComponent implements OnInit, OnDestroy {
     private snackbarService: SnackbarService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {}
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  private filterUserBySearchTerm(user: IAppUser, searchTerm: string) {
-    return (
-      user.username!.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email!.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  searchUser(searchTerm: string): void {
+    this.searchTermSubject.next(searchTerm);
   }
 
   onUserCategoryChange(selectedUserCategory: string): void {
@@ -131,5 +149,13 @@ export class AdminComponent implements OnInit, OnDestroy {
       // yes returns true
       // no returns false
     });
+  }
+
+  private filterUserBySearchTerm(user: IAppUser, searchTerm: string): boolean {
+    return (
+      user.username!.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email!.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   }
 }

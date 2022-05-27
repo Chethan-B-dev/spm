@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -67,10 +66,9 @@ public class AdminService {
     }
 
     public AppUser checkIfUserExists (Integer userId) {
-        Optional<AppUser> userOptional = appUserRepository.findById(userId);
-        if (userOptional.isEmpty())
-            throw new UserNotFoundException("user with id " + userId + " not found");
-        return userOptional.get();
+        return appUserRepository
+                .findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("user with id " + userId + " not found"));
     }
 
 }

@@ -4,6 +4,7 @@ import com.example.spm.model.enums.TodoStatus;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor
@@ -33,4 +34,5 @@ public class Todo {
     )
     private Task task;
     private TodoStatus status;
+    private LocalDate createdOn;
 }

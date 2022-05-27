@@ -51,5 +51,4 @@ public class Project {
 
     @OneToMany(mappedBy = "project")
     private List<Task> tasks = new ArrayList<>();
-
 }

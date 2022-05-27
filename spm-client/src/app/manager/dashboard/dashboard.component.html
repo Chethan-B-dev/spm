@@ -53,3 +53,7 @@
     </div>
   </div>
 </div>
+
+<div class="center loading-screen" *ngIf="isLoading$ | async">
+  <app-loading-spinner></app-loading-spinner>
+</div>

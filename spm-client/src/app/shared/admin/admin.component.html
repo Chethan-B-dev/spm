@@ -44,6 +44,7 @@
                   [matBadgeColor]="
                     user.status === 'VERIFIED' ? 'primary' : 'warn'
                   "
+                  [matTooltip]="user.status | titlecase"
                   matBadgeOverlap="false"
                   >{{ user.username }}</span
                 >
@@ -96,5 +97,9 @@
     <div *ngIf="users.length === 0">
       <mat-card>No users to display</mat-card>
     </div>
+  </div>
+
+  <div class="center loading-screen" *ngIf="isInitialLoading$ | async">
+    <app-loading-spinner color="accent"></app-loading-spinner>
   </div>
 </div>
