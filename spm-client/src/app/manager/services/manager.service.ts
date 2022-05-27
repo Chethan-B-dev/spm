@@ -16,14 +16,17 @@ import { IAppUser } from "src/app/shared/interfaces/user.interface";
 
 // utility
 import { handleError } from "src/app/shared/utility/error";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class ManagerService {
   //todo: get this url from env variable
-  private managerUrl = "http://localhost:8081/api/manager";
+  private managerUrl = "http://localhost:8080/api/manager";
+
   private refreshSubject = new BehaviorSubject(null);
+  refresh$ = this.refreshSubject.asObservable();
 
   private projectInsertedSubject = new Subject<IProject>();
   projectInsertedAction$ = this.projectInsertedSubject.asObservable();
@@ -91,10 +94,6 @@ export class ManagerService {
   );
 
   constructor(private http: HttpClient) {}
-
-  get refresh() {
-    return this.refreshSubject.asObservable();
-  }
 
   selectTaskCategory(selectedTaskCategory: string): void {
     this.taskCategorySelectedSubject.next(selectedTaskCategory);

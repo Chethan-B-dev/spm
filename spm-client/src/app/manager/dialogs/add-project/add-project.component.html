@@ -68,10 +68,7 @@
   <button
     mat-raised-button
     color="primary"
-    [disabled]="
-      this.createProjectForm.invalid &&
-      (this.createProjectForm.dirty || !this.createProjectForm.touched)
-    "
+    [disabled]="this.createProjectForm.invalid"
     (click)="createProject()"
   >
     Create

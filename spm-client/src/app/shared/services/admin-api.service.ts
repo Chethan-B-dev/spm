@@ -1,30 +1,22 @@
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from "@angular/common/http";
+import { BehaviorSubject, Observable } from "rxjs";
+import { catchError, tap } from "rxjs/operators";
 import { IAppUser } from "../interfaces/user.interface";
-
-import { tap, catchError } from "rxjs/operators";
-import { BehaviorSubject, Observable, throwError } from "rxjs";
 import { handleError } from "../utility/error";
 
 @Injectable({
   providedIn: "root",
 })
 export class AdminApiService {
-  private usersUrl = "http://localhost:8081/api/admin";
+  private usersUrl = "http://localhost:8080/api/admin";
   private userCategorySelectedSubject = new BehaviorSubject<string>(
     "UNVERIFIED"
   );
   userCategorySelectedAction$ = this.userCategorySelectedSubject.asObservable();
 
-  private refreshSubject = new BehaviorSubject(null);
-
-  get refresh() {
-    return this.refreshSubject.asObservable();
-  }
+  private refreshSubject = new BehaviorSubject<void>(null);
+  refresh$: Observable<void> = this.refreshSubject.asObservable();
 
   // todo: headers for temp testing of jwt, later replace with HTTP interceptor
   headers = new HttpHeaders({

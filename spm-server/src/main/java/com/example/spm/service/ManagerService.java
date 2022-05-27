@@ -123,10 +123,10 @@ public class ManagerService {
                 .findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project with the id '" + projectId + "' not found"));
     }
-
     public Task createTask(CreateTaskDTO createTaskDTO, MyAppUserDetails loggedInUser, Integer projectId) {
 
         Project project = checkIfProjectExists(projectId);
+        checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         AppUser employee = adminService.checkIfUserExists(createTaskDTO.getUserId());
 
         if (!employee.getRole().equals(UserRole.EMPLOYEE))
@@ -137,7 +137,7 @@ public class ManagerService {
                 .createdDate(LocalDate.now())
                 .description(createTaskDTO.getDescription())
                 .project(project)
-                // if task priority is not provided let us default it to LOW
+                //! if task priority is not provided let us default it to LOW
                 .priority(createTaskDTO.getPriority() != null ? createTaskDTO.getPriority() : TaskPriority.LOW)
                 .status(TaskStatus.CREATED)
                 .user(employee)

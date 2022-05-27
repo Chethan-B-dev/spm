@@ -13,6 +13,7 @@ import { ManagerService } from "../services/manager.service";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { stopLoading } from "src/app/shared/utility/loading";
 
 @Component({
   selector: "app-dashboard",
@@ -38,7 +39,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       tap((_) => this.isLoadingSubject.next(false)),
       catchError((err) => {
-        this.isLoadingSubject.next(false);
+        // this.isLoadingSubject.next(false);
+        stopLoading(this.isLoadingSubject);
         this.snackbarService.showSnackBar(err);
         return EMPTY;
       })

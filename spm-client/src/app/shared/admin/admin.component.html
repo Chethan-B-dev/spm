@@ -8,9 +8,11 @@
 <div class="container py-3">
   <div class="left-and-right">
     <div>
-      <h4 style="display: inline-block; padding: 15px">Users</h4>
+      <h4 class="inline-block" style="display: inline-block; padding: 15px">
+        Users
+      </h4>
       <mat-form-field>
-        <mat-label>Select</mat-label>
+        <mat-label>Select User Status</mat-label>
         <mat-select
           [(value)]="defaultUserCategory"
           (selectionChange)="onUserCategoryChange($event.value)"
@@ -22,18 +24,22 @@
         </mat-select>
       </mat-form-field>
     </div>
-    <mat-form-field class="example-full-width" appearance="fill">
-      <mat-label>Search</mat-label>
+    <mat-form-field
+      class="example-full-width mr-4"
+      appearance="fill"
+      [style.width.px]="320"
+    >
+      <mat-label>Search User By username or email or role</mat-label>
       <input
         (keyup)="searchUser($event.target.value)"
         matInput
-        placeholder="Search by username"
+        placeholder="Search users"
       />
     </mat-form-field>
   </div>
 
   <div class="row" *ngIf="users$ | async as users">
-    <div class="col-md-4" *ngFor="let user of users">
+    <div class="col-md-4 col-sm-6 col-xs-12" *ngFor="let user of users">
       <mat-card class="example-card">
         <div class="left-and-right">
           <div class="intro-header">
@@ -99,7 +105,7 @@
     </div>
   </div>
 
-  <div class="center loading-screen" *ngIf="isInitialLoading$ | async">
+  <div class="center loading-screen" *ngIf="isLoading$ | async">
     <app-loading-spinner color="accent"></app-loading-spinner>
   </div>
 </div>

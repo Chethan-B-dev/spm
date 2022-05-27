@@ -41,7 +41,7 @@ public class ManagerController {
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @RequestParam(required = false) Integer pageNumber
     ) {
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         pageNumber = pageNumber != null ? pageNumber : 0;
         return new ResponseEntity<>(
                 managerService.getAllPagedEmployees(pageNumber), HttpStatus.OK

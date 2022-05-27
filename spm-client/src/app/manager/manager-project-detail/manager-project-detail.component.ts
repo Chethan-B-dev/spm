@@ -45,7 +45,7 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
     });
 
     // ! we are refreshing in case we update project information
-    this.project$ = this.managerService.refresh.pipe(
+    this.project$ = this.managerService.refresh$.pipe(
       takeUntil(this.destroy$),
       switchMap(() => this.managerService.getProjectById(this.projectId)),
       tap((project) => this.managerService.setProject(project)),
@@ -73,7 +73,7 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }

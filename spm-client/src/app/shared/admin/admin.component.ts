@@ -2,7 +2,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 // material
 import { MatDialog } from "@angular/material";
-
 //rxjs
 import {
   BehaviorSubject,
@@ -20,16 +19,15 @@ import {
   takeUntil,
   tap,
 } from "rxjs/operators";
-
 // components
 import { ConfirmDeleteComponent } from "../dialogs/confirm-delete/confirm-delete.component";
-
+// interfaces
+import { IAppUser } from "../interfaces/user.interface";
 // services
 import { AdminApiService } from "../services/admin-api.service";
 import { SnackbarService } from "../services/snackbar.service";
+import { stopLoading } from "../utility/loading";
 
-// interfaces
-import { IAppUser } from "../interfaces/user.interface";
 @Component({
   selector: "app-admin",
   templateUrl: "./admin.component.html",
@@ -41,22 +39,22 @@ export class AdminComponent implements OnInit, OnDestroy {
   private searchTermSubject = new BehaviorSubject<string>("");
   searchTerm$ = this.searchTermSubject.asObservable();
 
-  private isInitialLoadingSubject = new BehaviorSubject<boolean>(true);
-  isInitialLoading$ = this.isInitialLoadingSubject.asObservable();
+  private isLoadingSubject = new BehaviorSubject<boolean>(true);
+  isLoading$ = this.isLoadingSubject.asObservable();
 
   private readonly destroy$ = new Subject();
 
-  users$: Observable<IAppUser[]> = this.adminApiService.refresh.pipe(
+  users$: Observable<IAppUser[]> = this.adminApiService.refresh$.pipe(
     takeUntil(this.destroy$),
     catchError((err) => {
-      this.isInitialLoadingSubject.next(false);
+      stopLoading(this.isLoadingSubject);
       this.snackbarService.showSnackBar(err);
       return EMPTY;
     }),
     switchMap(() => this.usersWithoutRefresh$),
-    tap((_) => this.isInitialLoadingSubject.next(false)),
+    tap((_) => this.isLoadingSubject.next(false)),
     catchError((err) => {
-      this.isInitialLoadingSubject.next(false);
+      stopLoading(this.isLoadingSubject);
       this.snackbarService.showSnackBar(err);
       return EMPTY;
     })
@@ -68,27 +66,24 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.searchTerm$.pipe(debounceTime(500), distinctUntilChanged()),
   ]).pipe(
     takeUntil(this.destroy$),
-    map(([users, userSelectedCategory, searchTerm]) =>
-      users.filter((user) => {
-        if (userSelectedCategory) {
-          if (
-            userSelectedCategory === "ALL" &&
-            this.filterUserBySearchTerm(user, searchTerm)
-          )
-            return true;
-          else if (
-            userSelectedCategory === user.status &&
-            this.filterUserBySearchTerm(user, searchTerm)
-          )
-            return true;
-          else return false;
-        } else {
-          return this.filterUserBySearchTerm(user, searchTerm);
-        }
-      })
-    ),
+    map(([users, userSelectedCategory, searchTerm]) => {
+      if (userSelectedCategory === "ALL" && searchTerm === "") return users;
+      return users.filter((user) => {
+        if (
+          userSelectedCategory === "ALL" &&
+          this.filterUserBySearchTerm(user, searchTerm)
+        )
+          return true;
+        else if (
+          userSelectedCategory === user.status &&
+          this.filterUserBySearchTerm(user, searchTerm)
+        )
+          return true;
+        else return false;
+      });
+    }),
     catchError((err) => {
-      this.isInitialLoadingSubject.next(false);
+      stopLoading(this.isLoadingSubject);
       this.snackbarService.showSnackBar(err);
       return EMPTY;
     })

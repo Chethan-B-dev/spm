@@ -43,7 +43,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.showAddEmps) {
-      this.users$ = this.managerService.refresh.pipe(
+      this.users$ = this.managerService.refresh$.pipe(
         switchMap(() => this.managerService.getAllEmployees(this.project.id)),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);

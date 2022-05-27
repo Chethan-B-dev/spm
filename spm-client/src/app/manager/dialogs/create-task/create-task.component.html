@@ -123,12 +123,9 @@
     Close
   </button>
   <button
-    mat-raised-button
     color="primary"
-    [disabled]="
-      this.createTaskForm.invalid &&
-      (this.createTaskForm.dirty || !this.createTaskForm.touched)
-    "
+    mat-raised-button
+    [disabled]="this.createTaskForm.invalid"
     (click)="createTask()"
   >
     Create

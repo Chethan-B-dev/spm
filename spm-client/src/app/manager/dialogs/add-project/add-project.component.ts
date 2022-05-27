@@ -42,7 +42,6 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   }
 
   createProject(): void {
-    if (this.createProjectForm.invalid) return;
     let projectName: string = this.createProjectForm.value.name;
     let projectDescription: string = this.createProjectForm.value.description;
     let projectDeadLine: Date = this.createProjectForm.value.toDate;
@@ -52,6 +51,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
+          this.close();
           return EMPTY;
         })
       )
