@@ -70,16 +70,6 @@ public class ProjectService {
     }
 
 
-    public void handleProjectValidationErrors(BindingResult bindingResult) {
-        StringBuilder errors = new StringBuilder();
-        if (bindingResult.hasFieldErrors()) {
-            bindingResult.getFieldErrors().forEach(fieldError ->
-                    errors.append(fieldError.getField()).append(" : ").append(fieldError.getDefaultMessage()).append(",")
-            );
-            throw new ProjectValidationException(errors.substring(0, errors.length() - 1));
-        }
-    }
-
     private Project checkIfProjectExists(Integer projectId) {
         return projectRepository
                 .findById(projectId)
