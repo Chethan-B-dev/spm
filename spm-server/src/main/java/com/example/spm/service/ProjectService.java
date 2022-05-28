@@ -70,7 +70,7 @@ public class ProjectService {
     }
 
 
-    private Project checkIfProjectExists(Integer projectId) {
+    public Project checkIfProjectExists(Integer projectId) {
         return projectRepository
                 .findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project with the id '" + projectId + "' not found"));

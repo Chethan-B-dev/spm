@@ -42,6 +42,7 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
+      // this.managerService.setProjectId(this.projectId);
     });
 
     // ! we are refreshing in case we update project information
@@ -54,6 +55,14 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
         return EMPTY;
       })
     );
+
+    // this.project$ = this.managerService.selectedSingleProject$.pipe(
+    //   takeUntil(this.destroy$),
+    //   catchError((err) => {
+    //     this.snackbarService.showSnackBar(err);
+    //     return EMPTY;
+    //   })
+    // );
 
     // todo: add pagination to this stream and scan to add more elements
     this.tasks$ = combineLatest(

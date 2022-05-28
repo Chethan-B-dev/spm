@@ -32,7 +32,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   @Input() showIssueStats: boolean = false;
   @Input() showViewDetailsButton: boolean = true;
   users$?: Observable<IAppUser[]> | undefined;
-  employees: number[] = [];
+  employees: IAppUser[] = [];
   private readonly destroy$ = new Subject();
 
   constructor(

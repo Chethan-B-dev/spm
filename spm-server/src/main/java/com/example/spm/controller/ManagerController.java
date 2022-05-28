@@ -1,11 +1,9 @@
 package com.example.spm.controller;
 
 import com.example.spm.model.dto.*;
-import com.example.spm.model.entity.AppUser;
-import com.example.spm.model.entity.Project;
-import com.example.spm.model.entity.Task;
-import com.example.spm.model.entity.Todo;
+import com.example.spm.model.entity.*;
 import com.example.spm.service.AppUserService;
+import com.example.spm.service.IssueService;
 import com.example.spm.service.ManagerService;
 import com.example.spm.service.MyAppUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +23,8 @@ import java.util.List;
 public class ManagerController {
 
     private final ManagerService managerService;
+    //todo: just for quick testing we are using issueservice directly later will move everything to managerservice
+    private final IssueService issueService;
 
     @GetMapping("/projects")
     public ResponseEntity<List<Project>> getAllProjects (
@@ -227,6 +227,22 @@ public class ManagerController {
                 managerService.updateTodo(todoId, updateTodoDTO),
                 HttpStatus.OK
         );
+    }
+
+    @GetMapping("/issues/{projectId}")
+    public ResponseEntity<List<Issue>> getAllProjectIssues(@PathVariable Integer projectId, MyAppUserDetails myAppUserDetails) {
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(issueService.getAllIssues(projectId), HttpStatus.OK);
+    }
+
+    @PostMapping("/create-issue/{projectId}")
+    public ResponseEntity<Issue> createIssue(
+            @PathVariable Integer projectId,
+            @RequestBody CreateIssueDTO createIssueDTO,
+            MyAppUserDetails myAppUserDetails
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(issueService.createIssue(projectId, createIssueDTO, loggedInUser), HttpStatus.OK);
     }
 
 }

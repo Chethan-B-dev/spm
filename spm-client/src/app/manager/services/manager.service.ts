@@ -4,13 +4,22 @@ import { Injectable } from "@angular/core";
 // rxjs
 import {
   BehaviorSubject,
+  combineLatest,
   merge,
   Observable,
   of,
   ReplaySubject,
   Subject,
 } from "rxjs";
-import { catchError, concatMap, scan, switchMap, tap } from "rxjs/operators";
+import {
+  catchError,
+  concatMap,
+  map,
+  scan,
+  shareReplay,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
@@ -42,7 +51,7 @@ export class ManagerService {
   private userPageNumberSubject = new ReplaySubject<number>(1);
   userPageNumber$ = this.userPageNumberSubject.asObservable();
 
-  private projectIdSubject = new Subject<number>();
+  private projectIdSubject = new ReplaySubject<number>(1);
   projectId$ = this.projectIdSubject.asObservable();
 
   private taskCategorySelectedSubject = new BehaviorSubject<string>("ALL");
@@ -63,12 +72,28 @@ export class ManagerService {
 
   projects$ = this.http
     .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
-    .pipe(catchError(handleError));
+    .pipe(
+      tap(() => console.log("called all projects")),
+      shareReplay(1),
+      catchError(handleError)
+    );
 
   projectsWithAdd$ = merge(this.projects$, this.projectInsertedAction$).pipe(
     scan(
       (acc, value) => (value instanceof Array ? [...value] : [value, ...acc]),
       [] as IProject[]
+    ),
+    shareReplay(1),
+    catchError(handleError)
+  );
+
+  selectedSingleProject$ = combineLatest(
+    this.projectsWithAdd$,
+    this.projectId$
+  ).pipe(
+    tap(console.log),
+    map(([projects, projectId]) =>
+      projects.find((project) => project.id === projectId)
     ),
     catchError(handleError)
   );
@@ -168,7 +193,8 @@ export class ManagerService {
       .pipe(catchError(handleError));
   }
 
-  addEmployees(projectId: number, userIds: number[]): Observable<IProject> {
+  addEmployees(projectId: number, employees: IAppUser[]): Observable<IProject> {
+    const userIds = employees.map((employee) => employee.id);
     const requestBody = {
       userIds,
     };
@@ -181,7 +207,7 @@ export class ManagerService {
         }
       )
       .pipe(
-        tap(() => this.refreshSubject.next(null)),
+        tap((project) => this.refreshSubject.next(null)),
         catchError(handleError)
       );
   }

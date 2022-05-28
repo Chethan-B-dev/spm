@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
+import { catchError, shareReplay, tap } from "rxjs/operators";
 import { IAppUser } from "../interfaces/user.interface";
 import { handleError } from "../utility/error";
 
@@ -30,7 +30,7 @@ export class AdminApiService {
   getAllUsers(): Observable<IAppUser[]> {
     return this.http
       .get<IAppUser[]>(this.usersUrl, { headers: this.headers })
-      .pipe(catchError(handleError));
+      .pipe(shareReplay(1), catchError(handleError));
   }
 
   selectUserCategory(selectedUserCategory: string): void {

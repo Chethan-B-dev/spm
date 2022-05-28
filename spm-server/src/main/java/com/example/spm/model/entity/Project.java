@@ -52,4 +52,8 @@ public class Project {
     @OneToMany(mappedBy = "project")
     @ToString.Exclude
     private List<Task> tasks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project")
+    @ToString.Exclude
+    private List<Issue> issues = new ArrayList<>();
 }

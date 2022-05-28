@@ -1,3 +1,4 @@
+import { IIssue } from "./issue.interface";
 import { ITask } from "./task.interface";
 import { IAppUser } from "./user.interface";
 
@@ -11,6 +12,7 @@ export interface IProject {
   description: string;
   users: IAppUser[];
   tasks: ITask[];
+  issues: IIssue[];
 }
 
 export enum ProjectStatus {

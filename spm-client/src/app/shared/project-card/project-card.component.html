@@ -56,7 +56,7 @@
         <mat-hint>Assign Employees to Project</mat-hint>
         <mat-label>Employees</mat-label>
         <mat-select multiple [(value)]="employees">
-          <mat-option *ngFor="let user of users" [value]="user.id">{{
+          <mat-option *ngFor="let user of users" [value]="user">{{
             user.username + " : " + user.email
           }}</mat-option>
         </mat-select>
@@ -92,4 +92,4 @@
   </mat-card-actions>
 </mat-card>
 
-<mat-divider></mat-divider>
+<mat-divider class="my-2"></mat-divider>
