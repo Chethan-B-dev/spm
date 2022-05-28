@@ -21,13 +21,13 @@ export interface ITaskRequestDTO {
   userId: number;
 }
 
-enum TaskStatus {
+export enum TaskStatus {
   CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETE = "COMPLETE",
 }
 
-enum TaskPriority {
+export enum TaskPriority {
   LOW = "LOW",
   MEDIUM = "MEDIUM",
   HIGH = "HIGH",

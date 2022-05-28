@@ -37,14 +37,15 @@ public class ManagerController {
     }
 
     @GetMapping("/employees")
-    public ResponseEntity<List<AppUser>> getAllPagedEmployees (
+    public ResponseEntity<PagedData<AppUser>> getAllPagedEmployees (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @RequestParam(required = false) Integer pageNumber
     ) {
         AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-        pageNumber = pageNumber != null ? pageNumber : 0;
+        pageNumber = pageNumber != null ? pageNumber - 1 : 0;
         return new ResponseEntity<>(
-                managerService.getAllPagedEmployees(pageNumber), HttpStatus.OK
+                managerService.getAllPagedEmployees(pageNumber),
+                HttpStatus.OK
         );
     }
 
@@ -55,7 +56,8 @@ public class ManagerController {
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getProjectById(projectId, loggedInUser), HttpStatus.OK
+                managerService.getProjectById(projectId, loggedInUser),
+                HttpStatus.OK
         );
     }
 
@@ -66,7 +68,8 @@ public class ManagerController {
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getAllEmployeesOfTheProject(projectId, loggedInUser), HttpStatus.OK
+                managerService.getAllEmployeesOfTheProject(projectId, loggedInUser),
+                HttpStatus.OK
         );
     }
 
@@ -77,7 +80,8 @@ public class ManagerController {
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getAllVerifiedEmployees(projectId, loggedInUser), HttpStatus.OK
+                managerService.getAllVerifiedEmployees(projectId, loggedInUser),
+                HttpStatus.OK
         );
     }
 
@@ -90,7 +94,8 @@ public class ManagerController {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         managerService.handleProjectValidationErrors(bindingResult);
         return new ResponseEntity<>(
-                managerService.createProject(createProjectDTO, loggedInUser), HttpStatus.OK
+                managerService.createProject(createProjectDTO, loggedInUser),
+                HttpStatus.OK
         );
     }
 
@@ -103,7 +108,8 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.addUsersToProject(projectId, projectUserDTO.getUserIds()), HttpStatus.OK
+                managerService.addUsersToProject(projectId, projectUserDTO.getUserIds()),
+                HttpStatus.OK
         );
     }
     /*
@@ -129,7 +135,8 @@ public class ManagerController {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
 //        managerService.handleProjectValidationErrors(bindingResult);
         return new ResponseEntity<>(
-                managerService.createTask(createTaskDTO, loggedInUser, projectId), HttpStatus.OK
+                managerService.createTask(createTaskDTO, loggedInUser, projectId),
+                HttpStatus.OK
         );
     }
 
@@ -140,7 +147,8 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getAllProjectTasks(projectId, loggedInUser), HttpStatus.OK
+                managerService.getAllProjectTasks(projectId, loggedInUser),
+                HttpStatus.OK
         );
     }
 
@@ -151,7 +159,8 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getTaskById(taskId), HttpStatus.OK
+                managerService.getTaskById(taskId),
+                HttpStatus.OK
         );
     }
     @Transactional
@@ -163,7 +172,8 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-            managerService.updateTask(taskId, updateTaskDTO), HttpStatus.OK
+            managerService.updateTask(taskId, updateTaskDTO),
+                HttpStatus.OK
         );
     }
 
@@ -176,7 +186,8 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.createTodo(createTodoDTO, loggedInUser, taskId), HttpStatus.OK
+                managerService.createTodo(createTodoDTO, loggedInUser, taskId),
+                HttpStatus.OK
         );
     }
 
@@ -187,7 +198,8 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getTodoById(todoId), HttpStatus.OK
+                managerService.getTodoById(todoId),
+                HttpStatus.OK
         );
     }
 
@@ -198,7 +210,8 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getAllTaskTodos(taskId, loggedInUser), HttpStatus.OK
+                managerService.getAllTaskTodos(taskId, loggedInUser),
+                HttpStatus.OK
         );
     }
 
@@ -211,7 +224,8 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.updateTodo(todoId, updateTodoDTO), HttpStatus.OK
+                managerService.updateTodo(todoId, updateTodoDTO),
+                HttpStatus.OK
         );
     }
 

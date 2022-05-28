@@ -13,7 +13,7 @@ export interface IProject {
   tasks: ITask[];
 }
 
-enum ProjectStatus {
+export enum ProjectStatus {
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETE = "COMPLETE",
 }

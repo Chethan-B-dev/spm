@@ -35,9 +35,8 @@
       </mat-list>
       <!-- <a routerLink="/project-detail">click me</a> -->
 
-      <div class="center my-3">
+      <div class="center my-3" *ngIf="loadMore$ | async">
         <button
-          *ngIf="showLoadMoreButton"
           mat-button
           color="accent"
           class="content-center"
@@ -45,10 +44,6 @@
         >
           Load More <mat-icon>arrow_downward</mat-icon>
         </button>
-        <!-- <app-loading-spinner
-          color="primary"
-          *ngIf="isLoading$ | async"
-        ></app-loading-spinner> -->
       </div>
     </div>
   </div>

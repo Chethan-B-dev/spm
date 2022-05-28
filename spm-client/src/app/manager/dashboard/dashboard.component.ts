@@ -21,10 +21,10 @@ import { stopLoading } from "src/app/shared/utility/loading";
   styleUrls: ["./dashboard.component.scss"],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  currentUserPageNumber: number = 0;
-  showLoadMoreButton: boolean;
+  currentUserPageNumber: number = 1;
   isLoadingSubject = new BehaviorSubject<boolean>(true);
   isLoading$ = this.isLoadingSubject.asObservable();
+  loadMore$: Observable<boolean>;
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
   private readonly destroy$ = new Subject();
@@ -35,6 +35,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.managerService.changeUserPageNumber(this.currentUserPageNumber);
+    this.managerService.loadMoreUsers();
+
     this.projects$ = this.managerService.projectsWithAdd$.pipe(
       takeUntil(this.destroy$),
       tap((_) => this.isLoadingSubject.next(false)),
@@ -53,16 +56,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.managerService.usersOver$.subscribe({
-      next: (usersOver) => (this.showLoadMoreButton = usersOver ? false : true),
-      // error: (err) => this.snackbarService.showSnackBar(err.message),
-    });
+    this.loadMore$ = this.managerService.loadMoreUsers$.pipe(
+      takeUntil(this.destroy$),
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
+    );
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.managerService.changeUserPageNumber(0);
   }
 
   getMoreUsers(): void {

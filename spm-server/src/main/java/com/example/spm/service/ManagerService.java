@@ -13,6 +13,7 @@ import com.example.spm.repository.ProjectRepository;
 import com.example.spm.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -66,9 +67,15 @@ public class ManagerService {
         return projectService.getAllEmployeesOfTheProject(project);
     }
 
-    public List<AppUser> getAllPagedEmployees(int pageNumber) {
+    public PagedData<AppUser> getAllPagedEmployees(int pageNumber) {
         Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("id").ascending());
-        return appUserRepository.findAllByStatusAndRole(UserStatus.VERIFIED, UserRole.EMPLOYEE, paging);
+        Page<AppUser> employees = appUserRepository.findAllByStatusAndRole(UserStatus.VERIFIED, UserRole.EMPLOYEE, paging);
+        return PagedData
+                .<AppUser>builder()
+                .data(employees.getContent())
+                .totalPages(employees.getTotalPages())
+                .currentPage(pageNumber)
+                .build();
     }
 
     public Project getProjectById(Integer projectId, MyAppUserDetails loggedInUser) {

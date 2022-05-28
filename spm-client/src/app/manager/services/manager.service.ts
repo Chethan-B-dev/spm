@@ -1,22 +1,27 @@
 // angular
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-
 // rxjs
-import { BehaviorSubject, merge, Observable, of, Subject } from "rxjs";
+import {
+  BehaviorSubject,
+  merge,
+  Observable,
+  of,
+  ReplaySubject,
+  Subject,
+} from "rxjs";
 import { catchError, concatMap, scan, switchMap, tap } from "rxjs/operators";
-
+import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   ITask,
   ITaskRequestDTO,
+  TaskStatus,
 } from "src/app/shared/interfaces/task.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
-
 // utility
 import { handleError } from "src/app/shared/utility/error";
-import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
@@ -34,11 +39,8 @@ export class ManagerService {
   private taskInsertedSubject = new Subject<ITask>();
   taskInsertedAction$ = this.taskInsertedSubject.asObservable();
 
-  private userPageNumberSubject = new BehaviorSubject<number>(0);
+  private userPageNumberSubject = new ReplaySubject<number>(1);
   userPageNumber$ = this.userPageNumberSubject.asObservable();
-
-  private readonly usersOverSubject = new BehaviorSubject<boolean>(false);
-  usersOver$ = this.usersOverSubject.asObservable();
 
   private projectIdSubject = new Subject<number>();
   projectId$ = this.projectIdSubject.asObservable();
@@ -48,6 +50,9 @@ export class ManagerService {
 
   private selectedProjectSubject = new Subject<IProject>();
   selectedProject$ = this.selectedProjectSubject.asObservable();
+
+  private loadMoreUsersSubject = new ReplaySubject<boolean>(1);
+  loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
 
   // todo: headers for temp testing of jwt, later replace with HTTP interceptor
   headers = new HttpHeaders({
@@ -69,14 +74,19 @@ export class ManagerService {
   );
 
   users$ = this.userPageNumber$.pipe(
-    tap((pageNumber) => {
-      if (pageNumber === 0) this.usersOverSubject.next(false);
-    }),
     concatMap((pageNumber) => this.getMoreUsers(pageNumber)),
-    tap((data) => {
-      if (data.length === 0) this.usersOverSubject.next(true);
+    tap((pagedUsers: IPagedData<IAppUser>) => {
+      if (
+        pagedUsers.data.length === 0 ||
+        pagedUsers.currentPage > pagedUsers.totalPages
+      ) {
+        this.loadMoreUsersSubject.next(false);
+      }
     }),
-    scan((acc, value) => [...acc, ...value], [] as IAppUser[]),
+    scan(
+      (acc: IAppUser[], value: IPagedData<IAppUser>) => [...acc, ...value.data],
+      [] as IAppUser[]
+    ),
     catchError(handleError)
   );
 
@@ -94,6 +104,10 @@ export class ManagerService {
   );
 
   constructor(private http: HttpClient) {}
+
+  loadMoreUsers() {
+    this.loadMoreUsersSubject.next(true);
+  }
 
   selectTaskCategory(selectedTaskCategory: string): void {
     this.taskCategorySelectedSubject.next(selectedTaskCategory);
@@ -115,13 +129,13 @@ export class ManagerService {
       .pipe(catchError(handleError));
   }
 
-  getMoreUsers(pageNumber: number): Observable<IAppUser[]> {
+  getMoreUsers(pageNumber: number): Observable<IPagedData<IAppUser>> {
     let params: HttpParams = new HttpParams().set(
       "pageNumber",
       pageNumber.toString()
     );
     return this.http
-      .get<IAppUser[]>(`${this.managerUrl}/employees`, {
+      .get<IPagedData<IAppUser>>(`${this.managerUrl}/employees`, {
         params: params,
         headers: this.headers,
       })
