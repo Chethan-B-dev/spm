@@ -11,6 +11,10 @@ import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-d
 import { MaterialModule } from "../shared/material/material.module";
 import { AddProjectComponent } from "./dialogs/add-project/add-project.component";
 import { ShowEmployeesComponent } from "./dialogs/show-employees/show-employees.component";
+import { ManagerScrumBoardComponent } from './manager-scrum-board/manager-scrum-board.component';
+import { BoardDndComponent } from './manager-scrum-board/board-dnd/board-dnd.component';
+import { BoardDndListComponent } from './manager-scrum-board/board-dnd-list/board-dnd-list.component';
+import { IssueCardComponent } from './manager-scrum-board/issue-card/issue-card.component';
 @NgModule({
   declarations: [
     DashboardComponent,
@@ -19,6 +23,10 @@ import { ShowEmployeesComponent } from "./dialogs/show-employees/show-employees.
     ManagerTaskDetailComponent,
     AddProjectComponent,
     ShowEmployeesComponent,
+    ManagerScrumBoardComponent,
+    BoardDndComponent,
+    BoardDndListComponent,
+    IssueCardComponent,
   ],
   entryComponents: [
     CreateTaskComponent,
