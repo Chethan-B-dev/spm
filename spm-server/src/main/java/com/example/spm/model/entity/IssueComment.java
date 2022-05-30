@@ -41,6 +41,6 @@ public class IssueComment {
     )
     private Issue issue;
 
-    private LocalDateTime createdDateTime = LocalDateTime.now();
+    private LocalDateTime createdDateTime;
 
 }

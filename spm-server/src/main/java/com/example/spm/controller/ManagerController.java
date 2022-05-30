@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/manager")
 @RequiredArgsConstructor
@@ -232,17 +234,52 @@ public class ManagerController {
     @GetMapping("/issues/{projectId}")
     public ResponseEntity<List<Issue>> getAllProjectIssues(@PathVariable Integer projectId, MyAppUserDetails myAppUserDetails) {
         AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-        return new ResponseEntity<>(issueService.getAllIssues(projectId), HttpStatus.OK);
+        return new ResponseEntity<>(managerService.getAllIssues(projectId), HttpStatus.OK);
+    }
+
+    @GetMapping("/issue/{issueId}")
+    public ResponseEntity<Issue> getIssueByIssueId(
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer issueId
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                managerService.getIssueById(issueId),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/edit-issue/{issueId}")
+    public ResponseEntity<Issue> updateIssue(
+            @RequestBody UpdateIssueDTO updateIssueDTO,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer issueId
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                managerService.updateIssue(issueId, updateIssueDTO),
+                HttpStatus.OK
+        );
     }
 
     @PostMapping("/create-issue/{projectId}")
     public ResponseEntity<Issue> createIssue(
             @PathVariable Integer projectId,
             @RequestBody CreateIssueDTO createIssueDTO,
-            MyAppUserDetails myAppUserDetails
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(issueService.createIssue(projectId, createIssueDTO, loggedInUser), HttpStatus.OK);
+    }
+
+    @PostMapping("/comment/{issueId}")
+    public ResponseEntity<IssueComment> addComment(
+            @PathVariable Integer issueId,
+            @RequestBody AddCommentDTO addCommentDTO,
+            MyAppUserDetails myAppUserDetails
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(managerService.addComment(addCommentDTO, issueId), HttpStatus.OK);
     }
 
 }

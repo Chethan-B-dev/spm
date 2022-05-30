@@ -5,6 +5,7 @@ import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.IssueNotFoundException;
 import com.example.spm.model.dto.AddCommentDTO;
 import com.example.spm.model.dto.CreateIssueDTO;
+import com.example.spm.model.dto.UpdateIssueDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Issue;
 import com.example.spm.model.entity.IssueComment;
@@ -50,13 +51,24 @@ public class IssueService {
         return issueCommentRepository.save(issueComment);
     }
 
+    @Transactional
+    public Issue updateIssue(UpdateIssueDTO updateIssueDTO, Integer issueId){
+        Issue issue = checkIfIssueExists(issueId);
+        issue.setSummary(updateIssueDTO.getSummary());
+        issue.setStatus(updateIssueDTO.getStatus());
+        issue.setProject(projectService.getProjectById(updateIssueDTO.getProjectId()));
+        issue.setCreatedDate(updateIssueDTO.getCreatedDate());
+        return issue;
+    }
+
     public Issue getIssueById(Integer issueId) {
         return checkIfIssueExists(issueId);
     }
 
     public Issue createIssue(Integer projectId, CreateIssueDTO createIssueDTO, MyAppUserDetails loggedInUser) {
-        if (!loggedInUser.getUser().getRole().equals(UserRole.EMPLOYEE))
-            throw new ActionNotAllowedException("Only Employees can raise issues");
+//        todo: add this function in employee issue service
+//        if (!loggedInUser.getUser().getRole().equals(UserRole.EMPLOYEE))
+//            throw new ActionNotAllowedException("Only Employees can raise issues");
         Project project = projectService.checkIfProjectExists(projectId);
         Issue issue = Issue
                 .builder()
