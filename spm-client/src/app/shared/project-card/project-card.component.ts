@@ -42,6 +42,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   employees: IAppUser[] = [];
   private readonly destroy$ = new Subject();
   @Output() showIssues: EventEmitter<void> = new EventEmitter<void>();
+  changed;
 
   constructor(
     public dialog: MatDialog,
