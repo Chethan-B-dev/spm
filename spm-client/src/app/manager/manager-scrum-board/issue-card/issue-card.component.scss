@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
+.issue-wrap {
+  touch-action: manipulation;
+  cursor: -webkit-grab;
+  cursor: grab;
+  margin-bottom: 5px;
+}
+
+.issue {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    border-radius: .125rem;
+    background-color: rgb(207, 207, 207);
+    transition-property: all;
+    transition-duration: .1s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 10px;
+}

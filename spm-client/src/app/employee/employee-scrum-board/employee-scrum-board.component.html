@@ -22,7 +22,7 @@
 
 
 <!-- header -->
-<div class="mx-4">
+<!-- <div class="mx-4">
   <div class="row">
     <div class="col">
       <mat-card>
@@ -37,12 +37,12 @@
       <mat-card><mat-chip class="bg-success" selected>Done</mat-chip> <mat-icon>check_circle</mat-icon></mat-card>
     </div>
   </div>
-</div>
+</div> -->
 <!-- header end -->
 
 
-<!-- scrum board -->
-<div class="mx-4">
+<!-- old scrum board -->
+<!-- <div class="mx-4">
 
   <div class="row">
     <div class="col">
@@ -82,24 +82,15 @@
     </div>
     </div>
   </div>
-</div>
-
-<!-- scrum board end-->
-
-<!-- <div
-      cdkDropList
-      #doneList="cdkDropList"
-      [cdkDropListData]="done"
-      [cdkDropListConnectedTo]="[inProgressList,todoList]"
-      class="example-list"
-      (cdkDropListDropped)="drop($event)">
-<mat-expansion-panel class="example-box" (opened)="panelOpenState = true" (closed)="panelOpenState = false"  *ngFor="let item of done" cdkDrag>
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{item}}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <p>I'm visible because I am open</p>
-  </mat-expansion-panel>
-
 </div> -->
+
+<!-- old scrum board end-->
+
+<!-- New scrum board -->
+
+<div class="mb-4"></div>
+	<board-dnd></board-dnd>
+	<div class="mb-4"></div>
+	<app-simple-div></app-simple-div>
+
+<!-- New scrum board end -->
