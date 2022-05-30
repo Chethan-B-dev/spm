@@ -8,10 +8,9 @@
 <div class="row row-height">
   <!-- project card -->
 
-  <div class="col-md-9 border-right">
+  <div class="col-md-9 border-right" *ngIf="project$ | async as project">
     <div class="container my-3">
       <app-project-card
-        *ngIf="project$ | async as project"
         appSpacing
         [margin]="100"
         [padding]="10"
@@ -26,22 +25,27 @@
       </app-project-card>
     </div>
 
-    <div #scrollHere class="container my-3" *ngIf="showIssues">
+    <div class="container my-3" *ngIf="showIssues">
       <h4 class="my-3">Project Issues</h4>
 
       <div class="horizontal-row">
-        <!-- card start-->
-        <mat-card class="card mr-3">
-          <mat-card-title>Key</mat-card-title>
-          <mat-card-subtitle>employee - name</mat-card-subtitle>
+        <!-- issue start-->
+        <mat-card class="card mr-3" *ngFor="let issue of project.issues">
+          <div class="left-and-right">
+            <mat-card-title class="reduce-font text-danger">
+              {{ getIssueKey(project.name, issue.id) }}</mat-card-title
+            >
+            <mat-chip>{{ issue.status | titlecase }}</mat-chip>
+          </div>
+          <mat-card-subtitle>{{ issue.createdDate | date }}</mat-card-subtitle>
           <mat-card-content>
-            <p>This card indeterminates progress bar description.</p>
+            <p>{{ issue.summary }}</p>
           </mat-card-content>
           <mat-card-actions>
             <button mat-button>View Details</button>
           </mat-card-actions>
         </mat-card>
-        <!-- card end -->
+        <!-- issue end -->
       </div>
     </div>
   </div>

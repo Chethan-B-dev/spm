@@ -1,17 +1,33 @@
 // angular
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
+  OnChanges,
   OnDestroy,
   OnInit,
+  SimpleChanges,
   ViewChild,
 } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 
 // rxjs
-import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
-import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  combineLatest,
+  EMPTY,
+  Observable,
+  Subject,
+} from "rxjs";
+import {
+  catchError,
+  filter,
+  map,
+  switchMap,
+  takeUntil,
+  tap,
+} from "rxjs/operators";
 
 // services
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
@@ -20,6 +36,7 @@ import { ManagerService } from "../services/manager.service";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { ITask } from "src/app/shared/interfaces/task.interface";
+import { IIssue } from "src/app/shared/interfaces/issue.interface";
 
 @Component({
   selector: "app-manager-project-detail",
@@ -31,9 +48,9 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   projectId: number;
   project$: Observable<IProject>;
   tasks$: Observable<ITask[]>;
+  issues$: Observable<IIssue[]>;
   private readonly destroy$ = new Subject();
   showIssues: boolean = false;
-  @ViewChild("scrollHere", { static: false }) issuesContainer: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,10 +66,6 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
 
   toggleShowIssues(): void {
     this.showIssues = !this.showIssues;
-    this.issuesContainer.nativeElement.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
   }
 
   ngOnInit() {
@@ -72,14 +85,6 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
       })
     );
 
-    // this.project$ = this.managerService.selectedSingleProject$.pipe(
-    //   takeUntil(this.destroy$),
-    //   catchError((err) => {
-    //     this.snackbarService.showSnackBar(err);
-    //     return EMPTY;
-    //   })
-    // );
-
     // todo: add pagination to this stream and scan to add more elements
     this.tasks$ = combineLatest(
       this.managerService.tasksWithAdd$,
@@ -96,6 +101,10 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
         return EMPTY;
       })
     );
+  }
+
+  getIssueKey(projectName: string, issueId: number): string {
+    return projectName.substring(0, 4) + "-" + issueId;
   }
 
   ngOnDestroy(): void {

@@ -62,7 +62,6 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   toggleShowIssues(): void {
-    console.log("toggleing show issues");
     this.showIssues.emit();
   }
 
