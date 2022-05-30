@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { JIssue } from '../interface/lane';
-
 @Component({
   selector: 'issue-card',
   templateUrl: './issue-card.component.html',
