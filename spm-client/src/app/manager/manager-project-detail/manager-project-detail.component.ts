@@ -1,5 +1,11 @@
 // angular
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 
@@ -26,6 +32,8 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   project$: Observable<IProject>;
   tasks$: Observable<ITask[]>;
   private readonly destroy$ = new Subject();
+  showIssues: boolean = false;
+  @ViewChild("scrollHere", { static: false }) issuesContainer: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +45,14 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
 
   onTaskCategoryChange(selectedTaskCategory: string): void {
     this.managerService.selectTaskCategory(selectedTaskCategory);
+  }
+
+  toggleShowIssues(): void {
+    this.showIssues = !this.showIssues;
+    this.issuesContainer.nativeElement.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }
 
   ngOnInit() {

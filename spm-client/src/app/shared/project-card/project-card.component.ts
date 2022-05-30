@@ -1,5 +1,12 @@
 // angular
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 
@@ -34,6 +41,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   users$?: Observable<IAppUser[]> | undefined;
   employees: IAppUser[] = [];
   private readonly destroy$ = new Subject();
+  @Output() showIssues: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(
     public dialog: MatDialog,
@@ -51,6 +59,10 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
         })
       );
     }
+  }
+
+  toggleShowIssues(): void {
+    this.showIssues.emit();
   }
 
   ngOnDestroy(): void {
