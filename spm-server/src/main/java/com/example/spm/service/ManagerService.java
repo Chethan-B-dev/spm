@@ -2,10 +2,7 @@ package com.example.spm.service;
 
 import com.example.spm.exception.*;
 import com.example.spm.model.dto.*;
-import com.example.spm.model.entity.AppUser;
-import com.example.spm.model.entity.Project;
-import com.example.spm.model.entity.Task;
-import com.example.spm.model.entity.Todo;
+import com.example.spm.model.entity.*;
 import com.example.spm.model.enums.UserRole;
 import com.example.spm.model.enums.UserStatus;
 import com.example.spm.repository.AppUserRepository;
@@ -30,6 +27,7 @@ public class ManagerService {
     private final TaskService taskService;
     private final TodoService todoService;
     private final AdminService adminService;
+    private final IssueService issueService;
     private final ProjectRepository projectRepository;
     private final TaskRepository taskRepository;
     private final AppUserRepository appUserRepository;
@@ -158,5 +156,21 @@ public class ManagerService {
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
         todoService.checkIfTodoExists(todoId);
         return todoService.updateTodo(todoId, updateTodoDTO);
+    }
+
+    public List<Issue> getAllIssues(Integer projectId) {
+        return issueService.getAllIssues(projectId);
+    }
+
+    public Issue getIssueById(Integer issueId) {
+        return issueService.getIssueById(issueId);
+    }
+
+    public Issue updateIssue(Integer issueId, UpdateIssueDTO updateIssueDTO) {
+        return issueService.updateIssue(updateIssueDTO, issueId);
+    }
+
+    public IssueComment addComment(AddCommentDTO addCommentDTO, Integer issueId){
+        return issueService.addComment(addCommentDTO, issueId);
     }
 }

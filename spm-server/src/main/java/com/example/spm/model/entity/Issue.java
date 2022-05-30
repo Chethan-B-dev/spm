@@ -1,6 +1,7 @@
 package com.example.spm.model.entity;
 
 import com.example.spm.model.enums.IssueStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -34,6 +35,7 @@ public class Issue {
             name = "project_id",
             referencedColumnName = "id"
     )
+    @JsonIgnore
     private Project project;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(
@@ -41,5 +43,5 @@ public class Issue {
             referencedColumnName = "id"
     )
     private AppUser user;
-    private LocalDate createdDate = LocalDate.now();
+    private LocalDate createdDate;
 }
