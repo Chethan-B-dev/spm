@@ -8,6 +8,7 @@ import { EmployeeProjectDetailComponent } from "./employee/employee-project-deta
 import { EmployeeScrumBoardComponent } from "./employee/employee-scrum-board/employee-scrum-board.component";
 import { DashboardComponent } from "./manager/dashboard/dashboard.component";
 import { ManagerProjectDetailComponent } from "./manager/manager-project-detail/manager-project-detail.component";
+import { ManagerScrumBoardComponent } from "./manager/manager-scrum-board/manager-scrum-board.component";
 import { ManagerTaskDetailComponent } from "./manager/manager-task-detail/manager-task-detail.component";
 import { AdminComponent } from "./shared/admin/admin.component";
 import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile.component";
@@ -31,6 +32,7 @@ const routes: Routes = [
   },
   { path: "employee-issue-detail", component: EmployeeIssueDetailComponent },
   { path: "employee-scrum-board", component: EmployeeScrumBoardComponent },
+  { path: "manager-scrum-board", component: ManagerScrumBoardComponent },
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];

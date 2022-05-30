@@ -75,7 +75,9 @@
       <mat-card>
         <app-pie-chart></app-pie-chart>
         <mat-card-actions>
-          <button mat-button>View All Issues</button>
+          <button mat-button (click)="toggleShowIssues()">
+            View All Issues
+          </button>
         </mat-card-actions>
       </mat-card>
     </div>
