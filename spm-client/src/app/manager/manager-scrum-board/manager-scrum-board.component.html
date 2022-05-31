@@ -5,6 +5,24 @@ rel="stylesheet"
 integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
 crossorigin="anonymous"
 />
+<mat-card class="mx-3 my-2">
+  <div class="row">
+    <div class="col-3"><mat-card-title>Manager Scrum Board</mat-card-title>
+      <mat-card-subtitle>Project Name:</mat-card-subtitle>
+      <mat-card-subtitle>Manager:</mat-card-subtitle>
+    </div>
+    <div class="col-8 p-2">
+    <div class="p-2">
+      <mat-chip-list aria-label="Fish selection">
+      <mat-chip color="primary" selected>Total tasks: 10</mat-chip>
+      <mat-chip color="warn" selected>To Do: 4</mat-chip>
+      <mat-chip color="accent" selected>In Progress: 2</mat-chip>
+      <mat-chip class="bg-success" selected>Done: 2</mat-chip>
+    </mat-chip-list>
+  </div>
+    <mat-progress-bar mode="determinate" value="60"></mat-progress-bar>Tasks Complete: 6/10</div>
+  </div>
+</mat-card>
 <div class="contaier mx-3">
 <div class="mb-4"></div>
 	<board-dnd></board-dnd>

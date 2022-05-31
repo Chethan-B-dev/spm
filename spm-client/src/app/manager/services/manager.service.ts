@@ -20,6 +20,7 @@ import {
   switchMap,
   tap,
 } from "rxjs/operators";
+import { IIssue } from "src/app/shared/interfaces/issue.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
@@ -149,6 +150,14 @@ export class ManagerService {
   getAllTasks(projectId: number): Observable<ITask[]> {
     return this.http
       .get<ITask[]>(`${this.managerUrl}/tasks/${projectId}`, {
+        headers: this.headers,
+      })
+      .pipe(catchError(handleError));
+  }
+
+  getAllIssues(projectId: number): Observable<IIssue[]> {
+    return this.http
+      .get<IIssue[]>(`${this.managerUrl}/issues/${projectId}`, {
         headers: this.headers,
       })
       .pipe(catchError(handleError));
