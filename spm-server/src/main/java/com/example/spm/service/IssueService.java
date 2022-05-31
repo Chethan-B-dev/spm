@@ -2,6 +2,7 @@ package com.example.spm.service;
 
 
 import com.example.spm.exception.ActionNotAllowedException;
+import com.example.spm.exception.IssueCommentNotFoundException;
 import com.example.spm.exception.IssueNotFoundException;
 import com.example.spm.model.dto.AddCommentDTO;
 import com.example.spm.model.dto.CreateIssueDTO;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.xml.stream.events.Comment;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,20 +37,6 @@ public class IssueService {
 
     public List<Issue> getAllIssues(Integer projectId) {
         return issueRepository.findAllByProjectIdOrderByCreatedDateDesc(projectId);
-    }
-
-    @Transactional
-    public IssueComment addComment(AddCommentDTO addCommentDTO, Integer issueId) {
-        Issue issue = checkIfIssueExists(issueId);
-        AppUser appUser = adminService.checkIfUserExists(addCommentDTO.getUserId());
-        IssueComment issueComment = IssueComment
-                .builder()
-                .comment(addCommentDTO.getComment())
-                .issue(issue)
-                .createdDateTime(LocalDateTime.now())
-                .user(appUser)
-                .build();
-        return issueCommentRepository.save(issueComment);
     }
 
     @Transactional
@@ -81,10 +69,48 @@ public class IssueService {
         return issueRepository.save(issue);
     }
 
+    @Transactional
+    public IssueComment addComment(AddCommentDTO addCommentDTO, Integer issueId) {
+        Issue issue = checkIfIssueExists(issueId);
+        AppUser appUser = adminService.checkIfUserExists(addCommentDTO.getUserId());
+        IssueComment issueComment = IssueComment
+                .builder()
+                .comment(addCommentDTO.getComment())
+                .issue(issue)
+                .createdDateTime(LocalDateTime.now())
+                .user(appUser)
+                .build();
+        return issueCommentRepository.save(issueComment);
+    }
+
+    public List<IssueComment> getComments(Integer issueId){
+        Issue issue = checkIfIssueExists(issueId);
+        return issueCommentRepository.findAllByIssueId(issueId);
+    }
+
+    @Transactional
+    public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser){
+        checkIfCommentBelongsToUser(commentId, loggedInUser);
+        issueCommentRepository.deleteById(commentId);
+    }
+
     private Issue checkIfIssueExists(Integer issueId) {
         return issueRepository
                 .findById(issueId)
                 .orElseThrow(() -> new IssueNotFoundException("issue with id '" + issueId + "' not found)"));
+    }
+
+    private IssueComment checkIfIssueCommentExists(Integer commentId) {
+        return issueCommentRepository
+                .findById(commentId)
+                .orElseThrow(() -> new IssueCommentNotFoundException("Issue Comment with id '" + commentId + "' not found)"));
+    }
+
+    private void checkIfCommentBelongsToUser(Integer commentId, MyAppUserDetails loggedInUser){
+        IssueComment issueComment = checkIfIssueCommentExists(commentId);
+        if(!(issueComment.getUser().getId().equals(loggedInUser.getUser().getId()))){
+            throw new ActionNotAllowedException("User with id "+loggedInUser.getUser().getId()+" cannot delete the comment with id "+commentId);
+        }
     }
 
 }

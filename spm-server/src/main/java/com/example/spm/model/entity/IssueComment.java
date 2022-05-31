@@ -26,7 +26,7 @@ public class IssueComment {
     )
     private Integer id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id"
@@ -34,7 +34,7 @@ public class IssueComment {
     private AppUser user;
     private String comment;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(
             name = "issue_id",
             referencedColumnName = "id"

@@ -21,11 +21,12 @@
         [showIssueStats]="true"
         [showViewDetailsButton]="false"
         [project]="project"
+        (showIssues)="toggleShowIssues()"
       >
       </app-project-card>
     </div>
 
-    <div class="container my-3">
+    <div #scrollHere class="container my-3" *ngIf="showIssues">
       <h4 class="my-3">Project Issues</h4>
 
       <div class="horizontal-row">

@@ -64,6 +64,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = IssueCommentNotFoundException.class)
+    public ResponseEntity<GeneralExceptionResponseDTO> issueCommentNotFoundException(IssueCommentNotFoundException issueCommentNotFoundException) {
+        GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO
+                .builder()
+                .message(issueCommentNotFoundException.getMessage())
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(generalExceptionResponseDTO, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(value = TodoNotFoundException.class)
     public ResponseEntity<GeneralExceptionResponseDTO> todoNotFoundException(TodoNotFoundException todoNotFoundException) {
         GeneralExceptionResponseDTO generalExceptionResponseDTO = GeneralExceptionResponseDTO

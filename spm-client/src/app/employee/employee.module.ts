@@ -9,6 +9,10 @@ import { EmployeeIssueDetailComponent } from './employee-issue-detail/employee-i
 import { EmployeeDashboardComponent } from './employee-dashboard/employee-dashboard.component';
 import { CreateIssueComponent } from './employee-project-detail/Dialogs/create-issue/create-issue.component';
 import { EmployeeScrumBoardComponent } from './employee-scrum-board/employee-scrum-board.component';
+import { BoardDndComponent } from './employee-scrum-board/board-dnd/board-dnd.component';
+import { BoardDndListComponent } from './employee-scrum-board/board-dnd-list/board-dnd-list.component';
+import { IssueCardComponent } from './employee-scrum-board/issue-card/issue-card.component';
+import { SimpleDivComponent } from './employee-scrum-board/simple-div/simple-div.component';
 
 
 @NgModule({
@@ -16,7 +20,11 @@ import { EmployeeScrumBoardComponent } from './employee-scrum-board/employee-scr
      EmployeeIssueDetailComponent,
       EmployeeDashboardComponent,
        CreateIssueComponent,
-       EmployeeScrumBoardComponent],
+       EmployeeScrumBoardComponent,
+       BoardDndComponent,
+       BoardDndListComponent,
+       IssueCardComponent,
+       SimpleDivComponent],
        entryComponents: [CreateIssueComponent],
   imports: [
     CommonModule,
