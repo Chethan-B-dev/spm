@@ -276,10 +276,29 @@ public class ManagerController {
     public ResponseEntity<IssueComment> addComment(
             @PathVariable Integer issueId,
             @RequestBody AddCommentDTO addCommentDTO,
-            MyAppUserDetails myAppUserDetails
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(managerService.addComment(addCommentDTO, issueId), HttpStatus.OK);
+    }
+
+    @GetMapping("/comment/{issueId}")
+    public ResponseEntity<List<IssueComment>> getComments(
+            @PathVariable Integer issueId,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(managerService.getComments(issueId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete-comment/{commentId}")
+    public ResponseEntity<Boolean> deleteComment(
+            @PathVariable Integer commentId,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        managerService.deleteComment(commentId, loggedInUser);
+        return new ResponseEntity<>(true, HttpStatus.GONE);
     }
 
 }

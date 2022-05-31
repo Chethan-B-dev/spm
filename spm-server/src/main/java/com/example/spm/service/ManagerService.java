@@ -173,4 +173,12 @@ public class ManagerService {
     public IssueComment addComment(AddCommentDTO addCommentDTO, Integer issueId){
         return issueService.addComment(addCommentDTO, issueId);
     }
+
+    public List<IssueComment> getComments(Integer issueId){
+        return issueService.getComments(issueId);
+    }
+
+    public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser){
+        issueService.deleteComment(commentId, loggedInUser);
+    }
 }
