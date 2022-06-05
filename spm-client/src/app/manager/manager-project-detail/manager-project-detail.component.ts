@@ -45,7 +45,7 @@ import { IIssue } from "src/app/shared/interfaces/issue.interface";
 })
 export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   defaultTaskCategory: string = "ALL";
-  projectId: number;
+  private projectId: number;
   project$: Observable<IProject>;
   tasks$: Observable<ITask[]>;
   issues$: Observable<IIssue[]>;
@@ -68,12 +68,11 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
     this.showIssues = !this.showIssues;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
       // this.managerService.setProjectId(this.projectId);
     });
-
     // ! we are refreshing in case we update project information
     this.project$ = this.managerService.refresh$.pipe(
       takeUntil(this.destroy$),

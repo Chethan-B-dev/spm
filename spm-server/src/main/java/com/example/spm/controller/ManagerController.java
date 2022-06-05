@@ -7,6 +7,7 @@ import com.example.spm.service.IssueService;
 import com.example.spm.service.ManagerService;
 import com.example.spm.service.MyAppUserDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Slf4j
@@ -54,7 +54,7 @@ public class ManagerController {
     @GetMapping("/project/{projectId}")
     public ResponseEntity<Project> getProjectById (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer projectId
+            @PathVariable final Integer projectId
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -66,7 +66,7 @@ public class ManagerController {
     @GetMapping("/project/{projectId}/employees")
     public ResponseEntity<List<AppUser>> getEmployeesProjectById (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer projectId
+            @PathVariable final Integer projectId
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -78,7 +78,7 @@ public class ManagerController {
     @GetMapping("/employees/{projectId}")
     public ResponseEntity<List<AppUser>> getAllProjectEmployees (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer projectId
+            @PathVariable final Integer projectId
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -89,7 +89,7 @@ public class ManagerController {
 
     @PostMapping("/create-project")
     public ResponseEntity<Project> createProject (
-            @RequestBody @Valid CreateProjectDTO createProjectDTO,
+            @RequestBody @Valid final CreateProjectDTO createProjectDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
@@ -104,7 +104,7 @@ public class ManagerController {
     @Transactional
     @PutMapping("/assign-user/{projectId}")
     public ResponseEntity<Project> addUserToProject (
-            @PathVariable Integer projectId,
+            @PathVariable final Integer projectId,
             @RequestBody ProjectUserDTO projectUserDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
@@ -132,7 +132,7 @@ public class ManagerController {
             @RequestBody @Valid CreateTaskDTO createTaskDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer projectId
+            @PathVariable final Integer projectId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
 //        managerService.handleProjectValidationErrors(bindingResult);
@@ -145,7 +145,7 @@ public class ManagerController {
     @GetMapping("/tasks/{projectId}")
     public ResponseEntity<List<Task>> getAllProjectTasks (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer projectId
+            @PathVariable final Integer projectId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -157,7 +157,7 @@ public class ManagerController {
     @GetMapping("/task/{taskId}")
     public ResponseEntity<Task> getTaskByTaskId(
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer taskId
+            @PathVariable final Integer taskId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -169,7 +169,7 @@ public class ManagerController {
     @PutMapping("/edit-task/{taskId}")
     public ResponseEntity<Task> updateTask (
             @PathVariable Integer taskId,
-            @RequestBody UpdateTaskDTO updateTaskDTO,
+            @RequestBody final UpdateTaskDTO updateTaskDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
@@ -184,7 +184,7 @@ public class ManagerController {
             @RequestBody @Valid CreateTodoDTO createTodoDTO,
             BindingResult bindingResult,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer taskId
+            @PathVariable final Integer taskId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -196,7 +196,7 @@ public class ManagerController {
     @GetMapping("/todo/{todoId}")
     public ResponseEntity<Todo> getTodoByTodoId(
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer todoId
+            @PathVariable final Integer todoId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -208,7 +208,7 @@ public class ManagerController {
     @GetMapping("/todos/{taskId}")
     public ResponseEntity<List<Todo>> getAllTaskTodos (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer taskId
+            @PathVariable final Integer taskId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -222,7 +222,7 @@ public class ManagerController {
     public ResponseEntity<Todo> updateTodo(
             @RequestBody UpdateTodoDTO updateTodoDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer todoId
+            @PathVariable final Integer todoId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -232,7 +232,7 @@ public class ManagerController {
     }
 
     @GetMapping("/issues/{projectId}")
-    public ResponseEntity<List<Issue>> getAllProjectIssues(@PathVariable Integer projectId, MyAppUserDetails myAppUserDetails) {
+    public ResponseEntity<List<Issue>> getAllProjectIssues(@PathVariable final Integer projectId, MyAppUserDetails myAppUserDetails) {
         AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(managerService.getAllIssues(projectId), HttpStatus.OK);
     }
@@ -240,7 +240,7 @@ public class ManagerController {
     @GetMapping("/issue/{issueId}")
     public ResponseEntity<Issue> getIssueByIssueId(
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer issueId
+            @PathVariable final Integer issueId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -253,7 +253,7 @@ public class ManagerController {
     public ResponseEntity<Issue> updateIssue(
             @RequestBody UpdateIssueDTO updateIssueDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer issueId
+            @PathVariable final Integer issueId
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -264,7 +264,7 @@ public class ManagerController {
 
     @PostMapping("/create-issue/{projectId}")
     public ResponseEntity<Issue> createIssue(
-            @PathVariable Integer projectId,
+            @PathVariable final Integer projectId,
             @RequestBody CreateIssueDTO createIssueDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
@@ -274,7 +274,7 @@ public class ManagerController {
 
     @PostMapping("/comment/{issueId}")
     public ResponseEntity<IssueComment> addComment(
-            @PathVariable Integer issueId,
+            @PathVariable final Integer issueId,
             @RequestBody AddCommentDTO addCommentDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
@@ -284,7 +284,7 @@ public class ManagerController {
 
     @GetMapping("/comment/{issueId}")
     public ResponseEntity<List<IssueComment>> getComments(
-            @PathVariable Integer issueId,
+            @PathVariable final Integer issueId,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
@@ -293,7 +293,7 @@ public class ManagerController {
 
     @DeleteMapping("/delete-comment/{commentId}")
     public ResponseEntity<Boolean> deleteComment(
-            @PathVariable Integer commentId,
+            @PathVariable final Integer commentId,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);

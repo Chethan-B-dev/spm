@@ -12,7 +12,6 @@ import com.example.spm.model.entity.Issue;
 import com.example.spm.model.entity.IssueComment;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.enums.IssueStatus;
-import com.example.spm.model.enums.UserRole;
 import com.example.spm.repository.IssueCommentRepository;
 import com.example.spm.repository.IssueRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import javax.xml.stream.events.Comment;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,7 +82,7 @@ public class IssueService {
     }
 
     public List<IssueComment> getComments(Integer issueId){
-        Issue issue = checkIfIssueExists(issueId);
+        checkIfIssueExists(issueId);
         return issueCommentRepository.findAllByIssueId(issueId);
     }
 
@@ -108,9 +106,8 @@ public class IssueService {
 
     private void checkIfCommentBelongsToUser(Integer commentId, MyAppUserDetails loggedInUser){
         IssueComment issueComment = checkIfIssueCommentExists(commentId);
-        if(!(issueComment.getUser().getId().equals(loggedInUser.getUser().getId()))){
+        if(!issueComment.getUser().getId().equals(loggedInUser.getUser().getId()))
             throw new ActionNotAllowedException("User with id "+loggedInUser.getUser().getId()+" cannot delete the comment with id "+commentId);
-        }
     }
 
 }
