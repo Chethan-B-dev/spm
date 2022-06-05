@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,8 +28,11 @@ public class ProjectService {
     private final AppUserService appUserService;
     private final AdminService adminService;
 
-    public List<Project> getAllProjects(Integer managerId) {
+    public List<Project> getAllProjectsByManagerId(Integer managerId) {
         return projectRepository.findByManagerIdOrderByFromDateDesc(managerId);
+    }
+    public List<Project> getAllProjectsByEmployeeId(AppUser employee) {
+        return projectRepository.findAllByUsers(employee);
     }
 
     public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
