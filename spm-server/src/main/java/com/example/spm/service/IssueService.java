@@ -51,11 +51,9 @@ public class IssueService {
         return checkIfIssueExists(issueId);
     }
 
-    public Issue createIssue(Integer projectId, CreateIssueDTO createIssueDTO, MyAppUserDetails loggedInUser) {
-//        todo: add this function in employee issue service
-//        if (!loggedInUser.getUser().getRole().equals(UserRole.EMPLOYEE))
-//            throw new ActionNotAllowedException("Only Employees can raise issues");
-        Project project = projectService.checkIfProjectExists(projectId);
+    public Issue createIssue(Project project, CreateIssueDTO createIssueDTO, MyAppUserDetails loggedInUser) {
+        if (!loggedInUser.getUser().getRole().equals(UserRole.EMPLOYEE))
+            throw new ActionNotAllowedException("Only Employees can raise issues");
         Issue issue = Issue
                 .builder()
                 .status(IssueStatus.UNRESOLVED)

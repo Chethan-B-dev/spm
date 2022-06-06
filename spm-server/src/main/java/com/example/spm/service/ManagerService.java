@@ -34,8 +34,8 @@ public class ManagerService {
 
     private final int pageSize = 2;
 
-    public List<Project> getAllProjects(Integer managerId) {
-        return projectService.getAllProjects(managerId);
+    public List<Project> getAllProjectsByManagerId(Integer managerId) {
+        return projectService.getAllProjectsByManagerId(managerId);
     }
 
     public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
@@ -118,11 +118,6 @@ public class ManagerService {
         return taskService.getTaskById(taskId);
     }
 
-    private Task checkIfTaskExists(Integer taskId) {
-        return taskRepository
-                .findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException("Task with id '" + taskId + "' does not exists"));
-    }
 
     public List<Task> getAllProjectTasks(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);
@@ -143,15 +138,11 @@ public class ManagerService {
     }
 
     public List<Todo> getAllTaskTodos(Integer taskId, MyAppUserDetails loggedInUser) {
-        Task task = checkIfTaskExists(taskId);
-        checkIfTaskBelongsToEmployee(task, loggedInUser.getUser().getId());
+        Task task = taskService.checkIfTaskExists(taskId);
+        taskService.checkIfTaskBelongsToEmployee(task, loggedInUser.getUser().getId());
         return todoService.getAllTaskTodos(taskId);
     }
 
-    private void checkIfTaskBelongsToEmployee(Task task, Integer employeeId) {
-        if (!task.getUser().getId().equals(employeeId))
-            throw new ActionNotAllowedException("Cannot access this task resource");
-    }
 
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
         todoService.checkIfTodoExists(todoId);

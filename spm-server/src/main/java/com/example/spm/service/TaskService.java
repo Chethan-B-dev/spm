@@ -48,6 +48,11 @@ public class TaskService {
                 .orElseThrow(() -> new TaskNotFoundException("Task with id '" + taskId + "' does not exists"));
     }
 
+    public void checkIfTaskBelongsToEmployee(Task task, Integer employeeId) {
+        if (!task.getUser().getId().equals(employeeId))
+            throw new ActionNotAllowedException("Cannot access this task resource");
+    }
+
     public List<Task> getAllProjectTasks(Integer projectId) {
         return taskRepository.findAllByProjectId(projectId);
     }

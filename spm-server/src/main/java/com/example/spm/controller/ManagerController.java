@@ -29,12 +29,12 @@ public class ManagerController {
     private final IssueService issueService;
 
     @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getAllProjects (
+    public ResponseEntity<List<Project>> getAllProjectsByManagerId (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                managerService.getAllProjects(loggedInUser.getUser().getId()), HttpStatus.OK
+                managerService.getAllProjectsByManagerId(loggedInUser.getUser().getId()), HttpStatus.OK
         );
     }
 
@@ -260,16 +260,6 @@ public class ManagerController {
                 managerService.updateIssue(issueId, updateIssueDTO),
                 HttpStatus.OK
         );
-    }
-
-    @PostMapping("/create-issue/{projectId}")
-    public ResponseEntity<Issue> createIssue(
-            @PathVariable final Integer projectId,
-            @RequestBody CreateIssueDTO createIssueDTO,
-            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
-    ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-        return new ResponseEntity<>(issueService.createIssue(projectId, createIssueDTO, loggedInUser), HttpStatus.OK);
     }
 
     @PostMapping("/comment/{issueId}")
