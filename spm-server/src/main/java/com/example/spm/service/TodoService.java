@@ -31,7 +31,7 @@ public class TodoService {
         Todo todo = Todo.builder()
                 .name(createTodoDTO.getTodoName())
                 // todo: change this back to assigned
-                .status(TodoStatus.DONE)
+                .status(TodoStatus.IN_PROGRESS)
                 .task(task)
                 .createdOn(LocalDate.now())
                 .build();

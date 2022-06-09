@@ -35,7 +35,7 @@ export class BoardDndComponent implements OnInit, OnChanges, OnDestroy {
       switchMap(() =>
         of(
           TodoStatusOptions.map((todoStatus) => ({
-            title: todoStatus,
+            title: todoStatus.replace("_", " "),
             todos: this.todos.filter((todo) => todo.status === todoStatus),
           }))
         )

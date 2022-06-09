@@ -5,7 +5,7 @@ import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { SnackbarService } from "../../services/snackbar.service";
-import { DeleteData, DeleteType } from "../../utility/common";
+import { DataType, DeleteData } from "../../utility/common";
 
 @Component({
   selector: "app-confirm-delete",
@@ -25,7 +25,7 @@ export class ConfirmDeleteComponent implements OnDestroy {
   }
 
   onDeleteClick(): void {
-    if (this.deleteData.deleteType === DeleteType.TODO) {
+    if (this.deleteData.deleteType === DataType.TODO) {
       this.managerService
         .deleteTodo(this.deleteData.id)
         .pipe(

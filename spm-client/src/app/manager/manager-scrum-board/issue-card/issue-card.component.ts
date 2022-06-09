@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ConfirmDeleteComponent } from "src/app/shared/dialogs/confirm-delete/confirm-delete.component";
 import { ITodo } from "src/app/shared/interfaces/todo.interface";
-import { DeleteData, DeleteType } from "src/app/shared/utility/common";
+import { DataType, DeleteData } from "src/app/shared/utility/common";
 
 @Component({
   selector: "issue-card",
@@ -16,7 +16,7 @@ export class IssueCardComponent implements OnInit {
 
   openDeleteConfirmDialog(): void {
     const deleteData: DeleteData = {
-      deleteType: DeleteType.TODO,
+      deleteType: DataType.TODO,
       id: this.todo.id,
     };
     let dialogRef = this.dialog.open(ConfirmDeleteComponent, {

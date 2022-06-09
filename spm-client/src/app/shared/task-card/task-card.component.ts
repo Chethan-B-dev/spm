@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ITask } from "../interfaces/task.interface";
+import { ITodo } from "../interfaces/todo.interface";
+import { DataType, PieData } from "../utility/common";
 
 @Component({
   selector: "app-task-card",
@@ -12,4 +14,8 @@ export class TaskCardComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
+
+  get pieChartData(): PieData<ITodo> {
+    return { type: DataType.TODO, data: this.task.todos } as PieData<ITodo>;
+  }
 }

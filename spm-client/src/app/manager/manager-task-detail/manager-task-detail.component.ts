@@ -28,7 +28,6 @@ export class ManagerTaskDetailComponent implements OnInit, OnDestroy {
 
     this.task$ = this.managerService.refresh$.pipe(
       switchMap(() => this.managerService.getTaskById(this.taskId)),
-      tap((task) => console.log(JSON.stringify(task))),
       takeUntil(this.destroy$),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
