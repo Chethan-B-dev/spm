@@ -14,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -100,8 +99,6 @@ public class ManagerController {
                 HttpStatus.OK
         );
     }
-
-    @Transactional
     @PutMapping("/assign-user/{projectId}")
     public ResponseEntity<Project> addUserToProject (
             @PathVariable final Integer projectId,
@@ -165,7 +162,6 @@ public class ManagerController {
                 HttpStatus.OK
         );
     }
-    @Transactional
     @PutMapping("/edit-task/{taskId}")
     public ResponseEntity<Task> updateTask (
             @PathVariable Integer taskId,
@@ -217,7 +213,6 @@ public class ManagerController {
         );
     }
 
-    @Transactional
     @PutMapping("/edit-todo/{todoId}")
     public ResponseEntity<Todo> updateTodo(
             @RequestBody UpdateTodoDTO updateTodoDTO,
@@ -229,6 +224,17 @@ public class ManagerController {
                 managerService.updateTodo(todoId, updateTodoDTO),
                 HttpStatus.OK
         );
+    }
+
+    @DeleteMapping("/delete-todo/{todoId}")
+    public ResponseEntity<Void> deleteTodo(
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable final Integer todoId
+    ){
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsManager(myAppUserDetails);
+        managerService.deleteTodo(todoId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/issues/{projectId}")

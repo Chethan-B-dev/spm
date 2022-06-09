@@ -1,66 +1,93 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+/>
 
 <div class="row">
-  <div class="col-8 ">  <div class="container my-3">
-    <mat-card>Project Title
-      <mat-chip color="primary">Manager</mat-chip>
-      <mat-chip class="mx-2" color="primary">Employees: 12</mat-chip><br>
-      <mat-divider></mat-divider><br><br>
-      <div class="row">
-        <div class="col">
-          <mat-chip-list class="mat-chip-list-stacked" aria-label="Color selection">
-            <mat-chip *ngFor="let chip of availableColors" selected [color]="chip.color">
-              {{chip.name}}
-            </mat-chip>
-          </mat-chip-list>
-        </div>
-        <div class="col-5">
-          <app-progress-bar value="70"></app-progress-bar>
-        </div>
-        <div class="col">
-          <div class="card" style="width: 18rem;">
-            <div class="card-header">
-              Issues
+  <div class="col-8">
+    <div class="container my-3">
+      <mat-card
+        >Project Title
+        <mat-chip color="primary">Manager</mat-chip>
+        <mat-chip class="mx-2" color="primary">Employees: 12</mat-chip><br />
+        <mat-divider></mat-divider><br /><br />
+        <div class="row">
+          <div class="col">
+            <mat-chip-list
+              class="mat-chip-list-stacked"
+              aria-label="Color selection"
+            >
+              <mat-chip
+                *ngFor="let chip of availableColors"
+                selected
+                [color]="chip.color"
+              >
+                {{ chip.name }}
+              </mat-chip>
+            </mat-chip-list>
+          </div>
+          <div class="col-5">
+            <app-progress-bar value="70"></app-progress-bar>
+          </div>
+          <div class="col">
+            <div class="card" style="width: 18rem">
+              <div class="card-header">Issues</div>
+              <ul class="list-group list-group-flush">
+                <mat-chip class="m-2" (click)="createIssue()"
+                  >Create a Issue</mat-chip
+                >
+                <mat-chip class="m-2">View All Issues</mat-chip>
+                <mat-chip class="m-2">Vestibulum at eros</mat-chip>
+              </ul>
             </div>
-            <ul class="list-group list-group-flush">
-              <mat-chip class="m-2" (click)="createIssue()">Create a Issue</mat-chip>
-              <mat-chip class="m-2">View All Issues</mat-chip>
-              <mat-chip class="m-2">Vestibulum at eros</mat-chip>
-            </ul>
           </div>
         </div>
-      </div>
-    </mat-card>
+      </mat-card>
     </div>
-    <div class="container"><mat-card><button mat-raised-button color="warn" class="mx-3">Issues</button><mat-chip>Solved 4/10</mat-chip><br><mat-progress-bar class="container col-7" mode="determinate" value="40">Solved 6/10</mat-progress-bar></mat-card>
+    <div class="container">
+      <mat-card
+        ><button mat-raised-button color="warn" class="mx-3">Issues</button
+        ><mat-chip>Solved 4/10</mat-chip><br /><mat-progress-bar
+          class="container col-7"
+          mode="determinate"
+          value="40"
+          >Solved 6/10</mat-progress-bar
+        ></mat-card
+      >
 
-      <mat-divider></mat-divider></div>
-    <br>
-      <div class="row container">
-        <div class="col-sm-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <button mat-raised-button color="primary">Go somewhere</button>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Special title treatment</h5>
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <button mat-raised-button color="primary">Go somewhere</button>
-            </div>
+      <mat-divider></mat-divider>
+    </div>
+    <br />
+    <div class="row container">
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">
+              With supporting text below as a natural lead-in to additional
+              content.
+            </p>
+            <button mat-raised-button color="primary">Go somewhere</button>
           </div>
         </div>
       </div>
-   </div>
-    <mat-divider [vertical]="true"></mat-divider>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">
+              With supporting text below as a natural lead-in to additional
+              content.
+            </p>
+            <button mat-raised-button color="primary">Go somewhere</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <mat-divider [vertical]="true"></mat-divider>
   <div class="col-3 my-3">
-      <mat-card class="my-2">
+    <mat-card class="my-2">
       <mat-card-title>Task Name</mat-card-title>
       <mat-chip-list aria-label="Fish selection">
         <mat-chip color="primary">
@@ -81,7 +108,7 @@
         <button mat-button color="warn">View Details</button>
       </mat-card-actions>
     </mat-card>
-      <mat-card class="my-2">
+    <mat-card class="my-2">
       <mat-card-title>Task Name</mat-card-title>
       <mat-chip-list aria-label="Fish selection">
         <mat-chip color="primary">
@@ -102,17 +129,11 @@
         <button mat-button color="warn">View Details</button>
       </mat-card-actions>
     </mat-card>
+  </div>
 </div>
-</div>
-
-
 
 <!-- <div class="container col-8"> -->
 
-
 <!-- </div> -->
 
-
-
 <!--scrollable test carousal -->
-

@@ -67,4 +67,9 @@ public class AppUserService {
         return myAppUserDetails;
     }
 
+    public static void checkIfUserIsManager(MyAppUserDetails myAppUserDetails) {
+        if (!myAppUserDetails.getUser().getRole().equals(UserRole.MANAGER))
+            throw new ActionNotAllowedException("Only Manager can perform this action");
+    }
+
 }

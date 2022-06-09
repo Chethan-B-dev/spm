@@ -14,9 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -53,6 +55,7 @@ public class ManagerService {
         return projectService.getAllVerifiedEmployees(project);
     }
 
+    @Transactional
     public Project addUsersToProject(Integer projectId, List<Integer> userIds) {
         Project project = checkIfProjectExists(projectId);
         return projectService.addUsersToProject(project, userIds);
@@ -125,6 +128,8 @@ public class ManagerService {
         return taskService.getAllProjectTasks(projectId);
     }
 
+    @Transactional
+    @Modifying
     public Task updateTask(Integer taskId, UpdateTaskDTO updateTaskDTO) {
         return taskService.updateTask(taskId, updateTaskDTO);
     }
@@ -143,10 +148,15 @@ public class ManagerService {
         return todoService.getAllTaskTodos(taskId);
     }
 
-
+    @Transactional
+    @Modifying
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
         todoService.checkIfTodoExists(todoId);
         return todoService.updateTodo(todoId, updateTodoDTO);
+    }
+
+    public void deleteTodo(Integer todoId) {
+        todoService.deleteTodo(todoId);
     }
 
     public List<Issue> getAllIssues(Integer projectId) {

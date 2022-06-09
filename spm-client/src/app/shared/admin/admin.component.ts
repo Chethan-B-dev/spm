@@ -46,13 +46,8 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   users$: Observable<IAppUser[]> = this.adminApiService.refresh$.pipe(
     takeUntil(this.destroy$),
-    catchError((err) => {
-      stopLoading(this.isLoadingSubject);
-      this.snackbarService.showSnackBar(err);
-      return EMPTY;
-    }),
     switchMap(() => this.usersWithoutRefresh$),
-    tap((_) => this.isLoadingSubject.next(false)),
+    tap(() => stopLoading(this.isLoadingSubject)),
     catchError((err) => {
       stopLoading(this.isLoadingSubject);
       this.snackbarService.showSnackBar(err);
@@ -120,11 +115,12 @@ export class AdminComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe((_) =>
+      .subscribe((_) => {
+        this.adminApiService.refresh();
         this.snackbarService.showSnackBar(
           `user has been ${adminDecision.toLowerCase()}ed`
-        )
-      );
+        );
+      });
   }
 
   enableUser(userId: number): void {
@@ -137,9 +133,10 @@ export class AdminComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe((_) =>
-        this.snackbarService.showSnackBar(`user has been enabled`)
-      );
+      .subscribe((_) => {
+        this.adminApiService.refresh();
+        this.snackbarService.showSnackBar(`user has been enabled`);
+      });
   }
 
   openDeleteConfirmDialog(): void {

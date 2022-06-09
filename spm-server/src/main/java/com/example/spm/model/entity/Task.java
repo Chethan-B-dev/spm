@@ -7,6 +7,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -27,7 +29,7 @@ public class Task {
             generator = "task_sequence"
     )
     private Integer id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(
             name = "project_id",
             referencedColumnName = "id"
@@ -41,10 +43,13 @@ public class Task {
     private LocalDate createdDate;
     private LocalDate deadLine;
     private TaskPriority priority;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id"
     )
     private AppUser user;
+    @OneToMany(mappedBy = "task")
+    @ToString.Exclude
+    private List<Todo> todos = new ArrayList<>();
 }

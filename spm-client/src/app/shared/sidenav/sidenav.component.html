@@ -11,6 +11,19 @@
       <a mat-list-item [routerLink]="'/signup'"> Signup </a>
       <a mat-list-item [routerLink]="'/admin'"> Admin </a>
       <a mat-list-item [routerLink]="'/manager'"> Manager </a>
+      <a mat-list-item [routerLink]="'/employee-dashboard'"> Employee </a>
+      <a mat-list-item [routerLink]="'/employee-project-detail'">
+        Employee Project Detail
+      </a>
+      <a mat-list-item [routerLink]="'/employee-issue-detail'">
+        Employee Issue Detail
+      </a>
+      <a mat-list-item [routerLink]="'/employee-scrum-board'">
+        Employee Scrum Board
+      </a>
+      <a mat-list-item [routerLink]="'/manager-issue-detail'">
+        Manager Scrum Board
+      </a>
     </mat-nav-list>
 
     <mat-nav-list *ngIf="isManager">
@@ -26,6 +39,19 @@
       <a mat-list-item [routerLink]="'/manager'"> Manager </a>
 
       <a mat-list-item [routerLink]="'/admin'"> Admin </a>
+      <a mat-list-item [routerLink]="'/employee-dashboard'"> Employee </a>
+      <a mat-list-item [routerLink]="'/employee-project-detail'">
+        Employee Project Detail
+      </a>
+      <a mat-list-item [routerLink]="'/employee-issue-detail'">
+        Employee Issue Detail
+      </a>
+      <a mat-list-item [routerLink]="'/employee-scrum-board'">
+        Employee Scrum Board
+      </a>
+      <a mat-list-item [routerLink]="'/manager-scrum-board'">
+        Manager Scrum Board
+      </a>
     </mat-nav-list>
   </mat-sidenav>
 

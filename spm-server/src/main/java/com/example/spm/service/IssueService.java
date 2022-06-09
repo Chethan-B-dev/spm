@@ -12,6 +12,7 @@ import com.example.spm.model.entity.Issue;
 import com.example.spm.model.entity.IssueComment;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.enums.IssueStatus;
+import com.example.spm.model.enums.UserRole;
 import com.example.spm.repository.IssueCommentRepository;
 import com.example.spm.repository.IssueRepository;
 import lombok.RequiredArgsConstructor;

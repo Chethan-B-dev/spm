@@ -32,7 +32,10 @@ const routes: Routes = [
   },
   { path: "employee-issue-detail", component: EmployeeIssueDetailComponent },
   { path: "employee-scrum-board", component: EmployeeScrumBoardComponent },
-  { path: "manager-scrum-board", component: ManagerScrumBoardComponent },
+  {
+    path: "manager-scrum-board/:taskId",
+    component: ManagerScrumBoardComponent,
+  },
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];

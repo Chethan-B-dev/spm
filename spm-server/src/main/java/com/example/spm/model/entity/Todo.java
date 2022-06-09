@@ -1,6 +1,7 @@
 package com.example.spm.model.entity;
 
 import com.example.spm.model.enums.TodoStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,11 +28,12 @@ public class Todo {
     )
     private Integer id;
     private String name;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(
             name = "task_id",
             referencedColumnName = "id"
     )
+    @JsonIgnore
     private Task task;
     private TodoStatus status;
     private LocalDate createdOn;

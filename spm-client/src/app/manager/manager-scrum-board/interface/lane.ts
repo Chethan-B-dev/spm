@@ -1,77 +1,81 @@
+import {
+  ITask,
+  TaskPriority,
+  TaskStatus,
+} from "src/app/shared/interfaces/task.interface";
+import { ITodo, TodoStatus } from "src/app/shared/interfaces/todo.interface";
 import { IssueStatus, IssueType, IssuePriority } from "./issue-status";
 
-export class JLane {
-  id: IssueStatus;
+export interface ILane {
   title: string;
-  issues: JIssue[];
+  todos: ITodo[];
 }
 
-export interface JIssue {
-  id: string;
-  title: string;
-  status: IssueStatus;
-  type: IssueType;
-  priority: IssuePriority;
-}
-
-export const MOCK_LANES: JLane[] = [
+export const MOCK_LANES: ILane[] = [
   {
-    id: IssueStatus.BACKLOG,
-    title: "Backlog",
-    issues: [
-      {
-        id: "0001",
-        priority: IssuePriority.MEDIUM,
-        status: IssueStatus.BACKLOG,
-        title: "Behind the 900 stars - Update 08/2020",
-        type: IssueType.STORY
-      },
-      {
-        id: "0002",
-        priority: IssuePriority.MEDIUM,
-        status: IssueStatus.BACKLOG,
-        title: "Who is the author of Angular Jira clone?",
-        type: IssueType.STORY
-      }
-    ]
-  },
-  {
-    id: IssueStatus.SELECTED,
     title: "To-Do",
-    issues: [
+    todos: [
       {
-        id: "0003",
-        priority: IssuePriority.MEDIUM,
-        status: IssueStatus.SELECTED,
-        title: "Set up Akita state management",
-        type: IssueType.STORY
-      }
-    ]
+        id: 1,
+        name: "hello world",
+        status: TodoStatus.IN_PROGRESS,
+        createdOn: new Date(),
+        task: {
+          id: 2,
+          name: "lol",
+          deadLine: new Date(),
+          description: "some lol",
+          priority: TaskPriority.HIGH,
+          status: TaskStatus.IN_PROGRESS,
+          createdDate: new Date(),
+          user: null,
+          todos: [],
+        },
+      },
+    ],
   },
   {
-    id: IssueStatus.IN_PROGRESS,
-    title: "In Progress",
-    issues: [
+    title: "In-Progress",
+    todos: [
       {
-        id: "0004",
-        priority: IssuePriority.MEDIUM,
-        status: IssueStatus.IN_PROGRESS,
-        title: "Preparing backend API with GraphQL",
-        type: IssueType.STORY
-      }
-    ]
+        id: 1,
+        name: "hello world",
+        status: TodoStatus.IN_PROGRESS,
+        createdOn: new Date(),
+        task: {
+          id: 2,
+          name: "lol",
+          deadLine: new Date(),
+          description: "some lol",
+          priority: TaskPriority.HIGH,
+          status: TaskStatus.IN_PROGRESS,
+          createdDate: new Date(),
+          user: null,
+          todos: [],
+        },
+      },
+    ],
   },
   {
-    id: IssueStatus.DONE,
     title: "Done",
-    issues: [
+    todos: [
       {
-        id: "0005",
-        priority: IssuePriority.MEDIUM,
-        status: IssueStatus.DONE,
-        title: "Preparing backend API with GraphQL",
-        type: IssueType.STORY
-      }
-    ]
-  }
+        id: 1,
+        name: "hello world",
+        status: TodoStatus.IN_PROGRESS,
+        createdOn: new Date(),
+        task: {
+          id: 2,
+          name: "lol",
+          deadLine: new Date(),
+          description: "some lol",
+          priority: TaskPriority.HIGH,
+          status: TaskStatus.IN_PROGRESS,
+          createdDate: new Date(),
+          user: null,
+          todos: [],
+        },
+      },
+    ],
+  },
 ];

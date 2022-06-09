@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>Create Todo</h2>
+
+<mat-dialog-content [formGroup]="createTodoForm">
+  <p>
+    <mat-form-field
+      class="example-full-width"
+      appearance="fill"
+      style="width: 100%"
+    >
+      <mat-label>Todo Description</mat-label>
+      <textarea
+        matInput
+        placeholder="Add Description"
+        formControlName="todo"
+      ></textarea>
+      <mat-hint
+        style="color: red"
+        *ngIf="
+          (this.createTodoForm.get('todo').dirty ||
+            this.createTodoForm.get('todo').touched) &&
+          this.createTodoForm.get('todo').errors?.required
+        "
+      >
+        Todo description is required
+      </mat-hint>
+    </mat-form-field>
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="push-right">
+  <button class="mat-raised-button" (click)="close()" style="margin-right: 8px">
+    Close
+  </button>
+  <button
+    class="mat-raised-button mat-primary"
+    [disabled]="this.createTodoForm.invalid"
+    (click)="createTodo()"
+  >
+    Create Todo
+  </button>
+</mat-dialog-actions>

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { catchError, shareReplay, tap } from "rxjs/operators";
+import { catchError, shareReplay, switchMap, tap } from "rxjs/operators";
 import { IAppUser } from "../interfaces/user.interface";
 import { handleError } from "../utility/error";
 
@@ -22,15 +22,24 @@ export class AdminApiService {
   headers = new HttpHeaders({
     "Content-Type": "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTY1NDM1NTgyOSwiaWF0IjoxNjUzMjc1ODI5fQ._T9mPMiWotf93PCZvtXJJjrWgqObs1E6YQtmKUwdr7qGWlzgjSXtFqHK70Abm5iZKL9_suuonqf8oxfYIhEkpw",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkB0ZXN0LmNvbSIsInJvbGUiOiJBRE1JTiIsImV4cCI6MTY1NTUyODM2MiwiaWF0IjoxNjU0NDQ4MzYyfQ.IeybbRfOp8dXMiZnaXlmYWNAvxSL10syFmTtC_FR-ujYAxzOpJzTd1IZdl2yHgTfKQlMUq9RiaQyX0a7bX1l9A",
   });
 
   constructor(private http: HttpClient) {}
 
   getAllUsers(): Observable<IAppUser[]> {
-    return this.http
-      .get<IAppUser[]>(this.usersUrl, { headers: this.headers })
-      .pipe(shareReplay(1), catchError(handleError));
+    return this.refresh$.pipe(
+      switchMap(() =>
+        this.http
+          .get<IAppUser[]>(this.usersUrl, { headers: this.headers })
+          .pipe(catchError(handleError))
+      ),
+      shareReplay(1)
+    );
+  }
+
+  refresh(): void {
+    this.refreshSubject.next();
   }
 
   selectUserCategory(selectedUserCategory: string): void {
@@ -43,10 +52,7 @@ export class AdminApiService {
       .post<IAppUser>(`${this.usersUrl}/take-decision`, requestBody, {
         headers: this.headers,
       })
-      .pipe(
-        tap((_) => this.refreshSubject.next(null)),
-        catchError(handleError)
-      );
+      .pipe(catchError(handleError));
   }
 
   enableUser(userId: number): Observable<IAppUser> {
@@ -54,9 +60,6 @@ export class AdminApiService {
       .get<IAppUser>(`${this.usersUrl}/enable/${userId}`, {
         headers: this.headers,
       })
-      .pipe(
-        tap((_) => this.refreshSubject.next(null)),
-        catchError(handleError)
-      );
+      .pipe(catchError(handleError));
   }
 }

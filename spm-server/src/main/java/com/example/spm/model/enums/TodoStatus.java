@@ -1,5 +1,5 @@
 package com.example.spm.model.enums;
 
 public enum TodoStatus {
-    ASSIGNED,IN_PROGRESS,COMPLETED
+    TO_DO,IN_PROGRESS,DONE
 }

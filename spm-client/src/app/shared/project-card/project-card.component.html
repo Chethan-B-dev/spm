@@ -20,7 +20,9 @@
   </div>
 
   <mat-chip-list aria-label="Fish selection">
-    <mat-chip color="primary" selected>{{ project.status }}</mat-chip>
+    <mat-chip color="primary" selected>{{
+      project.status | titlecase
+    }}</mat-chip>
     <mat-chip color="warn" selected
       >Deadline - {{ project.toDate | date }}</mat-chip
     >

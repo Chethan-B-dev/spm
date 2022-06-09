@@ -5,37 +5,28 @@
   crossorigin="anonymous"
 />
 
-<mat-card><mat-card-title>Task Name: Create Dashboard</mat-card-title>
-  <mat-card-subtitle><b>Created on: 20/08/2022</b></mat-card-subtitle>
-  <mat-card-subtitle><b>Deadline: 25/08/2022</b> </mat-card-subtitle>
-  <mat-chip color="primary" class="mx-1" selected>Priority: Medium</mat-chip>
-  <mat-chip color="accent" class="mx-1" selected>Manager: John</mat-chip>
-  <mat-chip color="accent" class="mx-1" selected>Total To-Do's: 14</mat-chip>
-  <mat-chip color="primary" class="mx-1" selected>Assignee: John</mat-chip>
-  <div class="container" >
-
-    <mat-grid-list cols="2" rowHeight="2:1">
-      <mat-grid-tile><div class="card" style="width: 18rem;">
-        <div class="card-header">
-         <mat-card-title>Task Options</mat-card-title>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Edit Description</li>
-          <li class="list-group-item">Edit Deadline</li>
-          <li class="list-group-item">Edit Task Name</li>
-        </ul>
-      </div></mat-grid-tile>
-      <mat-grid-tile><div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Task Description</h5>
-          <h6 class="card-subtitle mb-2 text-muted">Deadline</h6>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="card-link">Card link</a>
-          <a href="#" class="card-link">Another link</a>
-        </div>
-      </div></mat-grid-tile>
-    </mat-grid-list>
+<mat-card class="mx-3 my-3">
+  <div class="card-body">
+    <mat-card-title>Task Name: {{ task.name }}</mat-card-title>
+    <mat-chip-list>
+      <mat-chip color="primary" selected>{{
+        task.status | titlecase
+      }}</mat-chip>
+      <mat-chip color="warn" selected
+        >Deadline - {{ task.deadLine | date }}</mat-chip
+      >
+      <mat-chip>Assignee - {{ task.user?.username }}</mat-chip>
+      <mat-chip>Created date - {{ task.createdDate | date }}</mat-chip>
+      <mat-chip>{{ task.priority | titlecase }}</mat-chip>
+    </mat-chip-list>
   </div>
-  <button mat-raised-button color="primary" class="mx-1">Add ToDo</button>
-  <button mat-raised-button color="warn" class="mx-1">Delete Task</button>
+  <mat-card>
+    <app-pie-chart></app-pie-chart>
+    <!--  -->
+    <mat-card-actions>
+      <button mat-button [routerLink]="['/manager-scrum-board', task.id]">
+        View All Todos
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </mat-card>

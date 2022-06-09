@@ -11,8 +11,10 @@ import com.example.spm.repository.TaskRepository;
 import com.example.spm.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,7 +30,8 @@ public class TodoService {
         Task task = taskService.checkIfTaskExists(taskId);
         Todo todo = Todo.builder()
                 .name(createTodoDTO.getTodoName())
-                .status(TodoStatus.ASSIGNED)
+                // todo: change this back to assigned
+                .status(TodoStatus.DONE)
                 .task(task)
                 .createdOn(LocalDate.now())
                 .build();
@@ -59,4 +62,12 @@ public class TodoService {
         todo.setTask(taskService.checkIfTaskExists(updateTodoDTO.getTaskId()));
         return todo;
     }
+
+    @Transactional
+    @Modifying
+    public void deleteTodo(Integer todoId) {
+        Todo todo = checkIfTodoExists(todoId);
+        todoRepository.delete(todo);
+    }
+
 }

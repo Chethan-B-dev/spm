@@ -28,7 +28,7 @@ public class Project {
     )
     private Integer id;
     // Normal user but the role is the manager
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(
             name = "manager_id",
             referencedColumnName = "id"
@@ -40,7 +40,7 @@ public class Project {
     private LocalDate toDate;
     private ProjectStatus status;
     private String description;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(
             name = "project_user",
             joinColumns = @JoinColumn(name = "project_id",referencedColumnName = "id"),

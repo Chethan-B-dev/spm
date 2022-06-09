@@ -5,6 +5,7 @@ import { Injectable } from "@angular/core";
 import {
   BehaviorSubject,
   combineLatest,
+  forkJoin,
   merge,
   Observable,
   of,
@@ -19,6 +20,7 @@ import {
   shareReplay,
   switchMap,
   tap,
+  withLatestFrom,
 } from "rxjs/operators";
 import { IIssue } from "src/app/shared/interfaces/issue.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
@@ -29,6 +31,7 @@ import {
   ITaskRequestDTO,
   TaskStatus,
 } from "src/app/shared/interfaces/task.interface";
+import { ITodo } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 // utility
 import { handleError } from "src/app/shared/utility/error";
@@ -38,9 +41,9 @@ import { handleError } from "src/app/shared/utility/error";
 })
 export class ManagerService {
   //todo: get this url from env variable
-  private managerUrl = "http://localhost:8080/api/manager";
+  private managerUrl: string = "http://localhost:8080/api/manager";
 
-  private refreshSubject = new BehaviorSubject(null);
+  private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
 
   private projectInsertedSubject = new Subject<IProject>();
@@ -65,13 +68,17 @@ export class ManagerService {
   loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
 
   // todo: headers for temp testing of jwt, later replace with HTTP interceptor
-  headers = new HttpHeaders({
+  headers: HttpHeaders = new HttpHeaders({
     "Content-Type": "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjU0MzU1ODYxLCJpYXQiOjE2NTMyNzU4NjF9.EGJLB4va1thGRQhrGav5l9S8LX3M8XPJTBhvhpKnEeo_qRDj_hm46ze0C3ff-1GcvOzgs3JJvT4eTRVNkUa1jQ",
+      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjU1NTI4MjA3LCJpYXQiOjE2NTQ0NDgyMDd9.5Q_E-hiVNUQSdDHMSTBn2Z4sDQQkKV2ndJszN75Q6KrzCHV8XpJl7zmx3RA37Nf3JQHR0Qy91_Yw7vovc9qHNQ",
   });
 
-  projects$ = this.http
+  refresh(): void {
+    this.refreshSubject.next();
+  }
+
+  projects$: Observable<IProject[]> = this.http
     .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
     .pipe(
       tap(() => console.log("called all projects")),
@@ -79,7 +86,10 @@ export class ManagerService {
       catchError(handleError)
     );
 
-  projectsWithAdd$ = merge(this.projects$, this.projectInsertedAction$).pipe(
+  projectsWithAdd$: Observable<IProject[]> = merge(
+    this.projects$,
+    this.projectInsertedAction$
+  ).pipe(
     scan(
       (acc, value) => (value instanceof Array ? [...value] : [value, ...acc]),
       [] as IProject[]
@@ -88,18 +98,17 @@ export class ManagerService {
     catchError(handleError)
   );
 
-  selectedSingleProject$ = combineLatest(
+  selectedSingleProject$: Observable<IProject> = combineLatest(
     this.projectsWithAdd$,
     this.projectId$
   ).pipe(
-    tap(console.log),
     map(([projects, projectId]) =>
       projects.find((project) => project.id === projectId)
     ),
     catchError(handleError)
   );
 
-  users$ = this.userPageNumber$.pipe(
+  users$: Observable<IAppUser[]> = this.userPageNumber$.pipe(
     concatMap((pageNumber) => this.getMoreUsers(pageNumber)),
     tap((pagedUsers: IPagedData<IAppUser>) => {
       if (
@@ -116,22 +125,25 @@ export class ManagerService {
     catchError(handleError)
   );
 
-  tasks$ = this.selectedProject$.pipe(
+  tasks$: Observable<ITask[]> = this.selectedProject$.pipe(
     switchMap((project) => of(project.tasks)),
     catchError(handleError)
   );
 
-  tasksWithAdd$ = merge(this.tasks$, this.taskInsertedAction$).pipe(
+  tasksWithAdd$: Observable<ITask[]> = merge(
+    this.tasks$,
+    this.taskInsertedAction$
+  ).pipe(
     scan(
       (acc, value) => (value instanceof Array ? [...value] : [value, ...acc]),
       [] as ITask[]
     ),
+    shareReplay(1),
     catchError(handleError)
   );
-
   constructor(private http: HttpClient) {}
 
-  loadMoreUsers() {
+  loadMoreUsers(): void {
     this.loadMoreUsersSubject.next(true);
   }
 
@@ -150,6 +162,14 @@ export class ManagerService {
   getAllTasks(projectId: number): Observable<ITask[]> {
     return this.http
       .get<ITask[]>(`${this.managerUrl}/tasks/${projectId}`, {
+        headers: this.headers,
+      })
+      .pipe(catchError(handleError));
+  }
+
+  getTaskById(taskId: number): Observable<ITask> {
+    return this.http
+      .get<ITask>(`${this.managerUrl}/task/${taskId}`, {
         headers: this.headers,
       })
       .pipe(catchError(handleError));
@@ -180,11 +200,11 @@ export class ManagerService {
     this.userPageNumberSubject.next(userPageNumber);
   }
 
-  addProject(newProject?: IProject) {
+  addProject(newProject?: IProject): void {
     this.projectInsertedSubject.next(newProject);
   }
 
-  addTask(newTask?: ITask) {
+  addTask(newTask?: ITask): void {
     this.taskInsertedSubject.next(newTask);
   }
 
@@ -216,7 +236,7 @@ export class ManagerService {
         }
       )
       .pipe(
-        tap((project) => this.refreshSubject.next(null)),
+        tap(() => this.refresh()),
         catchError(handleError)
       );
   }
@@ -262,6 +282,31 @@ export class ManagerService {
       })
       .pipe(
         tap((task) => this.addTask(task)),
+        catchError(handleError)
+      );
+  }
+
+  createTodo(todo: { todo: string }, taskId: number): Observable<ITodo> {
+    const requestBody = {
+      todoName: todo.todo,
+    };
+    return this.http
+      .post<ITodo>(`${this.managerUrl}/${taskId}/create-todo`, requestBody, {
+        headers: this.headers,
+      })
+      .pipe(
+        tap(() => this.refresh()),
+        catchError(handleError)
+      );
+  }
+
+  deleteTodo(todoId: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.managerUrl}/delete-todo/${todoId}`, {
+        headers: this.headers,
+      })
+      .pipe(
+        tap(() => this.refresh()),
         catchError(handleError)
       );
   }
