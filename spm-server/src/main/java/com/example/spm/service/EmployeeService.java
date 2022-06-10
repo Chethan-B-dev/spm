@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -50,6 +51,7 @@ public class EmployeeService {
         return taskService.getTaskById(taskId);
     }
 
+    @Transactional
     public Task updateTask(Integer taskId, UpdateTaskDTO updateTaskDTO) {
         return taskService.updateTask(taskId, updateTaskDTO);
     }
@@ -64,6 +66,7 @@ public class EmployeeService {
         return todoService.getAllTaskTodos(taskId);
     }
 
+    @Transactional
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
         todoService.checkIfTodoExists(todoId);
         return todoService.updateTodo(todoId, updateTodoDTO);
@@ -90,6 +93,7 @@ public class EmployeeService {
         return issueService.getComments(issueId);
     }
 
+    @Transactional
     public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser){
         issueService.deleteComment(commentId, loggedInUser);
     }

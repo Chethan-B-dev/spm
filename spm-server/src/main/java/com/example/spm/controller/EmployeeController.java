@@ -58,7 +58,7 @@ public class EmployeeController {
         );
     }
 
-    @Transactional
+
     @PutMapping("/edit-task/{taskId}")
     public ResponseEntity<Task> updateTask (
             @PathVariable Integer taskId,
@@ -96,7 +96,6 @@ public class EmployeeController {
         );
     }
 
-    @Transactional
     @PutMapping("/edit-todo/{todoId}")
     public ResponseEntity<Todo> updateTodo(
             @RequestBody UpdateTodoDTO updateTodoDTO,
