@@ -140,4 +140,10 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe((data) => console.log("Dialog output:", data));
   }
+
+  showAddTaskButton(): boolean {
+    const isExpired: boolean =
+      new Date().getTime() > new Date(this.project.toDate).getTime();
+    return !isExpired;
+  }
 }

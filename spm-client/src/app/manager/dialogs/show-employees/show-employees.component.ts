@@ -44,7 +44,7 @@ export class ShowEmployeesComponent implements OnInit {
         return {
           user,
           ranking:
-            (taskStatistics[TaskStatus.CREATED] / userTasks.length) * 100,
+            (taskStatistics[TaskStatus.COMPLETE] / userTasks.length) * 100,
         } as IAppUserRanking;
       })
       .sort((a, b) => b.ranking - a.ranking);

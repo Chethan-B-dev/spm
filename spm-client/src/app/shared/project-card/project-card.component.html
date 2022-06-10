@@ -13,6 +13,7 @@
       *ngIf="showAddTask"
       mat-button
       color="primary"
+      [disabled]="!showAddTaskButton()"
       (click)="openCreateTaskDialog(project)"
     >
       <mat-icon>add</mat-icon> Add Task
