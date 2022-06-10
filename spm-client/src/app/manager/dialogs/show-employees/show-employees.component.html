@@ -63,14 +63,19 @@
   </header>
 
   <main class="leaderboard__profiles">
-    <article class="leaderboard__profile" *ngFor="let user of employees">
+    <article
+      class="leaderboard__profile"
+      *ngFor="let userRanking of employeeRankings"
+    >
       <img
         src="https://randomuser.me/api/portraits/men/32.jpg"
         alt="Mark Zuckerberg"
         class="leaderboard__picture"
       />
-      <span class="leaderboard__name">{{ user.username }}</span>
-      <span class="leaderboard__value">35.7<span>B</span></span>
+      <span class="leaderboard__name">{{ userRanking.user.username }}</span>
+      <span class="leaderboard__value"
+        >{{ userRanking.ranking }} <span>%</span></span
+      >
     </article>
   </main>
   <!-- <mat-dialog-actions class="push-right"> </mat-dialog-actions> -->

@@ -54,6 +54,12 @@ export class CreateTaskComponent implements OnInit, OnDestroy {
 
   createTask(): void {
     const taskRequestDTO: ITaskRequestDTO = this.createTaskForm.value;
+    if (taskRequestDTO.deadLine.getTime() < new Date().getTime()) {
+      this.snackbarService.showSnackBar(
+        "Deadline cannot be before current date"
+      );
+      return;
+    }
     this.managerService
       .createTask(taskRequestDTO, this.project.id)
       .pipe(

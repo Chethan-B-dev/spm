@@ -21,7 +21,6 @@ import java.util.List;
 public class TaskService {
     private final TaskRepository taskRepository;
 
-
     public Task createTask(CreateTaskDTO createTaskDTO, Project project, AppUser employee) {
         Task task = Task.builder()
                 .name(createTaskDTO.getName())
@@ -64,6 +63,10 @@ public class TaskService {
         task.setPriority(updateTaskDTO.getPriority());
         task.setDescription(updateTaskDTO.getDescription());
         return task;
+    }
+
+    public List<Task> getUserTasks(Integer projectId, Integer userId) {
+        return taskRepository.findAllByProjectIdAndUserId(projectId, userId);
     }
 
 }

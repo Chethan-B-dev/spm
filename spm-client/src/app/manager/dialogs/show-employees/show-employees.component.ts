@@ -1,6 +1,14 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { IProject } from "src/app/shared/interfaces/project.interface";
+import {
+  TaskStatistics,
+  TaskStatus,
+} from "src/app/shared/interfaces/task.interface";
+import {
+  IAppUser,
+  IAppUserRanking,
+} from "src/app/shared/interfaces/user.interface";
 
 @Component({
   selector: "app-show-employees",
@@ -8,16 +16,38 @@ import { IAppUser } from "src/app/shared/interfaces/user.interface";
   styleUrls: ["./show-employees.component.scss"],
 })
 export class ShowEmployeesComponent implements OnInit {
-  employees: IAppUser[];
+  project: IProject;
+  employeeRankings: IAppUserRanking[];
   constructor(
     private dialogRef: MatDialogRef<ShowEmployeesComponent>,
-    @Inject(MAT_DIALOG_DATA) employees
+    @Inject(MAT_DIALOG_DATA) project
   ) {
-    this.employees = employees;
+    this.project = project;
   }
 
   ngOnInit(): void {
-    console.log(this.employees);
+    this.employeeRankings = this.project.users
+      .map((user) => {
+        const taskStatistics: TaskStatistics = {
+          [TaskStatus.CREATED]: 0,
+          [TaskStatus.IN_PROGRESS]: 0,
+          [TaskStatus.COMPLETE]: 0,
+        };
+        const userTasks = this.project.tasks.filter((task) => {
+          if (task.user.id === user.id) {
+            taskStatistics[task.status] += 1;
+            return true;
+          }
+          return false;
+        });
+        if (!userTasks.length) return { user, ranking: 0 } as IAppUserRanking;
+        return {
+          user,
+          ranking:
+            (taskStatistics[TaskStatus.CREATED] / userTasks.length) * 100,
+        } as IAppUserRanking;
+      })
+      .sort((a, b) => b.ranking - a.ranking);
   }
 
   close(): void {

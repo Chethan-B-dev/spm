@@ -297,4 +297,15 @@ public class ManagerController {
         return new ResponseEntity<>(true, HttpStatus.GONE);
     }
 
+    @GetMapping("/tasks/{projectId}/{userId}")
+    public ResponseEntity<List<Task>> getUserTasks(
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable final Integer projectId,
+            @PathVariable final Integer userId
+    ) {
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsManager(loggedInUser);
+        return new ResponseEntity<>(managerService.getUserTasks(projectId, userId), HttpStatus.OK);
+    }
+
 }

@@ -7,7 +7,6 @@ import com.example.spm.model.dto.UpdateTodoDTO;
 import com.example.spm.model.entity.Task;
 import com.example.spm.model.entity.Todo;
 import com.example.spm.model.enums.TodoStatus;
-import com.example.spm.repository.TaskRepository;
 import com.example.spm.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,14 +22,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TodoService {
     private final TodoRepository todoRepository;
-    private final TaskRepository taskRepository;
     private final TaskService taskService;
 
     public Todo createTodo(CreateTodoDTO createTodoDTO, MyAppUserDetails loggedInUser, Integer taskId) {
         Task task = taskService.checkIfTaskExists(taskId);
         Todo todo = Todo.builder()
                 .name(createTodoDTO.getTodoName())
-                // todo: change this back to assigned
+                // todo: change this back to TO_DO
                 .status(TodoStatus.IN_PROGRESS)
                 .task(task)
                 .createdOn(LocalDate.now())

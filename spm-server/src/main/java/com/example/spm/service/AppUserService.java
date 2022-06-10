@@ -2,6 +2,7 @@ package com.example.spm.service;
 
 import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.UserNotLoggedInException;
+import com.example.spm.model.dto.PagedData;
 import com.example.spm.model.dto.UserRegisterDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.enums.UserRole;
@@ -10,6 +11,10 @@ import com.example.spm.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +75,17 @@ public class AppUserService {
     public static void checkIfUserIsManager(MyAppUserDetails myAppUserDetails) {
         if (!myAppUserDetails.getUser().getRole().equals(UserRole.MANAGER))
             throw new ActionNotAllowedException("Only Manager can perform this action");
+    }
+
+    public PagedData<AppUser> getPagedVerifiedEmployees(int pageNumber, int pageSize) {
+        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("id").ascending());
+        Page<AppUser> employees = appUserRepository.findAllByStatusAndRole(UserStatus.VERIFIED, UserRole.EMPLOYEE, paging);
+        return PagedData
+                .<AppUser>builder()
+                .data(employees.getContent())
+                .totalPages(employees.getTotalPages())
+                .currentPage(pageNumber)
+                .build();
     }
 
 }

@@ -92,7 +92,7 @@
               <mat-chip-avatar>
                 <mat-icon>person</mat-icon>
               </mat-chip-avatar>
-              {{ task.user.username }}
+              {{ task.user.username }} - {{ task.user.id }}
             </mat-chip>
             <mat-chip color="warn" selected
               >Deadline - {{ task.deadLine | date }}</mat-chip
@@ -112,14 +112,6 @@
           </mat-card-actions>
         </mat-card>
         <mat-card *ngIf="tasks.length === 0">There are no tasks</mat-card>
-
-        <!-- load more and loading spinner -->
-        <div class="center my-3" *ngIf="!(tasks.length === 0)">
-          <button mat-button color="accent" class="content-center">
-            Load More <mat-icon>arrow_downward</mat-icon>
-          </button>
-          <!-- <app-loading-spinner color="accent"></app-loading-spinner> -->
-        </div>
       </div>
     </div>
   </div>

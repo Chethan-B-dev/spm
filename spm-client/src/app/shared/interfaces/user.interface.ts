@@ -5,6 +5,12 @@ export interface IAppUser {
   email: string;
   status: UserStatus;
   role: UserRole;
+  ranking?: number;
+}
+
+export interface IAppUserRanking {
+  user: IAppUser;
+  ranking: number;
 }
 
 export enum UserStatus {

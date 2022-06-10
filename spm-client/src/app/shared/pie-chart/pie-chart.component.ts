@@ -21,8 +21,8 @@ export class PieChartComponent implements OnInit {
   ngOnInit() {
     this.stats = getTodoStatistics(this.pieData.data);
 
-    let chart = new CanvasJS.Chart("chartContainer", {
-      theme: "light2",
+    const chart = new CanvasJS.Chart("chartContainer", {
+      theme: "light1",
       animationEnabled: true,
       exportEnabled: true,
       title: {
@@ -40,11 +40,9 @@ export class PieChartComponent implements OnInit {
     });
 
     chart.render();
-
-    console.log(this.pieData);
   }
 
-  pieChartData(): Array<{ y: number; name: string }> {
+  private pieChartData(): Array<{ y: number; name: string }> {
     const pieData: Array<{ y: number; name: string }> = [];
     if (this.pieData.type === DataType.TODO) {
       TodoStatusOptions.forEach((todoStatus) => {

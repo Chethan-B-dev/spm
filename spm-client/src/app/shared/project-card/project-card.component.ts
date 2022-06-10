@@ -117,14 +117,22 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       .subscribe((data) => console.log("Dialog output:", data));
   }
 
-  openShowEmployeesDialog(employees: IAppUser[]): void {
+  openShowEmployeesDialog(project: IProject): void {
+    console.log("coming here");
+    if (!project.users.length) {
+      this.snackbarService.showSnackBar(
+        "Please Add Employees to the project first"
+      );
+      return;
+    }
+
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     // dialogConfig.width = "400px";
 
-    dialogConfig.data = employees;
+    dialogConfig.data = project;
 
     const dialogRef = this.dialog.open(ShowEmployeesComponent, dialogConfig);
 

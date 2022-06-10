@@ -1,20 +1,19 @@
 import {
   Component,
-  OnInit,
   Input,
   OnChanges,
-  SimpleChanges,
   OnDestroy,
+  OnInit,
+  SimpleChanges,
 } from "@angular/core";
 import { BehaviorSubject, EMPTY, Observable, of, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import {
   ITodo,
-  TodoStatus,
   TodoStatusOptions,
 } from "src/app/shared/interfaces/todo.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
-import { ILane, MOCK_LANES } from "../interface/lane";
+import { ILane } from "../interface/lane";
 
 @Component({
   selector: "board-dnd",
@@ -36,7 +35,9 @@ export class BoardDndComponent implements OnInit, OnChanges, OnDestroy {
         of(
           TodoStatusOptions.map((todoStatus) => ({
             title: todoStatus.replace("_", " "),
-            todos: this.todos.filter((todo) => todo.status === todoStatus),
+            todos: this.todos
+              .filter((todo: ITodo) => todo.status === todoStatus)
+              .sort((a: ITodo, b: ITodo) => b.id - a.id),
           }))
         )
       ),

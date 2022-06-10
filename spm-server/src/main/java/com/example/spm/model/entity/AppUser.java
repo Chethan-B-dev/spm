@@ -40,15 +40,6 @@ public class AppUser {
     private String phone;
     private UserStatus status;
 
-    public AppUser(String email, String username, String password, UserRole role, String phone, UserStatus status) {
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.phone = phone;
-        this.status = status;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

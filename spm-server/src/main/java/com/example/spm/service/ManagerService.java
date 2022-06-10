@@ -1,25 +1,20 @@
 package com.example.spm.service;
 
-import com.example.spm.exception.*;
+import com.example.spm.exception.ActionNotAllowedException;
+import com.example.spm.exception.ProjectAlreadyExistsException;
+import com.example.spm.exception.ProjectValidationException;
 import com.example.spm.model.dto.*;
 import com.example.spm.model.entity.*;
 import com.example.spm.model.enums.UserRole;
-import com.example.spm.model.enums.UserStatus;
-import com.example.spm.repository.AppUserRepository;
-import com.example.spm.repository.ProjectRepository;
-import com.example.spm.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -30,9 +25,7 @@ public class ManagerService {
     private final TodoService todoService;
     private final AdminService adminService;
     private final IssueService issueService;
-    private final ProjectRepository projectRepository;
-    private final TaskRepository taskRepository;
-    private final AppUserRepository appUserRepository;
+    private final AppUserService appUserService;
 
     private final int pageSize = 2;
 
@@ -41,7 +34,7 @@ public class ManagerService {
     }
 
     public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
-        if (projectRepository.existsByName(createProjectDTO.getProjectName())) {
+        if (projectService.projectExistsByName(createProjectDTO.getProjectName())) {
             throw new ProjectAlreadyExistsException(
                     "Project with the name '" + createProjectDTO.getProjectName() + "' already exists");
         }
@@ -49,46 +42,34 @@ public class ManagerService {
     }
 
     public List<AppUser> getAllVerifiedEmployees(Integer projectId, MyAppUserDetails loggedInUser) {
-        Project project = checkIfProjectExists(projectId);
-        checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
+        Project project = projectService.checkIfProjectExists(projectId);
+        projectService.checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         // returning all employees who are not part of the project
         return projectService.getAllVerifiedEmployees(project);
     }
 
     @Transactional
     public Project addUsersToProject(Integer projectId, List<Integer> userIds) {
-        Project project = checkIfProjectExists(projectId);
+        Project project = projectService.checkIfProjectExists(projectId);
         return projectService.addUsersToProject(project, userIds);
     }
 
     public List<AppUser> getAllEmployeesOfTheProject(Integer projectId, MyAppUserDetails loggedInUser) {
-        Project project = checkIfProjectExists(projectId);
+        Project project = projectService.checkIfProjectExists(projectId);
         // if the project does not belong to that manager
-        checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
+        projectService.checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         return projectService.getAllEmployeesOfTheProject(project);
     }
 
     public PagedData<AppUser> getAllPagedEmployees(int pageNumber) {
-        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("id").ascending());
-        Page<AppUser> employees = appUserRepository.findAllByStatusAndRole(UserStatus.VERIFIED, UserRole.EMPLOYEE, paging);
-        return PagedData
-                .<AppUser>builder()
-                .data(employees.getContent())
-                .totalPages(employees.getTotalPages())
-                .currentPage(pageNumber)
-                .build();
+        return appUserService.getPagedVerifiedEmployees(pageNumber, pageSize);
     }
 
     public Project getProjectById(Integer projectId, MyAppUserDetails loggedInUser) {
-        Project project = checkIfProjectExists(projectId);
+        Project project = projectService.checkIfProjectExists(projectId);
         // if the project does not belong to that manager
-        checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
+        projectService.checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         return projectService.getProjectById(projectId);
-    }
-
-    private void checkIfProjectBelongsToManager(Project project, Integer managerId) {
-        if (!project.getManager().getId().equals(managerId))
-            throw new ActionNotAllowedException("Cannot Access this project resource");
     }
 
     public void handleProjectValidationErrors(BindingResult bindingResult) {
@@ -100,15 +81,9 @@ public class ManagerService {
         }
     }
 
-    private Project checkIfProjectExists(Integer projectId) {
-        return projectRepository
-                .findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException("Project with the id '" + projectId + "' not found"));
-    }
-
     public Task createTask(CreateTaskDTO createTaskDTO, MyAppUserDetails loggedInUser, Integer projectId) {
-        Project project = checkIfProjectExists(projectId);
-        checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
+        Project project = projectService.checkIfProjectExists(projectId);
+        projectService.checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         AppUser employee = adminService.checkIfUserExists(createTaskDTO.getUserId());
 
         if (!employee.getRole().equals(UserRole.EMPLOYEE))
@@ -123,8 +98,8 @@ public class ManagerService {
 
 
     public List<Task> getAllProjectTasks(Integer projectId, MyAppUserDetails loggedInUser) {
-        Project project = checkIfProjectExists(projectId);
-        checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
+        Project project = projectService.checkIfProjectExists(projectId);
+        projectService.checkIfProjectBelongsToManager(project, loggedInUser.getUser().getId());
         return taskService.getAllProjectTasks(projectId);
     }
 
@@ -181,5 +156,15 @@ public class ManagerService {
 
     public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser){
         issueService.deleteComment(commentId, loggedInUser);
+    }
+
+    public List<Task> getUserTasks(Integer projectId, Integer userId) {
+        Project project = projectService.checkIfProjectExists(projectId);
+        adminService.checkIfUserExists(userId);
+        return project
+                .getTasks()
+                .stream()
+                .filter(task -> task.getUser().getId().equals(userId))
+                .collect(Collectors.toList());
     }
 }

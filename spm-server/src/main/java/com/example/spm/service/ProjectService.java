@@ -1,6 +1,7 @@
 package com.example.spm.service;
 
 
+import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.ProjectNotFoundException;
 import com.example.spm.exception.RoleNotAcceptableException;
 import com.example.spm.model.dto.CreateProjectDTO;
@@ -14,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,6 +78,15 @@ public class ProjectService {
         return projectRepository
                 .findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project with the id '" + projectId + "' not found"));
+    }
+
+    public boolean projectExistsByName (String projectName) {
+        return projectRepository.existsByName(projectName);
+    }
+
+    public void checkIfProjectBelongsToManager(Project project, Integer managerId) {
+        if (!project.getManager().getId().equals(managerId))
+            throw new ActionNotAllowedException("Cannot Access this project resource");
     }
 
 }

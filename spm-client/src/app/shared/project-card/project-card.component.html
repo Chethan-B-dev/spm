@@ -6,7 +6,7 @@
       </button>
 
       <mat-card-title class="mb-3 push-down">
-        {{ project.name }}
+        {{ project.name }} - {{ project.id }}
       </mat-card-title>
     </div>
     <button
@@ -21,16 +21,14 @@
 
   <mat-chip-list aria-label="Fish selection">
     <mat-chip color="primary" selected>{{
-      project.status | titlecase
+      project.status.replace("_", " ") | titlecase
     }}</mat-chip>
     <mat-chip color="warn" selected
       >Deadline - {{ project.toDate | date }}</mat-chip
     >
     <mat-chip
       matTooltip="click here to view employees"
-      (click)="
-        project.users?.length > 0 && openShowEmployeesDialog(project.users)
-      "
+      (click)="openShowEmployeesDialog(project)"
       >Employees - {{ project.users?.length }}</mat-chip
     >
     <mat-chip>Tasks - {{ project.tasks?.length }}</mat-chip>

@@ -29,6 +29,16 @@ export enum TaskStatus {
   COMPLETE = "COMPLETE",
 }
 
+export interface TaskStatistics {
+  [status: string]: number;
+}
+
+export const TaskStatusOptions = [
+  TaskStatus.CREATED,
+  TaskStatus.IN_PROGRESS,
+  TaskStatus.COMPLETE,
+];
+
 export enum TaskPriority {
   LOW = "LOW",
   MEDIUM = "MEDIUM",
