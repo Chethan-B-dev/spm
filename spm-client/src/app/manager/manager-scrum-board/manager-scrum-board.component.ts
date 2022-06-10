@@ -50,6 +50,10 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  goBack(): void {
+    window.history.go(-1);
+  }
+
   createTodo(): void {
     const dialogConfig = new MatDialogConfig();
 

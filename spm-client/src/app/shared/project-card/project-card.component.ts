@@ -7,7 +7,11 @@ import {
   OnInit,
   Output,
 } from "@angular/core";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import {
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+} from "@angular/material/dialog";
 import { Router } from "@angular/router";
 
 // rxjs
@@ -25,6 +29,8 @@ import { SnackbarService } from "../services/snackbar.service";
 // interfaces
 import { IProject } from "../interfaces/project.interface";
 import { IAppUser } from "../interfaces/user.interface";
+import { TaskStatistics } from "../interfaces/task.interface";
+import { getProjectProgress } from "../interfaces/todo.interface";
 
 @Component({
   selector: "app-project-card",
@@ -38,10 +44,11 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   @Input() showAddEmps: boolean = false;
   @Input() showIssueStats: boolean = false;
   @Input() showViewDetailsButton: boolean = true;
+  @Output() showIssues: EventEmitter<void> = new EventEmitter<void>();
   users$?: Observable<IAppUser[]> | undefined;
   employees: IAppUser[] = [];
-  private readonly destroy$ = new Subject();
-  @Output() showIssues: EventEmitter<void> = new EventEmitter<void>();
+  projectProgress: number;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     public dialog: MatDialog,
@@ -59,6 +66,11 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
         })
       );
     }
+    this.projectProgress = getProjectProgress(this.project.tasks);
+  }
+
+  scrollToBottom(): void {
+    window.scrollTo(0, document.body.scrollHeight);
   }
 
   toggleShowIssues(): void {
@@ -118,7 +130,6 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   openShowEmployeesDialog(project: IProject): void {
-    console.log("coming here");
     if (!project.users.length) {
       this.snackbarService.showSnackBar(
         "Please Add Employees to the project first"
@@ -126,7 +137,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const dialogConfig = new MatDialogConfig();
+    const dialogConfig: MatDialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
@@ -134,7 +145,10 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     dialogConfig.data = project;
 
-    const dialogRef = this.dialog.open(ShowEmployeesComponent, dialogConfig);
+    const dialogRef: MatDialogRef<ShowEmployeesComponent> = this.dialog.open(
+      ShowEmployeesComponent,
+      dialogConfig
+    );
 
     dialogRef
       .afterClosed()

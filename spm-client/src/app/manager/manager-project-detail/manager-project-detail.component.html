@@ -46,6 +46,10 @@
           </mat-card-actions>
         </mat-card>
         <!-- issue end -->
+
+        <mat-card *ngIf="!project.issues.length"
+          >No issues found for this project</mat-card
+        >
       </div>
     </div>
   </div>

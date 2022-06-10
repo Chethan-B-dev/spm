@@ -7,17 +7,38 @@
 
 <mat-card class="mx-3 my-3">
   <div class="card-body">
-    <mat-card-title>Task Name: {{ task.name }}</mat-card-title>
+    <div class="left">
+      <button *ngIf="showBackBtn" mat-icon-button (click)="goBack()">
+        <mat-icon>keyboard_backspace</mat-icon>
+      </button>
+      <mat-card-title class="push-down"
+        >Task Name: {{ task.name }}</mat-card-title
+      >
+    </div>
     <mat-chip-list>
-      <mat-chip color="primary" selected>{{
-        task.status | titlecase
-      }}</mat-chip>
+      <mat-chip
+        color="primary"
+        selected
+        [matTooltip]="'Task Status - ' + task.status"
+        >{{ task.status | titlecase }}</mat-chip
+      >
       <mat-chip color="warn" selected
         >Deadline - {{ task.deadLine | date }}</mat-chip
       >
       <mat-chip>Assignee - {{ task.user?.username }}</mat-chip>
       <mat-chip>Created date - {{ task.createdDate | date }}</mat-chip>
-      <mat-chip>{{ task.priority | titlecase }}</mat-chip>
+      <mat-chip *ngIf="task.priority === 'LOW'" matTooltip="Low Priority"
+        ><mat-icon>keyboard_arrow_down</mat-icon>
+        {{ task.priority | titlecase }}</mat-chip
+      >
+      <mat-chip *ngIf="task.priority === 'MEDIUM'" matTooltip="Medium Priority"
+        ><mat-icon>unfold_more</mat-icon
+        >{{ task.priority | titlecase }}</mat-chip
+      >
+      <mat-chip *ngIf="task.priority === 'HIGH'" matTooltip="High Priority"
+        ><mat-icon>keyboard_arrow_up</mat-icon
+        >{{ task.priority | titlecase }}</mat-chip
+      >
     </mat-chip-list>
   </div>
   <mat-card>

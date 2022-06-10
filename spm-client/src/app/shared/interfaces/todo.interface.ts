@@ -1,4 +1,4 @@
-import { ITask } from "./task.interface";
+import { ITask, TaskStatus } from "./task.interface";
 
 export interface ITodo {
   id: number;
@@ -30,10 +30,18 @@ export function getTodoStatistics(todos: ITodo[]): TodoStatistics {
     IN_PROGRESS: 0,
     DONE: 0,
   };
-
   todos.forEach((todo) => {
     todoStatistics[todo.status] += 1;
   });
 
   return todoStatistics;
+}
+
+export function getProjectProgress(tasks: ITask[]): number {
+  let completedTasks: number = 0;
+  tasks.forEach((task: ITask) => {
+    if (task.status === TaskStatus.COMPLETE) completedTasks += 1;
+  });
+  if (!completedTasks) return 0;
+  return (completedTasks / tasks.length) * 100;
 }

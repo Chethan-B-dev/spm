@@ -22,7 +22,7 @@ import { stopLoading } from "src/app/shared/utility/loading";
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   currentUserPageNumber: number = 1;
-  isLoadingSubject = new BehaviorSubject<boolean>(true);
+  private isLoadingSubject = new BehaviorSubject<boolean>(true);
   isLoading$ = this.isLoadingSubject.asObservable();
   loadMore$: Observable<boolean>;
   projects$: Observable<IProject[]>;
@@ -34,13 +34,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private snackbarService: SnackbarService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.managerService.changeUserPageNumber(this.currentUserPageNumber);
     this.managerService.loadMoreUsers();
 
     this.projects$ = this.managerService.projectsWithAdd$.pipe(
       takeUntil(this.destroy$),
-      tap((_) => this.isLoadingSubject.next(false)),
+      tap((_) => stopLoading(this.isLoadingSubject)),
       catchError((err) => {
         stopLoading(this.isLoadingSubject);
         this.snackbarService.showSnackBar(err);

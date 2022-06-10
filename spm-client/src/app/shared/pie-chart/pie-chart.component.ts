@@ -1,7 +1,10 @@
+import { not } from "@angular/compiler/src/output/output_ast.js";
 import { Component, Input, OnInit } from "@angular/core";
 import * as CanvasJS from "../../../assets/canvasjs.min.js";
 import {
   getTodoStatistics,
+  TodoStatistics,
+  TodoStatus,
   TodoStatusOptions,
 } from "../interfaces/todo.interface.js";
 import { DataType, myTitleCase, PieData } from "../utility/common.js";
@@ -14,12 +17,14 @@ import { DataType, myTitleCase, PieData } from "../utility/common.js";
 export class PieChartComponent implements OnInit {
   @Input()
   pieData: PieData<any>;
-  stats: any;
+  todoStats: TodoStatistics;
 
   constructor() {}
 
   ngOnInit() {
-    this.stats = getTodoStatistics(this.pieData.data);
+    if (this.pieData.type === DataType.TODO) {
+      this.todoStats = getTodoStatistics(this.pieData.data);
+    }
 
     const chart = new CanvasJS.Chart("chartContainer", {
       theme: "light1",
@@ -42,12 +47,17 @@ export class PieChartComponent implements OnInit {
     chart.render();
   }
 
-  private pieChartData(): Array<{ y: number; name: string }> {
-    const pieData: Array<{ y: number; name: string }> = [];
+  private pieChartData(): { y: number; name: string }[] {
+    const pieData: { y: number; name: string }[] = [];
     if (this.pieData.type === DataType.TODO) {
-      TodoStatusOptions.forEach((todoStatus) => {
+      const noTodos: boolean = TodoStatusOptions.every(
+        (todoStatus) => this.todoStats[todoStatus] === 0
+      );
+      if (noTodos)
+        return [{ y: 100, name: "No Todos have been added for this task yet" }];
+      TodoStatusOptions.forEach((todoStatus: TodoStatus) => {
         pieData.push({
-          y: this.stats[todoStatus],
+          y: this.todoStats[todoStatus],
           name: todoStatus.replace("_", " "),
         });
       });

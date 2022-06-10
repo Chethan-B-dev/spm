@@ -45,6 +45,15 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     let projectName: string = this.createProjectForm.value.name;
     let projectDescription: string = this.createProjectForm.value.description;
     let projectDeadLine: Date = this.createProjectForm.value.toDate;
+
+    if (new Date().getTime() > projectDeadLine.getTime()) {
+      console.log("came inside");
+      this.snackbarService.showSnackBar(
+        "Project deadline cannot precede current date"
+      );
+      return;
+    }
+
     this.managerService
       .createProject(projectName, projectDescription, projectDeadLine)
       .pipe(

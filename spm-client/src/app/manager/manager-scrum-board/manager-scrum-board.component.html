@@ -8,7 +8,15 @@
   <mat-card class="mx-3 my-2">
     <div class="row">
       <div class="col-3">
-        <mat-card-title>{{ task.name }} Scrum Board</mat-card-title>
+        <div class="left">
+          <button mat-icon-button (click)="goBack()">
+            <mat-icon>keyboard_backspace</mat-icon>
+          </button>
+          <mat-card-title class="push-down"
+            >{{ task.name }} Scrum Board</mat-card-title
+          >
+        </div>
+
         <mat-card-subtitle
           >Assignee - {{ task.user?.username }}</mat-card-subtitle
         >

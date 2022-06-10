@@ -10,12 +10,17 @@ import { DataType, PieData } from "../utility/common";
 })
 export class TaskCardComponent implements OnInit {
   @Input() task: ITask;
+  @Input() showBackBtn: boolean;
 
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit(): void {}
 
   get pieChartData(): PieData<ITodo> {
     return { type: DataType.TODO, data: this.task.todos } as PieData<ITodo>;
+  }
+
+  goBack(): void {
+    window.history.go(-1);
   }
 }

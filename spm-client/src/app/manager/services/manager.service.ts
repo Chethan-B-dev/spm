@@ -5,7 +5,6 @@ import { Injectable } from "@angular/core";
 import {
   BehaviorSubject,
   combineLatest,
-  forkJoin,
   merge,
   Observable,
   of,
@@ -20,7 +19,6 @@ import {
   shareReplay,
   switchMap,
   tap,
-  withLatestFrom,
 } from "rxjs/operators";
 import { IIssue } from "src/app/shared/interfaces/issue.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
@@ -90,10 +88,11 @@ export class ManagerService {
     this.projects$,
     this.projectInsertedAction$
   ).pipe(
-    scan(
-      (acc, value) => (value instanceof Array ? [...value] : [value, ...acc]),
-      [] as IProject[]
-    ),
+    scan((acc: IProject[], value: IProject) => {
+      if (value instanceof Array) return [...value];
+      value.tasks = [];
+      return [value, ...acc];
+    }, [] as IProject[]),
     shareReplay(1),
     catchError(handleError)
   );
@@ -224,13 +223,12 @@ export class ManagerService {
 
   addEmployees(projectId: number, employees: IAppUser[]): Observable<IProject> {
     const userIds = employees.map((employee) => employee.id);
-    const requestBody = {
-      userIds,
-    };
     return this.http
       .put<IProject>(
         `${this.managerUrl}/assign-user/${projectId}`,
-        requestBody,
+        {
+          userIds,
+        },
         {
           headers: this.headers,
         }
@@ -273,13 +271,14 @@ export class ManagerService {
     taskRequestDTO: ITaskRequestDTO,
     projectId: number
   ): Observable<ITask> {
-    const requestBody = {
-      ...taskRequestDTO,
-    };
     return this.http
-      .post<ITask>(`${this.managerUrl}/${projectId}/create-task`, requestBody, {
-        headers: this.headers,
-      })
+      .post<ITask>(
+        `${this.managerUrl}/${projectId}/create-task`,
+        taskRequestDTO,
+        {
+          headers: this.headers,
+        }
+      )
       .pipe(
         tap((task) => this.addTask(task)),
         catchError(handleError)
@@ -287,13 +286,16 @@ export class ManagerService {
   }
 
   createTodo(todo: { todo: string }, taskId: number): Observable<ITodo> {
-    const requestBody = {
-      todoName: todo.todo,
-    };
     return this.http
-      .post<ITodo>(`${this.managerUrl}/${taskId}/create-todo`, requestBody, {
-        headers: this.headers,
-      })
+      .post<ITodo>(
+        `${this.managerUrl}/${taskId}/create-todo`,
+        {
+          todoName: todo.todo,
+        },
+        {
+          headers: this.headers,
+        }
+      )
       .pipe(
         tap(() => this.refresh()),
         catchError(handleError)
