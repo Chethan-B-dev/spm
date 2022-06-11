@@ -15,15 +15,16 @@ import { DataType, myTitleCase, PieData } from "../utility/common.js";
   styleUrls: ["./pie-chart.component.scss"],
 })
 export class PieChartComponent implements OnInit {
-  @Input()
-  pieData: PieData<any>;
+  @Input() pieData: PieData<any>;
   todoStats: TodoStatistics;
 
   constructor() {}
 
   ngOnInit() {
-    if (this.pieData.type === DataType.TODO) {
-      this.todoStats = getTodoStatistics(this.pieData.data);
+    switch (this.pieData.type) {
+      case DataType.TODO:
+        this.todoStats = getTodoStatistics(this.pieData.data);
+        break;
     }
 
     const chart = new CanvasJS.Chart("chartContainer", {
@@ -54,7 +55,12 @@ export class PieChartComponent implements OnInit {
         (todoStatus) => this.todoStats[todoStatus] === 0
       );
       if (noTodos)
-        return [{ y: 100, name: "No Todos have been added for this task yet" }];
+        return [
+          {
+            y: 100,
+            name: `No ${myTitleCase(this.pieData.type)}'s have been added yet`,
+          },
+        ];
       TodoStatusOptions.forEach((todoStatus: TodoStatus) => {
         pieData.push({
           y: this.todoStats[todoStatus],

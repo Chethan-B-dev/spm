@@ -1,5 +1,7 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
+import { AdminGuard } from "./admin/admin.guard";
+import { AuthGuard } from "./auth/auth.guard";
 import { LoginComponent } from "./auth/login/login.component";
 import { SignupComponent } from "./auth/signup/signup.component";
 import { EmployeeDashboardComponent } from "./employee/employee-dashboard/employee-dashboard.component";
@@ -10,19 +12,21 @@ import { DashboardComponent } from "./manager/dashboard/dashboard.component";
 import { ManagerProjectDetailComponent } from "./manager/manager-project-detail/manager-project-detail.component";
 import { ManagerScrumBoardComponent } from "./manager/manager-scrum-board/manager-scrum-board.component";
 import { ManagerTaskDetailComponent } from "./manager/manager-task-detail/manager-task-detail.component";
+import { ManagerGuard } from "./manager/manager.guard";
 import { AdminComponent } from "./shared/admin/admin.component";
 import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile.component";
 
 const routes: Routes = [
-  { path: "", component: LoginComponent },
-  { path: "login", component: LoginComponent },
+  { path: "", component: LoginComponent, canActivate: [AuthGuard] },
+  { path: "login", component: LoginComponent, canActivate: [AuthGuard] },
   { path: "signup", component: SignupComponent },
-  { path: "admin", component: AdminComponent },
+  { path: "admin", component: AdminComponent, canActivate: [AdminGuard] },
   { path: "profile", component: EditProfileComponent },
   { path: "project-detail/:id", component: ManagerProjectDetailComponent },
   {
     path: "manager",
     component: DashboardComponent,
+    canActivate: [ManagerGuard],
   },
   { path: "task-detail/:id", component: ManagerTaskDetailComponent },
   { path: "employee-dashboard", component: EmployeeDashboardComponent },
@@ -43,5 +47,6 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
+  providers: [ManagerGuard, AdminGuard, AuthGuard],
 })
 export class AppRoutingModule {}

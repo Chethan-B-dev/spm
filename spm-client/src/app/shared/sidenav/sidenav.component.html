@@ -6,11 +6,9 @@
 
     <mat-divider></mat-divider>
 
-    <mat-nav-list *ngIf="!isAuthenticated">
-      <a mat-list-item [routerLink]="'/login'"> Login</a>
-      <a mat-list-item [routerLink]="'/signup'"> Signup </a>
+    <mat-nav-list *ngIf="isAdmin$ | async">
       <a mat-list-item [routerLink]="'/admin'"> Admin </a>
-      <a mat-list-item [routerLink]="'/manager'"> Manager </a>
+      <!-- <a mat-list-item [routerLink]="'/manager'"> Manager </a>
       <a mat-list-item [routerLink]="'/employee-dashboard'"> Employee </a>
       <a mat-list-item [routerLink]="'/employee-project-detail'">
         Employee Project Detail
@@ -23,14 +21,14 @@
       </a>
       <a mat-list-item [routerLink]="'/manager-issue-detail'">
         Manager Scrum Board
-      </a>
+      </a> -->
     </mat-nav-list>
 
-    <mat-nav-list *ngIf="isManager">
+    <mat-nav-list *ngIf="isManager$ | async">
       <a mat-list-item (click)="openAddProjectDialog()">
         <mat-icon class="mr-2">work</mat-icon> Add Project
       </a>
-      <a mat-list-item [routerLink]="'/manager'">
+      <!-- <a mat-list-item [routerLink]="'/manager'">
         <mat-icon class="mr-2">dashboard</mat-icon> Reports Dashboard
       </a>
       <a mat-list-item [routerLink]="'/manager'">
@@ -51,12 +49,59 @@
       </a>
       <a mat-list-item [routerLink]="'/manager-scrum-board'">
         Manager Scrum Board
-      </a>
+      </a> -->
+    </mat-nav-list>
+
+    <mat-nav-list *ngIf="!(isLoggedIn$ | async)">
+      <a mat-list-item [routerLink]="'/login'"> Login </a>
+      <a mat-list-item [routerLink]="'/signup'"> Signup </a>
     </mat-nav-list>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <app-top-nav (sideNav)="toggleSideNav()"></app-top-nav>
+    <mat-toolbar>
+      <button
+        mat-icon-button
+        class="example-icon"
+        aria-label="expand to view side navigation bar"
+      >
+        <mat-icon (click)="toggleSideNav()">menu</mat-icon>
+      </button>
+      <span class="px-2">SPM</span>
+      <button mat-button [routerLink]="'/manager'">
+        <mat-icon>home</mat-icon> Home
+      </button>
+
+      <button mat-button [matMenuTriggerFor]="projects">Projects</button>
+      <mat-menu #projects="matMenu">
+        <button mat-menu-item>Project 1</button>
+        <button mat-menu-item>Project 2</button>
+      </mat-menu>
+
+      <button matTooltip="Notifications" mat-icon-button class="mr-4">
+        <mat-icon matBadge="15" matBadgeColor="warn"
+          >notification_important</mat-icon
+        >
+      </button>
+
+      <mat-form-field class="example-full-width mx-2" appearance="fill">
+        <mat-label>Search</mat-label>
+        <input matInput placeholder="" />
+      </mat-form-field>
+
+      <span class="example-spacer"></span>
+      <button mat-button routerLink="/profile" *ngIf="isLoggedIn$ | async">
+        <mat-icon>person</mat-icon>
+        Profile
+      </button>
+      <button mat-button (click)="logout()" *ngIf="isLoggedIn$ | async">
+        <mat-icon>exit_to_app</mat-icon> Logout
+      </button>
+      <ng-container *ngIf="!(isLoggedIn$ | async)">
+        <button mat-button routerLink="/login">Login</button>
+        <button mat-button routerLink="/signup">Register</button>
+      </ng-container>
+    </mat-toolbar>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

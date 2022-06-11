@@ -34,12 +34,14 @@ public class AppUserService {
         if (userRegisterDTO.getUserRole() != null && userRegisterDTO.getUserRole().equals(UserRole.ADMIN))
             throw new ActionNotAllowedException("Cannot register as an admin");
 
+        checkIfEmailAlreadyExists(userRegisterDTO.getEmail());
+
         AppUser user = AppUser.builder()
                 .email(userRegisterDTO.getEmail())
                 .username(userRegisterDTO.getUsername())
                 .password(passwordEncoder.encode(userRegisterDTO.getPassword()))
                 // todo: change this later to unverified
-                .status(UserStatus.VERIFIED)
+                .status(UserStatus.UNVERIFIED)
                 .phone(userRegisterDTO.getPhone())
                 .role(userRegisterDTO.getUserRole())
                 .build();
@@ -70,6 +72,11 @@ public class AppUserService {
         if (myAppUserDetails == null)
             throw new UserNotLoggedInException("Please Log in");
         return myAppUserDetails;
+    }
+
+    public void checkIfEmailAlreadyExists(String email) {
+        if (appUserRepository.existsByEmail(email))
+            throw new ActionNotAllowedException("User with the email " + email + " already exists");
     }
 
     public static void checkIfUserIsManager(MyAppUserDetails myAppUserDetails) {

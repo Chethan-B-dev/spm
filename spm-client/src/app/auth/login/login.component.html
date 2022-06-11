@@ -1,27 +1,59 @@
 <mat-card>
   <mat-card-title>Login</mat-card-title>
-<mat-card-content>
-<form>
-<p>
-  <mat-form-field>
-    <input type="text" matInput placeholder="Username" formControlName="username">
-  </mat-form-field>
-</p>
+  <mat-card-content>
+    <form [formGroup]="loginForm">
+      <p>
+        <mat-form-field>
+          <input
+            type="email"
+            matInput
+            placeholder="Email"
+            formControlName="email"
+          />
+          <mat-hint
+            style="color: red"
+            *ngIf="
+              (this.loginForm.get('email').dirty ||
+                this.loginForm.get('email').touched) &&
+              this.loginForm.get('email').errors?.required
+            "
+          >
+            email is required
+          </mat-hint>
+        </mat-form-field>
+      </p>
 
-<p>
-  <mat-form-field>
-    <input type="password" matInput placeholder="Password" formControlName="password">
-  </mat-form-field>
-</p>
+      <p>
+        <mat-form-field>
+          <input
+            type="password"
+            matInput
+            placeholder="Password"
+            formControlName="password"
+          />
+          <mat-hint
+            style="color: red"
+            *ngIf="
+              (this.loginForm.get('password').dirty ||
+                this.loginForm.get('password').touched) &&
+              this.loginForm.get('password').errors?.required
+            "
+          >
+            password is required
+          </mat-hint>
+        </mat-form-field>
+      </p>
 
-<p class="error">
-  error
-</p>
-
-<div class="button mt-5">
-  <button type="submit" mat-button>Login</button>
-</div>
-
-</form>
-</mat-card-content>
+      <div class="button mt-5">
+        <button
+          type="submit"
+          mat-button
+          [disabled]="this.loginForm.invalid"
+          (click)="login()"
+        >
+          Login
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
 </mat-card>

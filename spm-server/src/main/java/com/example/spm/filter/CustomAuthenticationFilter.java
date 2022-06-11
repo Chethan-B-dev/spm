@@ -1,6 +1,7 @@
 package com.example.spm.filter;
 
 import com.example.spm.model.dto.BadCredentialsResponseDTO;
+import com.example.spm.model.dto.LoginResponseDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.service.AppUserService;
 import com.example.spm.service.MyAppUserDetails;
@@ -14,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -67,7 +67,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         }
         AppUser user = userService.getUser(email);
         if (user == null)
-            throw new AuthenticationServiceException("Bad Credentials");
+            throw new AuthenticationServiceException("email or password is incorrect");
         MyAppUserDetails myUserDetails = new MyAppUserDetails(user);
         UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(myUserDetails.getUsername(), password, myUserDetails.getAuthorities());
@@ -100,11 +100,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             Authentication authentication
     ) throws IOException, ServletException {
 
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        String token = jwtTokenUtil.generateToken(user);
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("token", token);
+        MyAppUserDetails myAppUserDetails = (MyAppUserDetails) authentication.getPrincipal();
+        String token = jwtTokenUtil.generateToken(myAppUserDetails);
+        LoginResponseDTO loginResponseDTO = LoginResponseDTO
+                .builder()
+                .token(token)
+                .user(myAppUserDetails.getUser())
+                .build();
         response.setContentType(APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(), tokens);
+        objectMapper.writeValue(response.getOutputStream(), loginResponseDTO);
     }
 }

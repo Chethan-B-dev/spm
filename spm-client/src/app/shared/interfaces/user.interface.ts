@@ -13,6 +13,24 @@ export interface IAppUserRanking {
   ranking: number;
 }
 
+export interface ILoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface ISignUpRequest {
+  username: string;
+  email: string;
+  password: string;
+  userRole: string;
+  phone: string;
+}
+
+export interface ILoginResponse {
+  token: string;
+  user: IAppUser;
+}
+
 export enum UserStatus {
   VERIFIED = "VERIFIED",
   UNVERIFIED = "UNVERIFIED",
