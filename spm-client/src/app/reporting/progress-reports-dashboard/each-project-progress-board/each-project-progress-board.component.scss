@@ -1,0 +1,19 @@
+// @import '../../../../../node_modules/highcharts/css/highcharts.css'
+
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html{
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  background-color: #e0e5ef;
+}
