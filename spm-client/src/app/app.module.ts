@@ -8,9 +8,10 @@ import { SharedModule } from "./shared/shared.module";
 import { AuthModule } from "./auth/auth.module";
 import { ManagerModule } from "./manager/manager.module";
 import { EmployeeModule } from "./employee/employee.module";
+import { ReportingModule } from "./reporting/reporting.module";
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -19,6 +20,7 @@ import { EmployeeModule } from "./employee/employee.module";
     AuthModule,
     ManagerModule,
     EmployeeModule,
+    ReportingModule
   ],
   providers: [],
   bootstrap: [AppComponent],

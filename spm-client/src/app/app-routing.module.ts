@@ -10,6 +10,7 @@ import { DashboardComponent } from "./manager/dashboard/dashboard.component";
 import { ManagerProjectDetailComponent } from "./manager/manager-project-detail/manager-project-detail.component";
 import { ManagerScrumBoardComponent } from "./manager/manager-scrum-board/manager-scrum-board.component";
 import { ManagerTaskDetailComponent } from "./manager/manager-task-detail/manager-task-detail.component";
+import { ReportsDashboardComponent } from "./reporting/reports-dashboard/reports-dashboard.component";
 import { AdminComponent } from "./shared/admin/admin.component";
 import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile.component";
 
@@ -36,6 +37,7 @@ const routes: Routes = [
     path: "manager-scrum-board/:taskId",
     component: ManagerScrumBoardComponent,
   },
+  { path: "reporting-dashboard", component: ReportsDashboardComponent },
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];
