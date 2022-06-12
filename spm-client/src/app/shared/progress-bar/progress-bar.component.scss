@@ -42,18 +42,3 @@
   clip: rect(0px, 75px, 150px, 0px);
   background-color: #227ded;
 }
-
-.mask.full,
-.circle .fill {
-  animation: fill ease-in-out 3s;
-  transform: rotate(135deg);
-}
-
-@keyframes fill {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(135deg);
-  }
-}

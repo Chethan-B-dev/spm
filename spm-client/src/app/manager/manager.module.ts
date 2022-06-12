@@ -16,6 +16,8 @@ import { BoardDndComponent } from "./manager-scrum-board/board-dnd/board-dnd.com
 import { BoardDndListComponent } from "./manager-scrum-board/board-dnd-list/board-dnd-list.component";
 import { IssueCardComponent } from "./manager-scrum-board/issue-card/issue-card.component";
 import { CreateTodoComponent } from "./dialogs/create-todo/create-todo.component";
+import { ManagerRoutingModule } from "./manager-routing.module";
+
 @NgModule({
   declarations: [
     DashboardComponent,
@@ -43,6 +45,7 @@ import { CreateTodoComponent } from "./dialogs/create-todo/create-todo.component
     RouterModule,
     ReactiveFormsModule,
     MaterialModule,
+    ManagerRoutingModule,
   ],
 })
 export class ManagerModule {}

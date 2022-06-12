@@ -1,47 +1,124 @@
 <mat-card>
   <mat-card-title>Signup</mat-card-title>
-<mat-card-content>
-<form>
-<p>
-  <mat-form-field>
-    <input type="text" matInput placeholder="Username" formControlName="username">
-  </mat-form-field>
-</p>
+  <mat-card-content>
+    <form [formGroup]="signupForm">
+      <p>
+        <mat-form-field>
+          <input
+            type="text"
+            matInput
+            placeholder="Username"
+            formControlName="username"
+          />
+          <mat-hint
+            style="color: red"
+            *ngIf="
+              (this.signupForm.get('username').dirty ||
+                this.signupForm.get('username').touched) &&
+              this.signupForm.get('username').errors?.required
+            "
+          >
+            username is required
+          </mat-hint>
+        </mat-form-field>
+      </p>
 
-<p>
-  <mat-form-field>
-    <input type="password" matInput placeholder="Password" formControlName="password">
-  </mat-form-field>
-</p>
+      <p>
+        <mat-form-field>
+          <input
+            type="email"
+            matInput
+            placeholder="Email"
+            formControlName="email"
+          />
+          <mat-hint
+            style="color: red"
+            *ngIf="
+              (this.signupForm.get('email').dirty ||
+                this.signupForm.get('email').touched) &&
+              this.signupForm.get('email').errors?.required
+            "
+          >
+            email is required
+          </mat-hint>
+        </mat-form-field>
+      </p>
 
-<p>
-  <mat-form-field>
-    <mat-label>Role</mat-label>
-    <mat-select>
-      <mat-option value="manager">Manager</mat-option>
-      <mat-option value="employee">Employee</mat-option>
-    </mat-select>
-  </mat-form-field>
-</p>
+      <p>
+        <mat-form-field>
+          <input
+            type="password"
+            matInput
+            placeholder="Password"
+            formControlName="password"
+          />
+          <mat-hint
+            style="color: red"
+            *ngIf="
+              (this.signupForm.get('password').dirty ||
+                this.signupForm.get('password').touched) &&
+              this.signupForm.get('password').errors?.required
+            "
+          >
+            password is required
+          </mat-hint>
+        </mat-form-field>
+      </p>
 
-<p>
-<mat-form-field class="example-full-width">
-    <input type="tel" matInput placeholder="Phone number" required pattern="[6-9]\\d{9}" maxlength="10">
-    <mat-hint>lol</mat-hint>
-      <mat-error>
-        Phone number is <strong>required</strong>
-    </mat-error>
-</mat-form-field>
-</p>
+      <p>
+        <mat-form-field>
+          <mat-label>Role</mat-label>
+          <mat-select formControlName="userRole">
+            <mat-option value="MANAGER">Manager</mat-option>
+            <mat-option value="EMPLOYEE">Employee</mat-option>
+          </mat-select>
+          <mat-hint
+            style="color: red"
+            *ngIf="
+              (this.signupForm.get('userRole').dirty ||
+                this.signupForm.get('userRole').touched) &&
+              this.signupForm.get('userRole').errors?.required
+            "
+          >
+            Role is required
+          </mat-hint>
+        </mat-form-field>
+      </p>
 
-<p class="error">
-  error
-</p>
+      <p>
+        <mat-form-field class="example-full-width">
+          <input
+            type="tel"
+            matInput
+            placeholder="Phone number"
+            required
+            maxlength="10"
+            formControlName="phone"
+          />
+          <mat-hint>+91</mat-hint>
+          <mat-hint
+            style="color: red"
+            *ngIf="
+              (this.signupForm.get('phone').dirty ||
+                this.signupForm.get('phone').touched) &&
+              this.signupForm.get('phone').errors?.required
+            "
+          >
+            Phone number is required
+          </mat-hint>
+        </mat-form-field>
+      </p>
 
-<div class="button mt-5">
-  <button type="submit" mat-button>Signup</button>
-</div>
-
-</form>
-</mat-card-content>
+      <div class="button mt-5">
+        <button
+          type="submit"
+          mat-button
+          [disabled]="this.signupForm.invalid"
+          (click)="signup()"
+        >
+          Signup
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
 </mat-card>

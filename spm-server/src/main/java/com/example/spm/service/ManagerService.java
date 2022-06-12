@@ -2,7 +2,6 @@ package com.example.spm.service;
 
 import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.ProjectAlreadyExistsException;
-import com.example.spm.exception.ProjectValidationException;
 import com.example.spm.model.dto.*;
 import com.example.spm.model.entity.*;
 import com.example.spm.model.enums.UserRole;
@@ -72,12 +71,12 @@ public class ManagerService {
         return projectService.getProjectById(projectId);
     }
 
-    public void handleProjectValidationErrors(BindingResult bindingResult) {
+    public void handleValidationErrors(BindingResult bindingResult) {
         StringBuilder errors = new StringBuilder();
         if (bindingResult.hasFieldErrors()) {
             bindingResult.getFieldErrors().forEach(fieldError -> errors.append(fieldError.getField()).append(" : ")
                     .append(fieldError.getDefaultMessage()).append(","));
-            throw new ProjectValidationException(errors.substring(0, errors.length() - 1));
+            throw new ActionNotAllowedException(errors.substring(0, errors.length() - 1));
         }
     }
 

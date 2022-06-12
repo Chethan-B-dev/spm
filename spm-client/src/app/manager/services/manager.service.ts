@@ -66,18 +66,18 @@ export class ManagerService {
   loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
 
   // todo: headers for temp testing of jwt, later replace with HTTP interceptor
-  headers: HttpHeaders = new HttpHeaders({
-    "Content-Type": "application/json",
-    Authorization:
-      "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjU1NTI4MjA3LCJpYXQiOjE2NTQ0NDgyMDd9.5Q_E-hiVNUQSdDHMSTBn2Z4sDQQkKV2ndJszN75Q6KrzCHV8XpJl7zmx3RA37Nf3JQHR0Qy91_Yw7vovc9qHNQ",
-  });
+  // headers: HttpHeaders = new HttpHeaders({
+  //   "Content-Type": "application/json",
+  //   Authorization:
+  //     "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjU1NTI4MjA3LCJpYXQiOjE2NTQ0NDgyMDd9.5Q_E-hiVNUQSdDHMSTBn2Z4sDQQkKV2ndJszN75Q6KrzCHV8XpJl7zmx3RA37Nf3JQHR0Qy91_Yw7vovc9qHNQ",
+  // });
 
   refresh(): void {
     this.refreshSubject.next();
   }
 
   projects$: Observable<IProject[]> = this.http
-    .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
+    .get<IProject[]>(`${this.managerUrl}/projects`)
     .pipe(
       tap(() => console.log("called all projects")),
       shareReplay(1),
@@ -160,25 +160,19 @@ export class ManagerService {
 
   getAllTasks(projectId: number): Observable<ITask[]> {
     return this.http
-      .get<ITask[]>(`${this.managerUrl}/tasks/${projectId}`, {
-        headers: this.headers,
-      })
+      .get<ITask[]>(`${this.managerUrl}/tasks/${projectId}`)
       .pipe(catchError(handleError));
   }
 
   getTaskById(taskId: number): Observable<ITask> {
     return this.http
-      .get<ITask>(`${this.managerUrl}/task/${taskId}`, {
-        headers: this.headers,
-      })
+      .get<ITask>(`${this.managerUrl}/task/${taskId}`)
       .pipe(catchError(handleError));
   }
 
   getAllIssues(projectId: number): Observable<IIssue[]> {
     return this.http
-      .get<IIssue[]>(`${this.managerUrl}/issues/${projectId}`, {
-        headers: this.headers,
-      })
+      .get<IIssue[]>(`${this.managerUrl}/issues/${projectId}`)
       .pipe(catchError(handleError));
   }
 
@@ -190,7 +184,6 @@ export class ManagerService {
     return this.http
       .get<IPagedData<IAppUser>>(`${this.managerUrl}/employees`, {
         params: params,
-        headers: this.headers,
       })
       .pipe(catchError(handleError));
   }
@@ -209,30 +202,22 @@ export class ManagerService {
 
   getAllProjects(): Observable<IProject[]> {
     return this.http
-      .get<IProject[]>(`${this.managerUrl}/projects`, { headers: this.headers })
+      .get<IProject[]>(`${this.managerUrl}/projects`)
       .pipe(catchError(handleError));
   }
 
   getAllEmployees(projectId: number): Observable<IAppUser[]> {
     return this.http
-      .get<IAppUser[]>(`${this.managerUrl}/employees/${projectId}`, {
-        headers: this.headers,
-      })
+      .get<IAppUser[]>(`${this.managerUrl}/employees/${projectId}`)
       .pipe(catchError(handleError));
   }
 
   addEmployees(projectId: number, employees: IAppUser[]): Observable<IProject> {
     const userIds = employees.map((employee) => employee.id);
     return this.http
-      .put<IProject>(
-        `${this.managerUrl}/assign-user/${projectId}`,
-        {
-          userIds,
-        },
-        {
-          headers: this.headers,
-        }
-      )
+      .put<IProject>(`${this.managerUrl}/assign-user/${projectId}`, {
+        userIds,
+      })
       .pipe(
         tap(() => this.refresh()),
         catchError(handleError)
@@ -241,9 +226,7 @@ export class ManagerService {
 
   getProjectById(projectId: number): Observable<IProject> {
     return this.http
-      .get<IProject>(`${this.managerUrl}/project/${projectId}`, {
-        headers: this.headers,
-      })
+      .get<IProject>(`${this.managerUrl}/project/${projectId}`)
       .pipe(catchError(handleError));
   }
 
@@ -258,9 +241,7 @@ export class ManagerService {
       toDate: projectDeadLine.toISOString(),
     };
     return this.http
-      .post<IProject>(`${this.managerUrl}/create-project`, requestBody, {
-        headers: this.headers,
-      })
+      .post<IProject>(`${this.managerUrl}/create-project`, requestBody)
       .pipe(
         tap((project) => this.addProject(project)),
         catchError(handleError)
@@ -274,10 +255,7 @@ export class ManagerService {
     return this.http
       .post<ITask>(
         `${this.managerUrl}/${projectId}/create-task`,
-        taskRequestDTO,
-        {
-          headers: this.headers,
-        }
+        taskRequestDTO
       )
       .pipe(
         tap((task) => this.addTask(task)),
@@ -287,15 +265,9 @@ export class ManagerService {
 
   createTodo(todo: { todo: string }, taskId: number): Observable<ITodo> {
     return this.http
-      .post<ITodo>(
-        `${this.managerUrl}/${taskId}/create-todo`,
-        {
-          todoName: todo.todo,
-        },
-        {
-          headers: this.headers,
-        }
-      )
+      .post<ITodo>(`${this.managerUrl}/${taskId}/create-todo`, {
+        todoName: todo.todo,
+      })
       .pipe(
         tap(() => this.refresh()),
         catchError(handleError)
@@ -304,9 +276,7 @@ export class ManagerService {
 
   deleteTodo(todoId: number): Observable<void> {
     return this.http
-      .delete<void>(`${this.managerUrl}/delete-todo/${todoId}`, {
-        headers: this.headers,
-      })
+      .delete<void>(`${this.managerUrl}/delete-todo/${todoId}`)
       .pipe(
         tap(() => this.refresh()),
         catchError(handleError)

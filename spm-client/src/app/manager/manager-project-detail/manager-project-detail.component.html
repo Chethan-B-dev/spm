@@ -96,7 +96,7 @@
               <mat-chip-avatar>
                 <mat-icon>person</mat-icon>
               </mat-chip-avatar>
-              {{ task.user.username }} - {{ task.user.id }}
+              {{ task.user.username }}
             </mat-chip>
             <mat-chip color="warn" selected
               >Deadline - {{ task.deadLine | date }}</mat-chip
@@ -109,7 +109,7 @@
             <button
               mat-button
               color="warn"
-              (click)="navigateToTaskDetail(task.id)"
+              [routerLink]="['../../task-detail', task.id]"
             >
               View Details
             </button>

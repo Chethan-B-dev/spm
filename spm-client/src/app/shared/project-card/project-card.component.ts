@@ -12,7 +12,7 @@ import {
   MatDialogConfig,
   MatDialogRef,
 } from "@angular/material/dialog";
-import { Router } from "@angular/router";
+import { Route, Router } from "@angular/router";
 
 // rxjs
 import { EMPTY, Observable, Subject } from "rxjs";
@@ -53,7 +53,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private managerService: ManagerService,
-    private snackbarService: SnackbarService
+    private snackbarService: SnackbarService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -159,5 +160,9 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     const isExpired: boolean =
       new Date().getTime() > new Date(this.project.toDate).getTime();
     return !isExpired;
+  }
+
+  navigateToProjectDetail(): void {
+    this.router.navigate(["manager", "project-detail", this.project.id]);
   }
 }

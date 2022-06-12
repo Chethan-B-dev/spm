@@ -6,7 +6,7 @@
       </button>
 
       <mat-card-title class="mb-3 push-down">
-        {{ project.name }} - {{ project.id }}
+        {{ project.name }}
       </mat-card-title>
     </div>
     <button
@@ -90,9 +90,9 @@
 
   <mat-card-actions *ngIf="showViewDetailsButton">
     <button
-      [routerLink]="['/project-detail', project.id]"
       mat-raised-button
       color="primary"
+      [routerLink]="['project-detail', project.id]"
     >
       View Details
     </button>

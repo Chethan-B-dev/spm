@@ -44,7 +44,7 @@
   <mat-card>
     <app-pie-chart [pieData]="pieChartData"></app-pie-chart>
     <mat-card-actions>
-      <button mat-button [routerLink]="['/manager-scrum-board', task.id]">
+      <button mat-button [routerLink]="['../../todo-detail', task.id]">
         Manage Todos
       </button>
     </mat-card-actions>

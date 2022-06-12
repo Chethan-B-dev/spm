@@ -37,6 +37,7 @@ import { ManagerService } from "../services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { ITask } from "src/app/shared/interfaces/task.interface";
 import { IIssue } from "src/app/shared/interfaces/issue.interface";
+import { relative } from "path";
 
 @Component({
   selector: "app-manager-project-detail",
@@ -109,9 +110,5 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  navigateToTaskDetail(taskId: number): void {
-    this.router.navigate(["task-detail", taskId]);
   }
 }
