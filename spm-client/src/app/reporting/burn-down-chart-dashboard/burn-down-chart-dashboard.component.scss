@@ -1,0 +1,29 @@
+.burndown {
+  width: 95%;
+  min-width: 310px;
+  height: 500px;
+  margin: 0 auto;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+.issue-burndown {
+  width: 55%;
+  min-width: 310px;
+  height: 500px;
+  margin: 10px;
+  border-radius: 10px;
+  padding-left: 35px;
+  float: left;
+}
+
+.tasks-burndown {
+  width: 40%;
+  min-width: 310px;
+  height: 500px;
+  margin: 10px;
+  padding-right: 35px;
+  border-radius: 10px;
+  float: right;
+}
+
