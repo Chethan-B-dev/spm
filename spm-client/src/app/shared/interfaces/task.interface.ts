@@ -24,20 +24,28 @@ export interface ITaskRequestDTO {
 }
 
 export enum TaskStatus {
-  CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
-  COMPLETE = "COMPLETE",
+  COMPLETED = "COMPLETED",
 }
 
 export interface TaskStatistics {
   [status: string]: number;
 }
 
-export const TaskStatusOptions = [
-  TaskStatus.CREATED,
-  TaskStatus.IN_PROGRESS,
-  TaskStatus.COMPLETE,
-];
+export function getTaskStatistics(tasks: ITask[]): TaskStatistics {
+  const TaskStatistics = {
+    [TaskStatus.IN_PROGRESS]: 0,
+    [TaskStatus.COMPLETED]: 0,
+  };
+
+  tasks.forEach((task) => {
+    TaskStatistics[task.status] += 1;
+  });
+
+  return TaskStatistics;
+}
+
+export const TaskStatusOptions = [TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED];
 
 export enum TaskPriority {
   LOW = "LOW",
