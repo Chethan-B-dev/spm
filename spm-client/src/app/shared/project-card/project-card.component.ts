@@ -29,7 +29,10 @@ import { SnackbarService } from "../services/snackbar.service";
 // interfaces
 import { IProject } from "../interfaces/project.interface";
 import { IAppUser } from "../interfaces/user.interface";
-import { TaskStatistics } from "../interfaces/task.interface";
+import {
+  getTaskStatistics,
+  TaskStatistics,
+} from "../interfaces/task.interface";
 import { getProjectProgress } from "../interfaces/todo.interface";
 
 @Component({
@@ -48,6 +51,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   users$?: Observable<IAppUser[]> | undefined;
   employees: IAppUser[] = [];
   projectProgress: number;
+  projectTaskStatistics: TaskStatistics;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -68,6 +72,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       );
     }
     this.projectProgress = getProjectProgress(this.project.tasks);
+    this.projectTaskStatistics = getTaskStatistics(this.project.tasks);
   }
 
   scrollToBottom(): void {

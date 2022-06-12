@@ -6,6 +6,7 @@ import com.example.spm.model.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -23,4 +24,10 @@ public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
 
     boolean existsByEmail(String email);
 
+    @Query(
+            value = "SELECT * FROM app_user a WHERE a.username LIKE %:searchKey%",
+            nativeQuery = true)
+    List<AppUser> getAllUsersWithSearchKey(String searchKey);
+
+//    List<AppUser> findAllByUsernameContaining(String searchKey);
 }

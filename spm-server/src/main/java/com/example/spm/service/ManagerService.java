@@ -7,6 +7,8 @@ import com.example.spm.model.entity.*;
 import com.example.spm.model.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -165,5 +167,24 @@ public class ManagerService {
                 .stream()
                 .filter(task -> task.getUser().getId().equals(userId))
                 .collect(Collectors.toList());
+    }
+
+    public SearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
+        // sanitizing search string
+        searchKey = Jsoup.clean(searchKey.trim(), Safelist.basic());
+        Integer managerId = loggedInUser.getUser().getId();
+        List<Project> projects = projectService.getAllProjectsWithSearchKey(searchKey, managerId);
+        List<Task> tasks = taskService.getAllTasksWithSearchKey(searchKey, managerId);
+        List<Todo> todos = todoService.getAllTasksWithSearchKey(searchKey, managerId);
+        List<Issue> issues = issueService.getAllIssuesWithSearchKey(searchKey, managerId);
+        List<AppUser> appUsers = appUserService.getAllUsersWithSearchKey(searchKey);
+        return SearchResultDTO
+                .builder()
+                .projects(projects)
+                .tasks(tasks)
+                .todos(todos)
+                .issues(issues)
+                .users(appUsers)
+                .build();
     }
 }

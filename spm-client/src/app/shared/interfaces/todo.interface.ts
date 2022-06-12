@@ -40,7 +40,7 @@ export function getTodoStatistics(todos: ITodo[]): TodoStatistics {
 export function getProjectProgress(tasks: ITask[]): number {
   let completedTasks: number = 0;
   tasks.forEach((task: ITask) => {
-    if (task.status === TaskStatus.COMPLETE) completedTasks += 1;
+    if (task.status === TaskStatus.COMPLETED) completedTasks += 1;
   });
   if (!completedTasks) return 0;
   return (completedTasks / tasks.length) * 100;

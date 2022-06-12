@@ -20,8 +20,6 @@ export class ProgressBarComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     const degree: number = +this.value ? (+this.value / 100) * 180 : 0;
-    console.log(degree);
-    // .mask.full,.circle .fill
     const progressBar: HTMLElement = this.elementRef.nativeElement;
     const nodes = progressBar.querySelectorAll(".value");
     for (let index = 0; index < nodes.length; index++) {

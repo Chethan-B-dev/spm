@@ -95,4 +95,7 @@ public class AppUserService {
                 .build();
     }
 
+    public List<AppUser> getAllUsersWithSearchKey(String searchKey) {
+        return appUserRepository.getAllUsersWithSearchKey(searchKey);
+    }
 }

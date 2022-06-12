@@ -22,11 +22,12 @@ import { MatCommonModule } from "@angular/material";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {MatTabsModule} from '@angular/material/tabs';
+import { MatGridListModule } from "@angular/material/grid-list";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { DragDropModule } from "@angular/cdk/drag-drop";
+import { MatExpansionModule } from "@angular/material/expansion";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
 const materialModules = [
   MatToolbarModule,
@@ -54,7 +55,8 @@ const materialModules = [
   MatProgressBarModule,
   DragDropModule,
   MatExpansionModule,
-  MatTabsModule
+  MatTabsModule,
+  MatAutocompleteModule,
 ];
 
 @NgModule({

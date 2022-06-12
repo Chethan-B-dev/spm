@@ -29,7 +29,7 @@ public class TaskService {
                 .project(project)
                 // if task priority is not provided let us default it to LOW
                 .priority(createTaskDTO.getPriority() != null ? createTaskDTO.getPriority() : TaskPriority.LOW)
-                .status(TaskStatus.CREATED)
+                .status(TaskStatus.IN_PROGRESS)
                 .user(employee)
                 .deadLine(createTaskDTO.getDeadLine().toLocalDate())
                 .build();
@@ -62,11 +62,14 @@ public class TaskService {
         task.setDeadLine(updateTaskDTO.getDeadline().toLocalDate());
         task.setPriority(updateTaskDTO.getPriority());
         task.setDescription(updateTaskDTO.getDescription());
-        return task;
+        return taskRepository.save(task);
     }
 
     public List<Task> getUserTasks(Integer projectId, Integer userId) {
         return taskRepository.findAllByProjectIdAndUserId(projectId, userId);
     }
 
+    public List<Task> getAllTasksWithSearchKey(String searchKey, Integer managerId) {
+        return taskRepository.getAllTasksWithSearchKey(managerId, searchKey);
+    }
 }
