@@ -110,6 +110,6 @@ public class IssueService {
     }
 
     public List<Issue> getAllIssuesWithSearchKey(String searchKey, Integer managerId) {
-        return issueRepository.findAllByProjectManagerIdAndSummaryContaining(managerId, searchKey);
+        return issueRepository.getAllIssuesWithSearchKey(managerId, searchKey);
     }
 }

@@ -69,6 +69,6 @@ public class TodoService {
     }
 
     public List<Todo> getAllTasksWithSearchKey(String searchKey, Integer managerId) {
-        return todoRepository.findAllByTaskProjectManagerIdAndNameContaining(managerId, searchKey);
+        return todoRepository.getAllTodosWithSearchKey(managerId, searchKey);
     }
 }

@@ -70,6 +70,6 @@ public class TaskService {
     }
 
     public List<Task> getAllTasksWithSearchKey(String searchKey, Integer managerId) {
-        return taskRepository.findAllByProjectManagerIdAndNameContaining(managerId, searchKey);
+        return taskRepository.getAllTasksWithSearchKey(managerId, searchKey);
     }
 }

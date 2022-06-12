@@ -96,6 +96,6 @@ public class AppUserService {
     }
 
     public List<AppUser> getAllUsersWithSearchKey(String searchKey) {
-        return appUserRepository.findAllByUsernameContaining(searchKey);
+        return appUserRepository.getAllUsersWithSearchKey(searchKey);
     }
 }

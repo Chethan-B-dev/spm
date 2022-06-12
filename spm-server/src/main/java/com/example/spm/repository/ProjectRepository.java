@@ -13,10 +13,10 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
     List<Project> findAllByUsers(AppUser employee);
 
-//    @Query(
-//            value = "SELECT * FROM project p WHERE p.manager_id = :managerId and p.name LIKE %:searchKey%",
-//            nativeQuery = true)
-//    List<Project> getAllProjectsWithSearchKey(String searchKey, Integer managerId);
+    @Query(
+            value = "SELECT * FROM project p WHERE p.manager_id = :managerId and p.name LIKE %:searchKey%",
+            nativeQuery = true)
+    List<Project> getAllProjectsWithSearchKey(Integer managerId, String searchKey);
 
-    List<Project> findAllByManagerIdAndNameContaining(Integer managerId, String searchKey);
+//    List<Project> findAllByManagerIdAndNameContaining(Integer managerId, String searchKey);
 }
