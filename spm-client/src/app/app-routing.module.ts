@@ -22,13 +22,11 @@ const routes: Routes = [
   { path: "signup", component: SignupComponent },
   { path: "admin", component: AdminComponent, canActivate: [AdminGuard] },
   { path: "profile", component: EditProfileComponent },
-  { path: "project-detail/:id", component: ManagerProjectDetailComponent },
   {
     path: "manager",
-    component: DashboardComponent,
+    loadChildren: "./manager/manager.module#ManagerModule",
     canActivate: [ManagerGuard],
   },
-  { path: "task-detail/:id", component: ManagerTaskDetailComponent },
   { path: "employee-dashboard", component: EmployeeDashboardComponent },
   {
     path: "employee-project-detail",
@@ -36,10 +34,7 @@ const routes: Routes = [
   },
   { path: "employee-issue-detail", component: EmployeeIssueDetailComponent },
   { path: "employee-scrum-board", component: EmployeeScrumBoardComponent },
-  {
-    path: "manager-scrum-board/:taskId",
-    component: ManagerScrumBoardComponent,
-  },
+
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];

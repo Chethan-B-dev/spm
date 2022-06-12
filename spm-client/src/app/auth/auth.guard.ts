@@ -19,6 +19,7 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | Promise<boolean> {
+    console.log("auth guard getting called");
     const isAuthenticated = this.authService.isLoggedIn();
     const user: IAppUser = this.authService.getUser();
     if (isAuthenticated && user) {
@@ -31,9 +32,6 @@ export class AuthGuard implements CanActivate {
           break;
         case UserRole.ADMIN:
           this.router.navigate(["/admin"]);
-          break;
-        default:
-          this.router.navigate(["/login"]);
           break;
       }
     }

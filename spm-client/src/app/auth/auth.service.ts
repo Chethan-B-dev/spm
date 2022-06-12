@@ -1,9 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { pick } from "highcharts";
 import { BehaviorSubject, Observable } from "rxjs";
-import { catchError, mapTo, pluck, tap } from "rxjs/operators";
-import { runInThisContext } from "vm";
+import { catchError, tap } from "rxjs/operators";
 import {
   IAppUser,
   ILoginRequest,
@@ -32,10 +30,7 @@ export class AuthService {
 
   login(loginData: ILoginRequest): Observable<ILoginResponse> {
     return this.http.post<ILoginResponse>(this.authUrl, loginData).pipe(
-      tap((loginResponse: ILoginResponse) => {
-        this.saveUser(loginResponse);
-        this.isLoggedInSubject.next(true);
-      }),
+      tap((loginResponse) => this.manageUserState(loginResponse)),
       catchError(handleError)
     );
   }
@@ -76,10 +71,11 @@ export class AuthService {
     return Math.floor(new Date().getTime() / 1000) >= expiry;
   }
 
-  saveUser(loginResponse: ILoginResponse): void {
+  manageUserState(loginResponse: ILoginResponse): void {
     localStorage.setItem("token", loginResponse.token);
     localStorage.setItem("user", JSON.stringify(loginResponse.user));
     this.setUser(loginResponse.user);
+    this.isLoggedInSubject.next(true);
   }
 
   setUser(user: IAppUser): void {

@@ -18,10 +18,13 @@ export class ManagerGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | Promise<boolean> {
+    console.log("manager guard getting called");
     const isAuthenticated = this.authService.isLoggedIn();
     if (!isAuthenticated) {
       this.router.navigate(["/login"]);
     }
-    return this.authService.isManager();
+    const isManager: boolean = this.authService.isManager();
+    if (!isManager) this.router.navigate(["/"]);
+    return isManager;
   }
 }

@@ -3,6 +3,7 @@ package com.example.spm.controller;
 import com.example.spm.model.dto.UserRegisterDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.service.AppUserService;
+import com.example.spm.service.ManagerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,20 +21,23 @@ import java.util.List;
 public class AuthController {
 
     private final AppUserService appUserService;
+    private final ManagerService managerService;
 
     @GetMapping("/users")
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('EMPLOYEE')")
     public ResponseEntity<List<AppUser>> getUsers() {
         return ResponseEntity.ok().body(appUserService.getUsers());
     }
 
     @PostMapping("/user/save")
     public ResponseEntity<AppUser> saveUser(
-            @RequestBody @Valid UserRegisterDTO userRegisterDTO,
+            @RequestBody @Valid final UserRegisterDTO userRegisterDTO,
             BindingResult bindingResult
     ) {
-        if (bindingResult.hasFieldErrors()) bindingResult.getFieldErrors().forEach(System.out::println);
-        return new ResponseEntity<>(appUserService.saveUser(userRegisterDTO), HttpStatus.CREATED);
+        managerService.handleValidationErrors(bindingResult);
+        return new ResponseEntity<>(
+                appUserService.saveUser(userRegisterDTO),
+                HttpStatus.CREATED
+        );
     }
 
 }
