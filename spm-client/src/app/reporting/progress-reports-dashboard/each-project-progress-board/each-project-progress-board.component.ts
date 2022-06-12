@@ -230,13 +230,13 @@ Highcharts.chart('container-bar-chart', {
       text: 'Stacked bar chart'
   },
   xAxis: {
-      categories: ['Employee 1', 'Employee 2', 'Employee 3', 'Employee 4', 'Employee 5']
+      categories: ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5']
   },
   yAxis: {
       min: 0,
       max: 100,
       title: {
-          text: "All Employee's Live Progress"
+          text: "All Tasks's Live Progress"
       }
   },
   legend: {

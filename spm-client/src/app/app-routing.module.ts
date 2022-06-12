@@ -10,6 +10,7 @@ import { EmployeeProjectDetailComponent } from "./employee/employee-project-deta
 import { EmployeeScrumBoardComponent } from "./employee/employee-scrum-board/employee-scrum-board.component";
 import { ManagerGuard } from "./manager/manager.guard";
 import { BurnDownChartDashboardComponent } from "./reporting/burn-down-chart-dashboard/burn-down-chart-dashboard.component";
+import { EmpReportListComponent } from "./reporting/employee-reports-dashboard/emp-report-list/emp-report-list.component";
 import { EmployeeReportsDashboardComponent } from "./reporting/employee-reports-dashboard/employee-reports-dashboard.component";
 import { OrgChartDashboardComponent } from "./reporting/org-chart-dashboard/org-chart-dashboard.component";
 import { EachProjectProgressBoardComponent } from "./reporting/progress-reports-dashboard/each-project-progress-board/each-project-progress-board.component";
@@ -38,11 +39,13 @@ const routes: Routes = [
   { path: "employee-scrum-board", component: EmployeeScrumBoardComponent },
 
   { path: "reporting-dashboard", component: ReportsDashboardComponent },
-  { path: "reporting-progress-dashboard", component: ProgressReportsDashboardComponent  },
-  { path: "reporting-burn-down-chart", component: BurnDownChartDashboardComponent },
-  { path: "reporting-org-chart", component: OrgChartDashboardComponent },
-  { path: "reporting-employee-dashboard", component: EmployeeReportsDashboardComponent },
+  { path: "reporting-all-progress-dashboard", component: ProgressReportsDashboardComponent  },
   { path: "reporting-each-project-progress", component: EachProjectProgressBoardComponent },
+  { path: "reporting-burn-down-chart", component: BurnDownChartDashboardComponent },
+  { path: "reporting-emp-report-list", component: EmpReportListComponent },
+  { path: "reporting-employee-chart", component: EmployeeReportsDashboardComponent },
+  { path: "reporting-org-chart", component: OrgChartDashboardComponent },
+
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];
