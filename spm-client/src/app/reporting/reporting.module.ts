@@ -10,9 +10,10 @@ import { BurnDownChartDashboardComponent } from './burn-down-chart-dashboard/bur
 import { OrgChartDashboardComponent } from './org-chart-dashboard/org-chart-dashboard.component';
 import { EmployeeReportsDashboardComponent } from './employee-reports-dashboard/employee-reports-dashboard.component';
 import { EachProjectProgressBoardComponent } from './progress-reports-dashboard/each-project-progress-board/each-project-progress-board.component';
+import { EmpReportListComponent } from './employee-reports-dashboard/emp-report-list/emp-report-list.component';
 
 @NgModule({
-  declarations: [ReportsDashboardComponent, ProgressReportsDashboardComponent, BurnDownChartDashboardComponent, OrgChartDashboardComponent, EmployeeReportsDashboardComponent, EachProjectProgressBoardComponent],
+  declarations: [ReportsDashboardComponent, ProgressReportsDashboardComponent, BurnDownChartDashboardComponent, OrgChartDashboardComponent, EmployeeReportsDashboardComponent, EachProjectProgressBoardComponent, EmpReportListComponent],
   imports: [
     CommonModule,
     MaterialModule,
