@@ -1,4 +1,11 @@
-import { Component, OnInit } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { Router } from "@angular/router";
 import { BehaviorSubject, Observable, of } from "rxjs";
@@ -18,11 +25,14 @@ export class SidenavComponent implements OnInit {
   isEmployee$: Observable<boolean>;
   isAdmin$: Observable<boolean>;
   isLoggedIn$: Observable<boolean> = this.authService.isLoggedIn$;
+  panelOpenState = false;
+  @ViewChild("notifications", { static: false }) notifications: ElementRef;
 
   constructor(
     public dialog: MatDialog,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
@@ -49,5 +59,14 @@ export class SidenavComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(["/login"]);
+  }
+
+  toggleNotifications(): void {
+    const overlay = this.notifications.nativeElement as HTMLElement;
+    if (overlay.style.display === "none") {
+      overlay.style.display = "block";
+    } else {
+      overlay.style.display = "none";
+    }
   }
 }

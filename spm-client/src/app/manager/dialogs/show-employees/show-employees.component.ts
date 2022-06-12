@@ -29,9 +29,8 @@ export class ShowEmployeesComponent implements OnInit {
     this.employeeRankings = this.project.users
       .map((user) => {
         const taskStatistics: TaskStatistics = {
-          [TaskStatus.CREATED]: 0,
           [TaskStatus.IN_PROGRESS]: 0,
-          [TaskStatus.COMPLETE]: 0,
+          [TaskStatus.COMPLETED]: 0,
         };
         const userTasks = this.project.tasks.filter((task) => {
           if (task.user.id === user.id) {
@@ -44,7 +43,7 @@ export class ShowEmployeesComponent implements OnInit {
         return {
           user,
           ranking:
-            (taskStatistics[TaskStatus.COMPLETE] / userTasks.length) * 100,
+            (taskStatistics[TaskStatus.COMPLETED] / userTasks.length) * 100,
         } as IAppUserRanking;
       })
       .sort((a, b) => b.ranking - a.ranking);
