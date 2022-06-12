@@ -9,6 +9,12 @@ import { EmployeeIssueDetailComponent } from "./employee/employee-issue-detail/e
 import { EmployeeProjectDetailComponent } from "./employee/employee-project-detail/employee-project-detail.component";
 import { EmployeeScrumBoardComponent } from "./employee/employee-scrum-board/employee-scrum-board.component";
 import { ManagerGuard } from "./manager/manager.guard";
+import { BurnDownChartDashboardComponent } from "./reporting/burn-down-chart-dashboard/burn-down-chart-dashboard.component";
+import { EmployeeReportsDashboardComponent } from "./reporting/employee-reports-dashboard/employee-reports-dashboard.component";
+import { OrgChartDashboardComponent } from "./reporting/org-chart-dashboard/org-chart-dashboard.component";
+import { EachProjectProgressBoardComponent } from "./reporting/progress-reports-dashboard/each-project-progress-board/each-project-progress-board.component";
+import { ProgressReportsDashboardComponent } from "./reporting/progress-reports-dashboard/progress-reports-dashboard.component";
+import { ReportsDashboardComponent } from "./reporting/reports-dashboard/reports-dashboard.component";
 import { AdminComponent } from "./shared/admin/admin.component";
 import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile.component";
 
@@ -31,6 +37,12 @@ const routes: Routes = [
   { path: "employee-issue-detail", component: EmployeeIssueDetailComponent },
   { path: "employee-scrum-board", component: EmployeeScrumBoardComponent },
 
+  { path: "reporting-dashboard", component: ReportsDashboardComponent },
+  { path: "reporting-progress-dashboard", component: ProgressReportsDashboardComponent  },
+  { path: "reporting-burn-down-chart", component: BurnDownChartDashboardComponent },
+  { path: "reporting-org-chart", component: OrgChartDashboardComponent },
+  { path: "reporting-employee-dashboard", component: EmployeeReportsDashboardComponent },
+  { path: "reporting-each-project-progress", component: EachProjectProgressBoardComponent },
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },
 ];

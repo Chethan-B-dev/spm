@@ -8,11 +8,12 @@ import { SharedModule } from "./shared/shared.module";
 import { AuthModule } from "./auth/auth.module";
 import { ManagerModule } from "./manager/manager.module";
 import { EmployeeModule } from "./employee/employee.module";
+import { ReportingModule } from "./reporting/reporting.module";
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { AuthInterceptor } from "./auth/auth.interceptor";
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -21,6 +22,7 @@ import { AuthInterceptor } from "./auth/auth.interceptor";
     AuthModule,
     ManagerModule,
     EmployeeModule,
+    ReportingModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

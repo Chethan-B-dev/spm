@@ -14,7 +14,7 @@ export class EmployeeDashboardComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    const chart = Highcharts.chart('container', {
+    const chart = Highcharts.chart('chart-container', {
       chart: {
           type: 'bar',
           height: 450,
