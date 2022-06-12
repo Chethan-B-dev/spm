@@ -31,6 +31,12 @@ import {
 } from "src/app/shared/interfaces/task.interface";
 import { ITodo } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import {
+  DataType,
+  ISearchData,
+  ISearchGroup,
+  ISearchResult,
+} from "src/app/shared/utility/common";
 // utility
 import { handleError } from "src/app/shared/utility/error";
 
@@ -64,13 +70,6 @@ export class ManagerService {
 
   private loadMoreUsersSubject = new ReplaySubject<boolean>(1);
   loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
-
-  // todo: headers for temp testing of jwt, later replace with HTTP interceptor
-  // headers: HttpHeaders = new HttpHeaders({
-  //   "Content-Type": "application/json",
-  //   Authorization:
-  //     "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QyLmNvbSIsInJvbGUiOiJNQU5BR0VSIiwiZXhwIjoxNjU1NTI4MjA3LCJpYXQiOjE2NTQ0NDgyMDd9.5Q_E-hiVNUQSdDHMSTBn2Z4sDQQkKV2ndJszN75Q6KrzCHV8XpJl7zmx3RA37Nf3JQHR0Qy91_Yw7vovc9qHNQ",
-  // });
 
   refresh(): void {
     this.refreshSubject.next();
@@ -183,7 +182,7 @@ export class ManagerService {
     );
     return this.http
       .get<IPagedData<IAppUser>>(`${this.managerUrl}/employees`, {
-        params: params,
+        params,
       })
       .pipe(catchError(handleError));
   }
@@ -281,5 +280,66 @@ export class ManagerService {
         tap(() => this.refresh()),
         catchError(handleError)
       );
+  }
+
+  globalSearch(searchKey: string): Observable<ISearchGroup[]> {
+    return this.http
+      .get<ISearchResult>(`${this.managerUrl}/search/${searchKey}`)
+      .pipe(
+        map((searchResults) => this.mapSearchResults(searchResults)),
+        catchError(handleError)
+      );
+  }
+
+  private mapSearchResults(searchResults: ISearchResult): ISearchGroup[] {
+    const searchGroups: ISearchGroup[] = [];
+    for (const entry of Object.entries(searchResults)) {
+      const key = entry[0];
+      const values = entry[1] as any[];
+      if (!values.length) continue;
+      switch (key) {
+        case "projects":
+          searchGroups.push({
+            type: DataType.PROJECT,
+            data: values.map((project: IProject): ISearchData => {
+              return { name: project.name, id: project.id } as ISearchData;
+            }),
+          } as ISearchGroup);
+          break;
+        case "users":
+          searchGroups.push({
+            type: DataType.USER,
+            data: values.map((user: IAppUser): ISearchData => {
+              return { name: user.username, id: user.id } as ISearchData;
+            }),
+          } as ISearchGroup);
+          break;
+        case "tasks":
+          searchGroups.push({
+            type: DataType.TASK,
+            data: values.map((task: ITask): ISearchData => {
+              return { name: task.name, id: task.id } as ISearchData;
+            }),
+          } as ISearchGroup);
+          break;
+        case "todos":
+          searchGroups.push({
+            type: DataType.TODO,
+            data: values.map((todo: ITodo): ISearchData => {
+              return { name: todo.name, id: todo.id } as ISearchData;
+            }),
+          } as ISearchGroup);
+          break;
+        case "issues":
+          searchGroups.push({
+            type: DataType.ISSUE,
+            data: values.map((issue: IIssue): ISearchData => {
+              return { name: issue.summary, id: issue.id } as ISearchData;
+            }),
+          } as ISearchGroup);
+          break;
+      }
+    }
+    return searchGroups;
   }
 }

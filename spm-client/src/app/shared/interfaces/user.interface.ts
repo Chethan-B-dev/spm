@@ -5,6 +5,7 @@ export interface IAppUser {
   email: string;
   status: UserStatus;
   role: UserRole;
+  phone: string;
   ranking?: number;
 }
 

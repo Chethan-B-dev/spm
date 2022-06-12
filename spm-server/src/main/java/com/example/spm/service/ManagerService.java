@@ -7,14 +7,14 @@ import com.example.spm.model.entity.*;
 import com.example.spm.model.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -170,10 +170,13 @@ public class ManagerService {
     }
 
     public SearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
-        List<Project> projects = projectService.getAllProjectsWithSearchKey(searchKey, loggedInUser.getUser().getId());
-        List<Task> tasks = taskService.getAllTasksWithSearchKey(searchKey, loggedInUser.getUser().getId());
-        List<Todo> todos = todoService.getAllTasksWithSearchKey(searchKey, loggedInUser.getUser().getId());
-        List<Issue> issues = issueService.getAllIssuesWithSearchKey(searchKey, loggedInUser.getUser().getId());
+        // sanitizing search string
+        searchKey = Jsoup.clean(searchKey.trim(), Safelist.basic());
+        Integer managerId = loggedInUser.getUser().getId();
+        List<Project> projects = projectService.getAllProjectsWithSearchKey(searchKey, managerId);
+        List<Task> tasks = taskService.getAllTasksWithSearchKey(searchKey, managerId);
+        List<Todo> todos = todoService.getAllTasksWithSearchKey(searchKey, managerId);
+        List<Issue> issues = issueService.getAllIssuesWithSearchKey(searchKey, managerId);
         List<AppUser> appUsers = appUserService.getAllUsersWithSearchKey(searchKey);
         return SearchResultDTO
                 .builder()
@@ -181,7 +184,7 @@ public class ManagerService {
                 .tasks(tasks)
                 .todos(todos)
                 .issues(issues)
-                .appUsers(appUsers)
+                .users(appUsers)
                 .build();
     }
 }

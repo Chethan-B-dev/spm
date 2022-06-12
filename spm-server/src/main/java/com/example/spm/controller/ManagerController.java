@@ -294,13 +294,16 @@ public class ManagerController {
         return new ResponseEntity<>(managerService.getUserTasks(projectId, userId), HttpStatus.OK);
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search/{searchKey}")
     public ResponseEntity<SearchResultDTO> getSearchResult(
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @RequestParam final String searchKey
+            @PathVariable String searchKey
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
-        return new ResponseEntity<>(managerService.getSearchResult(searchKey, loggedInUser), HttpStatus.OK);
+        return new ResponseEntity<>(
+                managerService.getSearchResult(searchKey, loggedInUser),
+                HttpStatus.OK
+        );
     }
 
 }

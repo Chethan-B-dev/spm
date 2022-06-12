@@ -62,7 +62,7 @@ public class TaskService {
         task.setDeadLine(updateTaskDTO.getDeadline().toLocalDate());
         task.setPriority(updateTaskDTO.getPriority());
         task.setDescription(updateTaskDTO.getDescription());
-        return task;
+        return taskRepository.save(task);
     }
 
     public List<Task> getUserTasks(Integer projectId, Integer userId) {

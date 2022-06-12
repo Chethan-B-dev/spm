@@ -73,7 +73,6 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     }
     this.projectProgress = getProjectProgress(this.project.tasks);
     this.projectTaskStatistics = getTaskStatistics(this.project.tasks);
-    console.log(this.projectTaskStatistics);
   }
 
   scrollToBottom(): void {

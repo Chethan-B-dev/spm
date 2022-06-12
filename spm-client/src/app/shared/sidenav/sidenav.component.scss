@@ -49,3 +49,11 @@ mat-sidenav {
     border-left: 5px solid red;
   }
 }
+
+::ng-deep .cdk-overlay-pane {
+  /* Do you changes here */
+  min-width: 450px;
+}
+.searchForm {
+  min-width: 450px;
+}

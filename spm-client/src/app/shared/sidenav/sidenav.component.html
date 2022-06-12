@@ -78,10 +78,53 @@
         <button mat-menu-item>Project 2</button>
       </mat-menu>
 
-      <mat-form-field class="example-full-width mx-2" appearance="fill">
+      <!-- <mat-form-field class="example-full-width mx-2" appearance="fill">
         <mat-label>Search</mat-label>
         <input matInput placeholder="" />
+      </mat-form-field> -->
+
+      <!-- search -->
+      <mat-form-field appearance="fill" class="searchForm">
+        <!-- <mat-label>Search</mat-label> -->
+        <input
+          type="text"
+          matInput
+          required
+          placeholder="Search For Project/Task/User/Todo"
+          [matAutocomplete]="searchGroup"
+          (keyup)="search($event.target.value)"
+        />
+
+        <mat-autocomplete #searchGroup="matAutocomplete">
+          <mat-optgroup
+            *ngFor="let group of searchResults$ | async"
+            [label]="group.type + 'S'"
+          >
+            <mat-option
+              *ngFor="let data of group.data"
+              [routerLink]="getRedirectLink(group.type, data)"
+            >
+              <span *ngIf="group.type === 'PROJECT'"
+                ><mat-icon class="mr-2">work</mat-icon></span
+              >
+              <span *ngIf="group.type === 'TASK'"
+                ><mat-icon>code</mat-icon>
+              </span>
+              <span *ngIf="group.type === 'USER'"
+                ><mat-icon>person</mat-icon>
+              </span>
+              <span *ngIf="group.type === 'ISSUE'"
+                ><mat-icon>cancel</mat-icon>
+              </span>
+              <span *ngIf="group.type === 'TODO'"
+                ><mat-icon>check_circle</mat-icon>
+              </span>
+              {{ data.name }}
+            </mat-option>
+          </mat-optgroup>
+        </mat-autocomplete>
       </mat-form-field>
+      <!-- end of search -->
 
       <span class="example-spacer"></span>
 
