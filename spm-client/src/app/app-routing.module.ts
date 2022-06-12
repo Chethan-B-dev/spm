@@ -20,7 +20,7 @@ import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile
 
 const routes: Routes = [
   { path: "", component: LoginComponent, canActivate: [AuthGuard] },
-  { path: "login", component: LoginComponent, canActivate: [AuthGuard] },
+  { path: "login", component: LoginComponent },
   { path: "signup", component: SignupComponent },
   { path: "admin", component: AdminComponent, canActivate: [AdminGuard] },
   { path: "profile", component: EditProfileComponent },
@@ -29,7 +29,7 @@ const routes: Routes = [
     loadChildren: "./manager/manager.module#ManagerModule",
     canActivate: [ManagerGuard],
   },
-  { path: "employee-dashboard", component: EmployeeDashboardComponent },
+  { path: "employee", component: EmployeeDashboardComponent },
   {
     path: "employee-project-detail",
     component: EmployeeProjectDetailComponent,
