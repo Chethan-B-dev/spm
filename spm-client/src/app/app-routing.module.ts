@@ -8,17 +8,13 @@ import { EmployeeDashboardComponent } from "./employee/employee-dashboard/employ
 import { EmployeeIssueDetailComponent } from "./employee/employee-issue-detail/employee-issue-detail.component";
 import { EmployeeProjectDetailComponent } from "./employee/employee-project-detail/employee-project-detail.component";
 import { EmployeeScrumBoardComponent } from "./employee/employee-scrum-board/employee-scrum-board.component";
-import { DashboardComponent } from "./manager/dashboard/dashboard.component";
-import { ManagerProjectDetailComponent } from "./manager/manager-project-detail/manager-project-detail.component";
-import { ManagerScrumBoardComponent } from "./manager/manager-scrum-board/manager-scrum-board.component";
-import { ManagerTaskDetailComponent } from "./manager/manager-task-detail/manager-task-detail.component";
 import { ManagerGuard } from "./manager/manager.guard";
 import { AdminComponent } from "./shared/admin/admin.component";
 import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile.component";
 
 const routes: Routes = [
   { path: "", component: LoginComponent, canActivate: [AuthGuard] },
-  { path: "login", component: LoginComponent, canActivate: [AuthGuard] },
+  { path: "login", component: LoginComponent },
   { path: "signup", component: SignupComponent },
   { path: "admin", component: AdminComponent, canActivate: [AdminGuard] },
   { path: "profile", component: EditProfileComponent },
@@ -27,7 +23,7 @@ const routes: Routes = [
     loadChildren: "./manager/manager.module#ManagerModule",
     canActivate: [ManagerGuard],
   },
-  { path: "employee-dashboard", component: EmployeeDashboardComponent },
+  { path: "employee", component: EmployeeDashboardComponent },
   {
     path: "employee-project-detail",
     component: EmployeeProjectDetailComponent,
