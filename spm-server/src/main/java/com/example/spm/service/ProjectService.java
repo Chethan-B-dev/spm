@@ -89,4 +89,8 @@ public class ProjectService {
             throw new ActionNotAllowedException("Cannot Access this project resource");
     }
 
+    public List<Project> getAllProjectsWithSearchKey(String searchKey, Integer managerId) {
+//        return projectRepository.getAllProjectsWithSearchKey(searchKey, managerId);
+        return projectRepository.findAllByManagerIdAndNameContaining(managerId, searchKey);
+    }
 }

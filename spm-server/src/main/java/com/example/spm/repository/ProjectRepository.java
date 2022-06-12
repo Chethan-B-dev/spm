@@ -3,6 +3,7 @@ package com.example.spm.repository;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -11,4 +12,11 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
     Boolean existsByName (String name);
 
     List<Project> findAllByUsers(AppUser employee);
+
+//    @Query(
+//            value = "SELECT * FROM project p WHERE p.manager_id = :managerId and p.name LIKE %:searchKey%",
+//            nativeQuery = true)
+//    List<Project> getAllProjectsWithSearchKey(String searchKey, Integer managerId);
+
+    List<Project> findAllByManagerIdAndNameContaining(Integer managerId, String searchKey);
 }

@@ -23,4 +23,5 @@ public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
 
     boolean existsByEmail(String email);
 
+    List<AppUser> findAllByUsernameContaining(String searchKey);
 }

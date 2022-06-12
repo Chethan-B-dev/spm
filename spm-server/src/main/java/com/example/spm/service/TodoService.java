@@ -68,4 +68,7 @@ public class TodoService {
         todoRepository.delete(todo);
     }
 
+    public List<Todo> getAllTasksWithSearchKey(String searchKey, Integer managerId) {
+        return todoRepository.findAllByTaskProjectManagerIdAndNameContaining(managerId, searchKey);
+    }
 }

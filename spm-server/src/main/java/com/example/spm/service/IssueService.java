@@ -109,4 +109,7 @@ public class IssueService {
             throw new ActionNotAllowedException("User with id "+loggedInUser.getUser().getId()+" cannot delete the comment with id "+commentId);
     }
 
+    public List<Issue> getAllIssuesWithSearchKey(String searchKey, Integer managerId) {
+        return issueRepository.findAllByProjectManagerIdAndSummaryContaining(managerId, searchKey);
+    }
 }

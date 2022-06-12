@@ -69,4 +69,7 @@ public class TaskService {
         return taskRepository.findAllByProjectIdAndUserId(projectId, userId);
     }
 
+    public List<Task> getAllTasksWithSearchKey(String searchKey, Integer managerId) {
+        return taskRepository.findAllByProjectManagerIdAndNameContaining(managerId, searchKey);
+    }
 }

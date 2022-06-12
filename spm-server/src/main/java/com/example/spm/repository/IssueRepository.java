@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface IssueRepository extends JpaRepository<Issue, Integer> {
     List<Issue> findAllByProjectIdOrderByCreatedDateDesc(Integer projectId);
+
+    List<Issue> findAllByProjectManagerIdAndSummaryContaining(Integer managerId, String searchKey);
 }

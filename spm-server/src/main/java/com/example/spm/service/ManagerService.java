@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -165,5 +167,21 @@ public class ManagerService {
                 .stream()
                 .filter(task -> task.getUser().getId().equals(userId))
                 .collect(Collectors.toList());
+    }
+
+    public SearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
+        List<Project> projects = projectService.getAllProjectsWithSearchKey(searchKey, loggedInUser.getUser().getId());
+        List<Task> tasks = taskService.getAllTasksWithSearchKey(searchKey, loggedInUser.getUser().getId());
+        List<Todo> todos = todoService.getAllTasksWithSearchKey(searchKey, loggedInUser.getUser().getId());
+        List<Issue> issues = issueService.getAllIssuesWithSearchKey(searchKey, loggedInUser.getUser().getId());
+        List<AppUser> appUsers = appUserService.getAllUsersWithSearchKey(searchKey);
+        return SearchResultDTO
+                .builder()
+                .projects(projects)
+                .tasks(tasks)
+                .todos(todos)
+                .issues(issues)
+                .appUsers(appUsers)
+                .build();
     }
 }

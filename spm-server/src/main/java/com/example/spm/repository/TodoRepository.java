@@ -9,4 +9,6 @@ import java.util.List;
 public interface TodoRepository extends JpaRepository<Todo, Integer> {
 
     List<Todo> findAllByTaskId(Integer taskId);
+
+    List<Todo> findAllByTaskProjectManagerIdAndNameContaining(Integer managerId, String searchKey);
 }
