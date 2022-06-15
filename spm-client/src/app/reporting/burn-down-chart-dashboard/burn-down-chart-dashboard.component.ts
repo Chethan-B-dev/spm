@@ -129,6 +129,14 @@ export class BurnDownChartDashboardComponent implements OnInit {
         radius: 6
       },
       data: [100, 110, 125, 95, 64, 76, 62, 44, 35, 29, 18, 2]
+    },
+    {
+      name: 'Completed Burn',
+      color: 'blue',
+      marker: {
+        radius: 6
+      },
+      data: [90, 95, 25, 50, 64, 76, 67, 43, 95, 66, 57, 20]
     }],
 
   });
