@@ -37,11 +37,7 @@ export function getTaskStatistics(tasks: ITask[]): TaskStatistics {
     [TaskStatus.IN_PROGRESS]: 0,
     [TaskStatus.COMPLETED]: 0,
   };
-
-  tasks.forEach((task) => {
-    TaskStatistics[task.status] += 1;
-  });
-
+  tasks.forEach((task) => (TaskStatistics[task.status] += 1));
   return TaskStatistics;
 }
 

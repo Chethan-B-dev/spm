@@ -1,4 +1,3 @@
-import { HttpResponse } from "@angular/common/http";
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { EMPTY, Subject } from "rxjs";

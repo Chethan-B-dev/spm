@@ -61,7 +61,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   private searchTermSubject = new Subject<string>();
   searchTerm$ = this.searchTermSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
-  currentUser$: Observable<IAppUser> = this.authService.currentUser$;
+  currentUser$: Observable<IAppUser>;
 
   constructor(
     private dialog: MatDialog,
@@ -73,14 +73,33 @@ export class SidenavComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.currentUser$ = this.authService.currentUser$.pipe(
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
+    );
+
     this.isAdmin$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.isAdmin()))
+      switchMap(() => of(this.authService.isAdmin())),
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
     );
     this.isManager$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.isManager()))
+      switchMap(() => of(this.authService.isManager())),
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
     );
     this.isEmployee$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.isEmployee()))
+      switchMap(() => of(this.authService.isEmployee())),
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
     );
 
     this.searchResults$ = this.searchTerm$.pipe(
@@ -135,20 +154,6 @@ export class SidenavComponent implements OnInit, OnDestroy {
         return `/manager/project-detail/${searchData.id}`;
     }
   }
-
-  // getHomeLink(currentUser: IAppUser): void {
-  //   switch (currentUser.role) {
-  //     case UserRole.MANAGER:
-  //       this.router.navigate(["manager"]);
-  //       break;
-  //     case UserRole.EMPLOYEE:
-  //       this.router.navigate(["employee"]);
-  //       break;
-  //     case UserRole.ADMIN:
-  //       this.router.navigate(["admin"]);
-  //       break;
-  //   }
-  // }
 
   toggleNotifications(): void {
     const overlay = this.notifications.nativeElement as HTMLElement;

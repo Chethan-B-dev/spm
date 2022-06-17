@@ -10,7 +10,19 @@ export function handleError(
   } else if (err.error && err.error.message) {
     errorMessage = err.error.message;
   } else {
-    errorMessage = `Backend returned code ${err.status}: ${err.message}`;
+    switch (err.status) {
+      case 404:
+        errorMessage = `Not Found: ${err.message}`;
+        break;
+      case 403:
+        errorMessage = `Access Denied: ${err.message}`;
+        break;
+      case 500:
+        errorMessage = `Internal Server Error: ${err.message}`;
+        break;
+      default:
+        errorMessage = `Unknown Server Error:  ${err.status} : ${err.message}`;
+    }
   }
   console.error(err);
   return throwError(errorMessage);

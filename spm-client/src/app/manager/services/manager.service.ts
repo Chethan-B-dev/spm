@@ -45,7 +45,7 @@ import { handleError } from "src/app/shared/utility/error";
 })
 export class ManagerService {
   //todo: get this url from env variable
-  private managerUrl: string = "http://localhost:8080/api/manager";
+  private managerUrl = "http://localhost:8080/api/manager";
 
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
@@ -77,11 +77,7 @@ export class ManagerService {
 
   projects$: Observable<IProject[]> = this.http
     .get<IProject[]>(`${this.managerUrl}/projects`)
-    .pipe(
-      tap(() => console.log("called all projects")),
-      shareReplay(1),
-      catchError(handleError)
-    );
+    .pipe(shareReplay(1), catchError(handleError));
 
   projectsWithAdd$: Observable<IProject[]> = merge(
     this.projects$,
@@ -96,6 +92,7 @@ export class ManagerService {
     catchError(handleError)
   );
 
+  // todo: this is not used anywhere, keeping it as reference to use in the future
   selectedSingleProject$: Observable<IProject> = combineLatest(
     this.projectsWithAdd$,
     this.projectId$
@@ -176,7 +173,7 @@ export class ManagerService {
   }
 
   getMoreUsers(pageNumber: number): Observable<IPagedData<IAppUser>> {
-    let params: HttpParams = new HttpParams().set(
+    const params: HttpParams = new HttpParams().set(
       "pageNumber",
       pageNumber.toString()
     );

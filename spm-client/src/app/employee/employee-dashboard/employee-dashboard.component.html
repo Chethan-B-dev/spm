@@ -13,70 +13,18 @@
   </mat-toolbar>
 </p>
 
-<mat-card class="mx-3 my-3">
-  <mat-grid-list cols="4" rowHeight="200px">
-    <mat-grid-tile
-      colspan="3"
-      class="p-1"
-      style="
-        background-image: url('../../../assets/background-images/growth.svg');
-        background-size: 200px 200px;
-        background-repeat: no-repeat;
-        background-position: 25% 40%;
-        border-radius: 20px;
-      "
-    >
-      <div class="card-body">
-        <mat-card-title>Project Name</mat-card-title>
-        <mat-card-subtitle>Manager: John B</mat-card-subtitle>
-        <mat-card-subtitle>Status: In progress</mat-card-subtitle>
-        <mat-card-subtitle>Deadline: 03/07/2022</mat-card-subtitle>
-      </div>
-      <mat-icon class="float-right">radio_button_checked</mat-icon
-      ><mat-progress-bar
-        mode="determinate"
-        class="w-25"
-        value="100"
-      ></mat-progress-bar
-      ><mat-icon class="float-right">radio_button_checked</mat-icon
-      ><mat-progress-bar
-        mode="determinate"
-        class="w-25"
-        value="100"
-      ></mat-progress-bar
-      ><mat-icon class="float-right">radio_button_checked</mat-icon>
-    </mat-grid-tile>
+<ng-container *ngIf="projects$ | async as projects">
+  <div class="container-fluid">
+    <app-project-card
+      *ngFor="let project of projects"
+      appSpacing
+      [margin]="100"
+      [padding]="10"
+      [project]="project"
+    ></app-project-card>
+  </div>
+</ng-container>
 
-    <mat-grid-tile
-      ><app-progress-bar value="75" text="Overall Progress"></app-progress-bar
-    ></mat-grid-tile>
-    <mat-grid-tile colspan="2" rowspan="2" class="p-1" id="chart-container"
-      >2</mat-grid-tile
-    >
-    <mat-grid-tile colspan="1" rowspan="2">
-      <mat-list role="list">
-        <mat-list-item role="listitem"
-          ><mat-card-title>Total Tasks: 10</mat-card-title></mat-list-item
-        ><mat-divider></mat-divider>
-        <mat-list-item role="listitem"
-          ><mat-card-title>Employees: 12</mat-card-title></mat-list-item
-        ><mat-divider></mat-divider>
-        <mat-list-item role="listitem"
-          ><mat-card-title>Developers: 15</mat-card-title></mat-list-item
-        ><mat-divider></mat-divider>
-        <mat-list-item role="listitem"
-          ><mat-card-title>Testers: 5</mat-card-title></mat-list-item
-        ><mat-divider></mat-divider>
-        <button class="m-3" mat-raised-button color="accent">
-          View Project Details
-        </button>
-      </mat-list>
-    </mat-grid-tile>
-    <mat-grid-tile rowspan="1"
-      ><app-progress-bar value="40" text="Task Completed"></app-progress-bar
-    ></mat-grid-tile>
-    <mat-grid-tile rowspan="1"
-      ><app-progress-bar value="25" text="Issues Resolved"></app-progress-bar
-    ></mat-grid-tile>
-  </mat-grid-list>
-</mat-card>
+<div class="center loading-screen" *ngIf="isLoading$ | async">
+  <app-loading-spinner></app-loading-spinner>
+</div>

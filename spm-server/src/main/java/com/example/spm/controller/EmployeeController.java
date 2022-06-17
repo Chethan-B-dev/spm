@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Slf4j
@@ -28,6 +27,7 @@ public class EmployeeController {
     public ResponseEntity<List<Project>> getAllProjectsByEmployeeId (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ) {
+        System.out.println("hitting this");
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 employeeService.getAllProjectsByEmployeeId(loggedInUser.getUser()), HttpStatus.OK
@@ -162,7 +162,6 @@ public class EmployeeController {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(employeeService.getComments(issueId), HttpStatus.OK);
     }
-
     @DeleteMapping("/delete-comment/{commentId}")
     public ResponseEntity<Boolean> deleteComment(
             @PathVariable Integer commentId,

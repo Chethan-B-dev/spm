@@ -3,7 +3,6 @@ package com.example.spm.controller;
 import com.example.spm.model.dto.EditProfileDTO;
 import com.example.spm.model.dto.UserRegisterDTO;
 import com.example.spm.model.entity.AppUser;
-import com.example.spm.service.AdminService;
 import com.example.spm.service.AppUserService;
 import com.example.spm.service.ManagerService;
 import com.example.spm.service.MyAppUserDetails;
@@ -16,7 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,12 +24,6 @@ public class AuthController {
 
     private final AppUserService appUserService;
     private final ManagerService managerService;
-    private final AdminService adminService;
-
-    @GetMapping("/users")
-    public ResponseEntity<List<AppUser>> getUsers() {
-        return ResponseEntity.ok().body(appUserService.getUsers());
-    }
 
     @PostMapping("/user/save")
     public ResponseEntity<AppUser> saveUser(
@@ -46,11 +38,13 @@ public class AuthController {
     }
 
     @PutMapping("/user/edit")
-    public ResponseEntity<AppUser> saveUser(
+    public ResponseEntity<AppUser> editUser(
             @RequestBody @Valid final EditProfileDTO editProfileDTO,
+            BindingResult bindingResult,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        managerService.handleValidationErrors(bindingResult);
         return new ResponseEntity<>(
                 appUserService.editProfile(editProfileDTO, loggedInUser),
                 HttpStatus.CREATED

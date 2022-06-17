@@ -1,6 +1,12 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
+import { catchError, takeUntil, tap } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
+import { IProject } from "src/app/shared/interfaces/project.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { stopLoading } from "src/app/shared/utility/loading";
+import { EmployeeService } from "../employee.service";
 declare let Highcharts: any;
 
 @Component({
@@ -8,35 +14,34 @@ declare let Highcharts: any;
   templateUrl: "./employee-dashboard.component.html",
   styleUrls: ["./employee-dashboard.component.scss"],
 })
-export class EmployeeDashboardComponent implements OnInit {
+export class EmployeeDashboardComponent implements OnInit, OnDestroy {
   currentUser: IAppUser = this.authService.currentUser;
+  projects$: Observable<IProject[]>;
+  users$: Observable<IAppUser[]>;
+  private isLoadingSubject = new BehaviorSubject<boolean>(true);
+  isLoading$ = this.isLoadingSubject.asObservable();
+  private readonly destroy$ = new Subject<void>();
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private snackbarService: SnackbarService,
+    private employeeService: EmployeeService
+  ) {}
 
   ngOnInit() {
-    const chart = Highcharts.chart("chart-container", {
-      chart: {
-        type: "bar",
-        height: 450,
-        width: 700,
-      },
-      title: {
-        text: "Project Team Statistics",
-      },
-      xAxis: {
-        categories: ["Developers", "Testers", "Q/A"],
-      },
-      yAxis: {
-        title: {
-          text: "Strength",
-        },
-      },
-      series: [
-        {
-          name: "Jane",
-          data: [1, 5, 4],
-        },
-      ],
-    });
+    this.projects$ = this.employeeService.projects$.pipe(
+      takeUntil(this.destroy$),
+      tap((_) => stopLoading(this.isLoadingSubject)),
+      catchError((err) => {
+        stopLoading(this.isLoadingSubject);
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

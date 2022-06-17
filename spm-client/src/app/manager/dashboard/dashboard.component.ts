@@ -27,7 +27,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadMore$: Observable<boolean>;
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
-  private readonly destroy$ = new Subject();
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private managerService: ManagerService,

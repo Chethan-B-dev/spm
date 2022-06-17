@@ -12,6 +12,7 @@ import { BoardDndComponent } from "./employee-scrum-board/board-dnd/board-dnd.co
 import { BoardDndListComponent } from "./employee-scrum-board/board-dnd-list/board-dnd-list.component";
 import { EmployeeScrumBoardComponent } from "./employee-scrum-board/employee-scrum-board.component";
 import { IssueCardComponent } from "./employee-scrum-board/issue-card/issue-card.component";
+import { EmployeeService } from "./employee.service";
 
 @NgModule({
   declarations: [

@@ -74,7 +74,7 @@
       />
       <span
         class="leaderboard__name ml-2"
-        [matTooltip]="userRanking.user.designation"
+        [matTooltip]="userRanking.user.designation | titlecase"
         >{{ userRanking.user.username }}</span
       >
       <span class="leaderboard__value"
@@ -82,5 +82,4 @@
       >
     </article>
   </main>
-  <!-- <mat-dialog-actions class="push-right"> </mat-dialog-actions> -->
 </article>
