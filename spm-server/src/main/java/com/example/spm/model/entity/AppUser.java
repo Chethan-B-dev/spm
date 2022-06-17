@@ -1,5 +1,6 @@
 package com.example.spm.model.entity;
 
+import com.example.spm.model.enums.UserDesignation;
 import com.example.spm.model.enums.UserRole;
 import com.example.spm.model.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,6 +40,8 @@ public class AppUser {
     @Length(min = 10, max = 10)
     private String phone;
     private UserStatus status;
+    @Column(nullable = true)
+    private UserDesignation designation;
 
     @Override
     public boolean equals(Object o) {

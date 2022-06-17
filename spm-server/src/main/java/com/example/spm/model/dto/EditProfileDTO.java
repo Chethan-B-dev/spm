@@ -1,8 +1,7 @@
 package com.example.spm.model.dto;
 
+import com.example.spm.model.enums.UserDesignation;
 import lombok.*;
-
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -10,8 +9,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @ToString
 @Builder
-public class AddCommentDTO {
-    @NotNull
-    private String comment;
-    private Integer userId;
+public class EditProfileDTO {
+    private String username;
+    private String phone;
+    private UserDesignation designation;
 }

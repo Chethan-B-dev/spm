@@ -2,6 +2,7 @@ package com.example.spm.service;
 
 import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.UserNotLoggedInException;
+import com.example.spm.model.dto.EditProfileDTO;
 import com.example.spm.model.dto.PagedData;
 import com.example.spm.model.dto.UserRegisterDTO;
 import com.example.spm.model.entity.AppUser;
@@ -15,9 +16,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -28,6 +31,7 @@ public class AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AdminService adminService;
 
     public AppUser saveUser(UserRegisterDTO userRegisterDTO) {
 
@@ -97,5 +101,15 @@ public class AppUserService {
 
     public List<AppUser> getAllUsersWithSearchKey(String searchKey) {
         return appUserRepository.getAllUsersWithSearchKey(searchKey);
+    }
+
+    @Transactional
+    @Modifying
+    public AppUser editProfile(EditProfileDTO editProfileDTO, MyAppUserDetails loggedInUser) {
+        AppUser user = loggedInUser.getUser();
+        user.setUsername(editProfileDTO.getUsername());
+        user.setPhone(editProfileDTO.getPhone());
+        user.setDesignation(editProfileDTO.getDesignation());
+        return appUserRepository.save(user);
     }
 }
