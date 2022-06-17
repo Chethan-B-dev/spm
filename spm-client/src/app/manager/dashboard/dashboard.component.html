@@ -27,12 +27,22 @@
 
   <div class="col-md-3 users">
     <div class="stats container my-3">
-      <h4>Verified Employees</h4>
-      <mat-list role="list" *ngIf="users$ | async as users">
+      <h4 class="mb-2">Verified Employees</h4>
+      <!-- <mat-list role="list" *ngIf="users$ | async as users">
         <mat-list-item matRipple role="listitem" *ngFor="let user of users">{{
-          user.username
+          user.username + " : " + ((user.designation | titlecase) || "")
         }}</mat-list-item>
-      </mat-list>
+      </mat-list> -->
+      <ng-container *ngIf="users$ | async as users">
+        <mat-chip-list *ngFor="let user of users">
+          <mat-chip color="primary" class="my-2">
+            <mat-chip-avatar>
+              <mat-icon>person</mat-icon>
+            </mat-chip-avatar>
+            {{ user.username }}
+          </mat-chip>
+        </mat-chip-list>
+      </ng-container>
       <!-- <a routerLink="/project-detail">click me</a> -->
 
       <div class="center my-3" *ngIf="loadMore$ | async">

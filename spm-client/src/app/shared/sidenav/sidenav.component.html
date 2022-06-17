@@ -68,23 +68,14 @@
         <mat-icon (click)="toggleSideNav()">menu</mat-icon>
       </button>
       <span class="px-2">SPM</span>
-      <button mat-button [routerLink]="'/manager'">
-        <mat-icon>home</mat-icon> Home
-      </button>
-
-      <button mat-button [matMenuTriggerFor]="projects">Projects</button>
-      <mat-menu #projects="matMenu">
-        <button mat-menu-item>Project 1</button>
-        <button mat-menu-item>Project 2</button>
-      </mat-menu>
-
-      <!-- <mat-form-field class="example-full-width mx-2" appearance="fill">
-        <mat-label>Search</mat-label>
-        <input matInput placeholder="" />
-      </mat-form-field> -->
+      <button mat-button><mat-icon>home</mat-icon> Home</button>
 
       <!-- search -->
-      <mat-form-field appearance="fill" class="searchForm">
+      <mat-form-field
+        appearance="fill"
+        class="searchForm"
+        *ngIf="(isLoggedIn$ | async) && (isManager$ | async)"
+      >
         <!-- <mat-label>Search</mat-label> -->
         <input
           type="text"
@@ -128,7 +119,12 @@
 
       <span class="example-spacer"></span>
 
-      <button mat-button routerLink="/profile" *ngIf="isLoggedIn$ | async">
+      <button
+        mat-button
+        routerLink="/profile"
+        *ngIf="isLoggedIn$ | async"
+        [matTooltip]="(currentUser$ | async)?.username"
+      >
         <mat-icon>person</mat-icon>
         Profile
       </button>

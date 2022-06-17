@@ -57,9 +57,12 @@
         <mat-hint>Assign Employees to Project</mat-hint>
         <mat-label>Employees</mat-label>
         <mat-select multiple [(value)]="employees">
-          <mat-option *ngFor="let user of users" [value]="user">{{
-            user.username + " : " + user.email
-          }}</mat-option>
+          <mat-option
+            *ngFor="let user of users"
+            [value]="user"
+            [matTooltip]="user.designation"
+            >{{ user.username }}</mat-option
+          >
         </mat-select>
       </mat-form-field>
 

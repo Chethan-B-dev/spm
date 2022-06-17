@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import {
   IAppUser,
+  IEditProfileRequest,
   ILoginRequest,
   ILoginResponse,
   ISignUpRequest,
@@ -15,8 +16,8 @@ import { handleError } from "../shared/utility/error";
   providedIn: "root",
 })
 export class AuthService {
-  private authUrl: string = "http://localhost:8080/api/login";
-  private signUpUrl: string = "http://localhost:8080/api/auth/user/save";
+  private loginUrl: string = "http://localhost:8080/api/login";
+  private authUrl: string = "http://localhost:8080/api/auth";
   private currentUserSubject = new BehaviorSubject<IAppUser>(this.getUser());
   currentUser$: Observable<IAppUser> = this.currentUserSubject.asObservable();
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
@@ -25,19 +26,27 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   get currentUser(): IAppUser {
-    return this.currentUserSubject.value;
+    return this.getUser();
   }
 
   login(loginData: ILoginRequest): Observable<ILoginResponse> {
-    return this.http.post<ILoginResponse>(this.authUrl, loginData).pipe(
+    return this.http.post<ILoginResponse>(this.loginUrl, loginData).pipe(
       tap((loginResponse) => this.manageUserState(loginResponse)),
+      catchError(handleError)
+    );
+  }
+
+  editProfile(editData: IEditProfileRequest): Observable<IAppUser> {
+    editData.designation = editData.designation || null;
+    return this.http.put<IAppUser>(`${this.authUrl}/user/edit`, editData).pipe(
+      tap((user) => this.setUser(user)),
       catchError(handleError)
     );
   }
 
   signup(signupData: ISignUpRequest): Observable<IAppUser> {
     return this.http
-      .post<IAppUser>(this.signUpUrl, signupData)
+      .post<IAppUser>(`${this.authUrl}/user/save`, signupData)
       .pipe(catchError(handleError));
   }
 
@@ -80,6 +89,7 @@ export class AuthService {
 
   setUser(user: IAppUser): void {
     this.currentUserSubject.next(user);
+    localStorage.setItem("user", JSON.stringify(user));
   }
 
   getUser(): IAppUser {

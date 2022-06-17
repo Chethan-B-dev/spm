@@ -6,6 +6,7 @@ export interface IAppUser {
   status: UserStatus;
   role: UserRole;
   phone: string;
+  designation?: UserDesignation;
   ranking?: number;
 }
 
@@ -27,6 +28,12 @@ export interface ISignUpRequest {
   phone: string;
 }
 
+export interface IEditProfileRequest {
+  username: string;
+  phone: string;
+  designation: UserDesignation;
+}
+
 export interface ILoginResponse {
   token: string;
   user: IAppUser;
@@ -42,4 +49,10 @@ export enum UserRole {
   ADMIN = "ADMIN",
   MANAGER = "MANAGER",
   EMPLOYEE = "EMPLOYEE",
+}
+
+export enum UserDesignation {
+  DEVELOPER = "DEVELOPER",
+  TESTER = "TESTER",
+  DEVOPS = "DEVOPS",
 }

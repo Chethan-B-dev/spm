@@ -21,6 +21,7 @@ import { TopNavComponent } from "./top-nav/top-nav.component";
 import { AdminApiService } from "./services/admin-api.service";
 import { HttpClientModule } from "@angular/common/http";
 import { SnackbarService } from "./services/snackbar.service";
+import { ReactiveFormsModule } from "@angular/forms";
 @NgModule({
   declarations: [
     SidenavComponent,
@@ -43,6 +44,7 @@ import { SnackbarService } from "./services/snackbar.service";
     AuthModule,
     MaterialModule,
     HttpClientModule,
+    ReactiveFormsModule,
   ],
   exports: [
     SidenavComponent,

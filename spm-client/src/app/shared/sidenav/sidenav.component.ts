@@ -26,6 +26,7 @@ import { AddProjectComponent } from "src/app/manager/dialogs/add-project/add-pro
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { EditProfileComponent } from "../dialogs/edit-profile/edit-profile.component";
 import { ITodo } from "../interfaces/todo.interface";
+import { IAppUser, UserRole } from "../interfaces/user.interface";
 import { SnackbarService } from "../services/snackbar.service";
 import {
   DataType,
@@ -60,6 +61,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   private searchTermSubject = new Subject<string>();
   searchTerm$ = this.searchTermSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
+  currentUser$: Observable<IAppUser> = this.authService.currentUser$;
 
   constructor(
     private dialog: MatDialog,
@@ -133,6 +135,20 @@ export class SidenavComponent implements OnInit, OnDestroy {
         return `/manager/project-detail/${searchData.id}`;
     }
   }
+
+  // getHomeLink(currentUser: IAppUser): void {
+  //   switch (currentUser.role) {
+  //     case UserRole.MANAGER:
+  //       this.router.navigate(["manager"]);
+  //       break;
+  //     case UserRole.EMPLOYEE:
+  //       this.router.navigate(["employee"]);
+  //       break;
+  //     case UserRole.ADMIN:
+  //       this.router.navigate(["admin"]);
+  //       break;
+  //   }
+  // }
 
   toggleNotifications(): void {
     const overlay = this.notifications.nativeElement as HTMLElement;
