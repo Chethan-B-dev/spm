@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   OnDestroy,
@@ -7,72 +6,58 @@ import {
   Renderer2,
   ViewChild,
 } from "@angular/core";
-import { FormBuilder, FormGroup } from "@angular/forms";
 import { MatDialog } from "@angular/material";
 import { Router } from "@angular/router";
-import { BehaviorSubject, EMPTY, Observable, of, Subject } from "rxjs";
+import { EMPTY, Observable, of, Subject } from "rxjs";
 import {
   catchError,
   debounceTime,
   distinctUntilChanged,
-  filter,
-  map,
   switchMap,
   takeUntil,
-  tap,
 } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { AddProjectComponent } from "src/app/manager/dialogs/add-project/add-project.component";
 import { ManagerService } from "src/app/manager/services/manager.service";
-import { EditProfileComponent } from "../dialogs/edit-profile/edit-profile.component";
-import { ITodo } from "../interfaces/todo.interface";
-import { IAppUser, UserRole } from "../interfaces/user.interface";
+import { IAppUser } from "../interfaces/user.interface";
 import { SnackbarService } from "../services/snackbar.service";
-import {
-  DataType,
-  ISearchData,
-  ISearchGroup,
-  ISearchResult,
-} from "../utility/common";
+import { DataType, ISearchData, ISearchGroup } from "../utility/common";
 
-export interface StateGroup {
-  letter: string;
-  names: string[];
-}
-
-export const _filter = (opt: string[], value: string): string[] => {
-  const filterValue = value.toLowerCase();
-
-  return opt.filter((item) => item.toLowerCase().includes(filterValue));
-};
 @Component({
   selector: "app-sidenav",
   templateUrl: "./sidenav.component.html",
   styleUrls: ["./sidenav.component.scss"],
 })
 export class SidenavComponent implements OnInit, OnDestroy {
-  isExpanded: boolean = false;
+  @ViewChild("notifications", { static: false }) notifications: ElementRef;
+  isExpanded = false;
   isManager$: Observable<boolean>;
   isEmployee$: Observable<boolean>;
   isAdmin$: Observable<boolean>;
-  isLoggedIn$: Observable<boolean> = this.authService.isLoggedIn$;
-  @ViewChild("notifications", { static: false }) notifications: ElementRef;
+  isLoggedIn$: Observable<boolean>;
   searchResults$: Observable<ISearchGroup[]>;
+  currentUser$: Observable<IAppUser>;
   private searchTermSubject = new Subject<string>();
   searchTerm$ = this.searchTermSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
-  currentUser$: Observable<IAppUser>;
 
   constructor(
     private dialog: MatDialog,
-    private authService: AuthService,
-    private managerService: ManagerService,
-    private snackbarService: SnackbarService,
+    private readonly authService: AuthService,
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService,
     private router: Router,
     private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
+    this.isLoggedIn$ = this.authService.isLoggedIn$.pipe(
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
+    );
+
     this.currentUser$ = this.authService.currentUser$.pipe(
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
@@ -104,8 +89,8 @@ export class SidenavComponent implements OnInit, OnDestroy {
 
     this.searchResults$ = this.searchTerm$.pipe(
       takeUntil(this.destroy$),
-      distinctUntilChanged(),
       debounceTime(500),
+      distinctUntilChanged(),
       switchMap((searchTerm) =>
         !searchTerm ? of([]) : this.managerService.globalSearch(searchTerm)
       ),

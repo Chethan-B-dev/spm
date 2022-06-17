@@ -3,9 +3,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
-import { ManagerService } from "src/app/manager/services/manager.service";
 import {
-  IAppUser,
   ILoginRequest,
   ILoginResponse,
   UserRole,
@@ -23,8 +21,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
-    private snackbarService: SnackbarService,
+    private readonly authService: AuthService,
+    private readonly snackbarService: SnackbarService,
     private router: Router
   ) {}
 
@@ -51,7 +49,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((response: ILoginResponse) => {
-        const user: IAppUser = response.user;
+        const user = response.user;
         this.snackbarService.showSnackBar(`Welcome ${user.username}`);
         switch (user.role) {
           case UserRole.MANAGER:

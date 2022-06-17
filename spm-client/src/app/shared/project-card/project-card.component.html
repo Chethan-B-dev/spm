@@ -29,6 +29,7 @@
     >
     <mat-chip
       matTooltip="click here to view employees"
+      [matTooltipPosition]="'right'"
       (click)="openShowEmployeesDialog(project)"
       >Employees - {{ project.users?.length }}</mat-chip
     >
@@ -45,7 +46,6 @@
   <mat-card-content>
     <p>{{ project.description }}</p>
   </mat-card-content>
-  <!-- todo: calculate progress based on tasks completed -->
   <app-progress-bar [value]="projectProgress"></app-progress-bar>
   <div class="row">
     <div class="col-md-4 left" *ngIf="showAddEmps">
@@ -61,6 +61,7 @@
             *ngFor="let user of users"
             [value]="user"
             [matTooltip]="user.designation"
+            [matTooltipPosition]="'below'"
             >{{ user.username }}</mat-option
           >
         </mat-select>

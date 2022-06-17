@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
+import { environment } from "src/environments/environment";
 import {
   IAppUser,
   IEditProfileRequest,
@@ -16,10 +17,10 @@ import { handleError } from "../shared/utility/error";
   providedIn: "root",
 })
 export class AuthService {
-  private loginUrl: string = "http://localhost:8080/api/login";
-  private authUrl: string = "http://localhost:8080/api/auth";
+  private loginUrl = environment.loginUrl;
+  private authUrl = environment.authUrl;
   private currentUserSubject = new BehaviorSubject<IAppUser>(this.getUser());
-  currentUser$: Observable<IAppUser> = this.currentUserSubject.asObservable();
+  currentUser$ = this.currentUserSubject.asObservable();
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
@@ -51,31 +52,26 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    const token: string = this.getToken();
-    return (
-      token &&
-      !this.isTokenExpired(token) &&
-      !!this.getUser() &&
-      !!this.currentUser
-    );
+    const token = this.getToken();
+    return token && !this.isTokenExpired(token) && !!this.getUser();
   }
 
   isManager(): boolean {
-    const user: IAppUser = this.getUser();
+    const user = this.getUser();
     return user && user.role === UserRole.MANAGER;
   }
 
   isEmployee(): boolean {
-    const user: IAppUser = this.getUser();
+    const user = this.getUser();
     return user && user.role === UserRole.EMPLOYEE;
   }
 
   isAdmin(): boolean {
-    const user: IAppUser = this.getUser();
+    const user = this.getUser();
     return user && user.role === UserRole.ADMIN;
   }
 
-  isTokenExpired(token: string) {
+  isTokenExpired(token: string): boolean {
     const expiry = JSON.parse(atob(token.split(".")[1])).exp;
     return Math.floor(new Date().getTime() / 1000) >= expiry;
   }
@@ -100,7 +96,7 @@ export class AuthService {
     return localStorage.getItem("token");
   }
 
-  logout() {
+  logout(): void {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     this.setUser(null);

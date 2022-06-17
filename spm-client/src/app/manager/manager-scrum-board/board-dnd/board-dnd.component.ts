@@ -25,10 +25,9 @@ export class BoardDndComponent implements OnInit, OnChanges, OnDestroy {
   lanes$: Observable<ILane[]>;
   private readonly refreshLane$ = new BehaviorSubject<void>(null);
   private readonly destroy$ = new Subject<void>();
-  constructor(private snackbarService: SnackbarService) {}
+  constructor(private readonly snackbarService: SnackbarService) {}
 
   ngOnInit(): void {
-    //todo: connect actual todos
     this.lanes$ = this.refreshLane$.pipe(
       takeUntil(this.destroy$),
       switchMap(() =>
@@ -36,8 +35,8 @@ export class BoardDndComponent implements OnInit, OnChanges, OnDestroy {
           TodoStatusOptions.map((todoStatus) => ({
             title: todoStatus.replace("_", " "),
             todos: this.todos
-              .filter((todo: ITodo) => todo.status === todoStatus)
-              .sort((a: ITodo, b: ITodo) => b.id - a.id),
+              .filter((todo) => todo.status === todoStatus)
+              .sort((a, b) => b.id - a.id),
           }))
         )
       ),

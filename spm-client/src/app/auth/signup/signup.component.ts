@@ -20,8 +20,8 @@ export class SignupComponent implements OnInit {
   private readonly destroy$ = new Subject<void>();
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
-    private snackbarService: SnackbarService,
+    private readonly authService: AuthService,
+    private readonly snackbarService: SnackbarService,
     private router: Router
   ) {}
 

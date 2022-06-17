@@ -1,43 +1,20 @@
 // angular
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
-  ViewChild,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 
 // rxjs
-import {
-  BehaviorSubject,
-  combineLatest,
-  EMPTY,
-  Observable,
-  Subject,
-} from "rxjs";
-import {
-  catchError,
-  filter,
-  map,
-  switchMap,
-  takeUntil,
-  tap,
-} from "rxjs/operators";
+import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
+import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
 
 // services
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../services/manager.service";
 
 // interfaces
+import { IIssue } from "src/app/shared/interfaces/issue.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { ITask } from "src/app/shared/interfaces/task.interface";
-import { IIssue } from "src/app/shared/interfaces/issue.interface";
-import { relative } from "path";
 
 @Component({
   selector: "app-manager-project-detail",
@@ -45,20 +22,19 @@ import { relative } from "path";
   styleUrls: ["./manager-project-detail.component.scss"],
 })
 export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
-  defaultTaskCategory: string = "ALL";
+  defaultTaskCategory = "ALL";
   private projectId: number;
   project$: Observable<IProject>;
   tasks$: Observable<ITask[]>;
   issues$: Observable<IIssue[]>;
-  private readonly destroy$ = new Subject();
-  showIssues: boolean = false;
+  private readonly destroy$ = new Subject<void>();
+  showIssues = false;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private managerService: ManagerService,
+    private readonly managerService: ManagerService,
     public dialog: MatDialog,
-    private snackbarService: SnackbarService
+    private readonly snackbarService: SnackbarService
   ) {}
 
   onTaskCategoryChange(selectedTaskCategory: string): void {
@@ -72,8 +48,8 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
-      // this.managerService.setProjectId(this.projectId);
     });
+
     // ! we are refreshing in case we update project information
     this.project$ = this.managerService.refresh$.pipe(
       takeUntil(this.destroy$),

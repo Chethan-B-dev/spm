@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog, MatDialogConfig } from "@angular/material";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
-import { catchError, switchMap, takeUntil, tap } from "rxjs/operators";
+import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { ITask } from "src/app/shared/interfaces/task.interface";
 import {
   getTodoStatistics,
@@ -26,14 +26,14 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private route: ActivatedRoute,
-    private managerService: ManagerService,
-    private snackbarService: SnackbarService
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      this.taskId = +params.get("taskId");
-    });
+    this.route.paramMap.subscribe(
+      (params: ParamMap) => (this.taskId = +params.get("taskId"))
+    );
 
     this.task$ = this.managerService.refresh$.pipe(
       switchMap(() => this.managerService.getTaskById(this.taskId)),
@@ -59,9 +59,6 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    // dialogConfig.width = "400px";
-
-    // todo: send task here
     dialogConfig.data = this.taskId;
 
     const dialogRef = this.dialog.open(CreateTodoComponent, dialogConfig);
@@ -72,7 +69,7 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
   }
 
   getCompletedPercentage(todos: ITodo[]): number {
-    const todoStatistics: TodoStatistics = getTodoStatistics(todos);
+    const todoStatistics = getTodoStatistics(todos);
     return (todoStatistics[TodoStatus.DONE] / todos.length) * 100;
   }
 }

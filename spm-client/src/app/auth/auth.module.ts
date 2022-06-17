@@ -1,12 +1,10 @@
-import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { LoginComponent } from "./login/login.component";
-import { SignupComponent } from "./signup/signup.component";
+import { NgModule } from "@angular/core";
+import { ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { MaterialModule } from "../shared/material/material.module";
-import { ReactiveFormsModule } from "@angular/forms";
-import { HTTP_INTERCEPTORS } from "@angular/common/http";
-import { AuthInterceptor } from "./auth.interceptor";
+import { LoginComponent } from "./login/login.component";
+import { SignupComponent } from "./signup/signup.component";
 @NgModule({
   declarations: [LoginComponent, SignupComponent],
   imports: [RouterModule, CommonModule, MaterialModule, ReactiveFormsModule],

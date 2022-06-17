@@ -1,10 +1,6 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from "@angular/material/dialog";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { IProject } from "src/app/shared/interfaces/project.interface";
@@ -20,11 +16,11 @@ import { ManagerService } from "../../services/manager.service";
 export class CreateTaskComponent implements OnInit, OnDestroy {
   createTaskForm: FormGroup;
   project: IProject;
-  readonly destroy$ = new Subject();
+  readonly destroy$ = new Subject<void>();
   constructor(
     private fb: FormBuilder,
-    private managerService: ManagerService,
-    private snackbarService: SnackbarService,
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService,
     private dialogRef: MatDialogRef<CreateTaskComponent>,
     @Inject(MAT_DIALOG_DATA) project
   ) {
@@ -53,7 +49,7 @@ export class CreateTaskComponent implements OnInit, OnDestroy {
   }
 
   createTask(): void {
-    const taskRequestDTO: ITaskRequestDTO = this.createTaskForm.value;
+    const taskRequestDTO = this.createTaskForm.value as ITaskRequestDTO;
 
     if (taskRequestDTO.deadLine.getTime() < new Date().getTime()) {
       this.snackbarService.showSnackBar(

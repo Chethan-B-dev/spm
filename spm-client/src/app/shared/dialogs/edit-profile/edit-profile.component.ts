@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
-import { EMPTY, Observable, Subject } from "rxjs";
+import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import {
@@ -24,8 +23,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private readonly authService: AuthService,
-    private readonly snackbarService: SnackbarService,
-    private router: Router
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit() {
@@ -66,7 +64,6 @@ export class EditProfileComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((user) => {
-        console.log(user);
         this.currentUser = user;
         this.snackbarService.showSnackBar(`Your profile has been updated`);
       });

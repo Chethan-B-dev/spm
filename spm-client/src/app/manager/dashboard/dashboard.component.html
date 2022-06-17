@@ -14,9 +14,6 @@
 
       <app-project-card
         *ngFor="let project of projects"
-        appSpacing
-        [margin]="100"
-        [padding]="10"
         [project]="project"
       ></app-project-card>
     </div>
@@ -34,6 +31,7 @@
             color="primary"
             class="my-2"
             [matTooltip]="user.designation"
+            [matTooltipPosition]="'right'"
           >
             <mat-chip-avatar>
               <mat-icon>person</mat-icon>

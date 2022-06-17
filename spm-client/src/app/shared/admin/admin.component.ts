@@ -1,15 +1,9 @@
 // angular
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 // material
 import { MatDialog } from "@angular/material";
 //rxjs
-import {
-  BehaviorSubject,
-  combineLatest,
-  EMPTY,
-  Observable,
-  Subject,
-} from "rxjs";
+import { BehaviorSubject, combineLatest, EMPTY, Subject } from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -33,7 +27,7 @@ import { stopLoading } from "../utility/loading";
   templateUrl: "./admin.component.html",
   styleUrls: ["./admin.component.scss"],
 })
-export class AdminComponent implements OnInit, OnDestroy {
+export class AdminComponent implements OnDestroy {
   defaultUserCategory: string = "UNVERIFIED";
 
   private searchTermSubject = new BehaviorSubject<string>("");
@@ -44,7 +38,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject();
 
-  users$: Observable<IAppUser[]> = this.adminApiService.refresh$.pipe(
+  users$ = this.adminApiService.refresh$.pipe(
     takeUntil(this.destroy$),
     switchMap(() => this.usersWithoutRefresh$),
     tap(() => stopLoading(this.isLoadingSubject)),
@@ -55,7 +49,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     })
   );
 
-  usersWithoutRefresh$: Observable<IAppUser[]> = combineLatest([
+  usersWithoutRefresh$ = combineLatest([
     this.adminApiService.getAllUsers(),
     this.adminApiService.userCategorySelectedAction$,
     this.searchTerm$.pipe(debounceTime(500), distinctUntilChanged()),
@@ -74,7 +68,7 @@ export class AdminComponent implements OnInit, OnDestroy {
           this.filterUserBySearchTerm(user, searchTerm)
         )
           return true;
-        else return false;
+        return false;
       });
     }),
     catchError((err) => {
@@ -86,11 +80,9 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialog: MatDialog,
-    private adminApiService: AdminApiService,
-    private snackbarService: SnackbarService
+    private readonly adminApiService: AdminApiService,
+    private readonly snackbarService: SnackbarService
   ) {}
-
-  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.destroy$.next();

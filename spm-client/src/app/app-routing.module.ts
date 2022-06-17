@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { Routes, RouterModule } from "@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 import { AdminGuard } from "./admin/admin.guard";
 import { AuthGuard } from "./auth/auth.guard";
 import { LoginComponent } from "./auth/login/login.component";
@@ -39,11 +39,23 @@ const routes: Routes = [
   { path: "employee-scrum-board", component: EmployeeScrumBoardComponent },
 
   { path: "reporting-dashboard", component: ReportsDashboardComponent },
-  { path: "reporting-all-progress-dashboard", component: ProgressReportsDashboardComponent  },
-  { path: "reporting-each-project-progress", component: EachProjectProgressBoardComponent },
-  { path: "reporting-burn-down-chart", component: BurnDownChartDashboardComponent },
+  {
+    path: "reporting-all-progress-dashboard",
+    component: ProgressReportsDashboardComponent,
+  },
+  {
+    path: "reporting-each-project-progress",
+    component: EachProjectProgressBoardComponent,
+  },
+  {
+    path: "reporting-burn-down-chart",
+    component: BurnDownChartDashboardComponent,
+  },
   { path: "reporting-emp-report-list", component: EmpReportListComponent },
-  { path: "reporting-employee-chart", component: EmployeeReportsDashboardComponent },
+  {
+    path: "reporting-employee-chart",
+    component: EmployeeReportsDashboardComponent,
+  },
   { path: "reporting-org-chart", component: OrgChartDashboardComponent },
 
   // this is for 404 request

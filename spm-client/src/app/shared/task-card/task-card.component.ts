@@ -8,13 +8,9 @@ import { DataType, PieData } from "../utility/common";
   templateUrl: "./task-card.component.html",
   styleUrls: ["./task-card.component.scss"],
 })
-export class TaskCardComponent implements OnInit {
+export class TaskCardComponent {
   @Input() task: ITask;
   @Input() showBackBtn: boolean;
-
-  constructor() {}
-
-  ngOnInit(): void {}
 
   get pieChartData(): PieData<ITodo> {
     return { type: DataType.TODO, data: this.task.todos } as PieData<ITodo>;

@@ -1,7 +1,7 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { EMPTY, Observable, Subject } from "rxjs";
+import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
@@ -20,8 +20,8 @@ export class CreateTodoComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CreateTodoComponent>,
     @Inject(MAT_DIALOG_DATA) taskId,
-    private managerService: ManagerService,
-    private snackbarService: SnackbarService
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService
   ) {
     this.taskId = taskId;
   }

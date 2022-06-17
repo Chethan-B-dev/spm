@@ -5,10 +5,7 @@ import {
   TaskStatistics,
   TaskStatus,
 } from "src/app/shared/interfaces/task.interface";
-import {
-  IAppUser,
-  IAppUserRanking,
-} from "src/app/shared/interfaces/user.interface";
+import { IAppUserRanking } from "src/app/shared/interfaces/user.interface";
 
 @Component({
   selector: "app-show-employees",

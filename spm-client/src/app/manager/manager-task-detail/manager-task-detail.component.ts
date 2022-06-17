@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, ParamMap, Router } from "@angular/router";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
-import { catchError, switchMap, takeUntil, tap } from "rxjs/operators";
+import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { ITask } from "src/app/shared/interfaces/task.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../services/manager.service";
@@ -17,8 +17,8 @@ export class ManagerTaskDetailComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   constructor(
     private route: ActivatedRoute,
-    private managerService: ManagerService,
-    private snackbarService: SnackbarService
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +40,4 @@ export class ManagerTaskDetailComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
-  navigateToTaskDetail(taskId: number): void {}
 }

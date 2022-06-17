@@ -1,11 +1,6 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { MatSnackBar } from "@angular/material";
-import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from "@angular/material/dialog";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
@@ -17,15 +12,14 @@ import { ManagerService } from "../../services/manager.service";
   styleUrls: ["./add-project.component.scss"],
 })
 export class AddProjectComponent implements OnInit, OnDestroy {
-  private readonly destroy$ = new Subject();
   createProjectForm: FormGroup;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AddProjectComponent>,
-    @Inject(MAT_DIALOG_DATA) data,
-    private managerService: ManagerService,
-    private snackbarService: SnackbarService
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -47,7 +41,6 @@ export class AddProjectComponent implements OnInit, OnDestroy {
     let projectDeadLine: Date = this.createProjectForm.value.toDate;
 
     if (new Date().getTime() > projectDeadLine.getTime()) {
-      console.log("came inside");
       this.snackbarService.showSnackBar(
         "Project deadline cannot precede current date"
       );

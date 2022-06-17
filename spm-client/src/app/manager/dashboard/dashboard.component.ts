@@ -21,7 +21,7 @@ import { stopLoading } from "src/app/shared/utility/loading";
   styleUrls: ["./dashboard.component.scss"],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  currentUserPageNumber: number = 1;
+  currentUserPageNumber = 1;
   private isLoadingSubject = new BehaviorSubject<boolean>(true);
   isLoading$ = this.isLoadingSubject.asObservable();
   loadMore$: Observable<boolean>;
@@ -30,8 +30,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private managerService: ManagerService,
-    private snackbarService: SnackbarService
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {

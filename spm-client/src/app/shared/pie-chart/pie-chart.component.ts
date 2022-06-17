@@ -1,4 +1,3 @@
-import { not } from "@angular/compiler/src/output/output_ast.js";
 import { Component, Input, OnInit } from "@angular/core";
 import * as CanvasJS from "../../../assets/canvasjs.min.js";
 import {
@@ -17,8 +16,6 @@ import { DataType, myTitleCase, PieData } from "../utility/common.js";
 export class PieChartComponent implements OnInit {
   @Input() pieData: PieData<any>;
   todoStats: TodoStatistics;
-
-  constructor() {}
 
   ngOnInit() {
     switch (this.pieData.type) {
@@ -51,7 +48,7 @@ export class PieChartComponent implements OnInit {
   private pieChartData(): { y: number; name: string }[] {
     const pieData: { y: number; name: string }[] = [];
     if (this.pieData.type === DataType.TODO) {
-      const noTodos: boolean = TodoStatusOptions.every(
+      const noTodos = TodoStatusOptions.every(
         (todoStatus) => this.todoStats[todoStatus] === 0
       );
       if (noTodos)
@@ -61,7 +58,7 @@ export class PieChartComponent implements OnInit {
             name: `No ${myTitleCase(this.pieData.type)}'s have been added yet`,
           },
         ];
-      TodoStatusOptions.forEach((todoStatus: TodoStatus) => {
+      TodoStatusOptions.forEach((todoStatus) => {
         pieData.push({
           y: this.todoStats[todoStatus],
           name: todoStatus.replace("_", " "),

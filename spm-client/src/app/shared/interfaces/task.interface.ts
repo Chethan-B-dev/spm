@@ -1,5 +1,5 @@
 import { IProject } from "./project.interface";
-import { ITodo, TodoStatus } from "./todo.interface";
+import { ITodo } from "./todo.interface";
 import { IAppUser } from "./user.interface";
 
 export interface ITask {
@@ -33,7 +33,7 @@ export interface TaskStatistics {
 }
 
 export function getTaskStatistics(tasks: ITask[]): TaskStatistics {
-  const TaskStatistics = {
+  const TaskStatistics: TaskStatistics = {
     [TaskStatus.IN_PROGRESS]: 0,
     [TaskStatus.COMPLETED]: 0,
   };

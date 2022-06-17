@@ -39,13 +39,13 @@ import {
 } from "src/app/shared/utility/common";
 // utility
 import { handleError } from "src/app/shared/utility/error";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class ManagerService {
-  //todo: get this url from env variable
-  private managerUrl = "http://localhost:8080/api/manager";
+  private managerUrl = environment.managerUrl;
 
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();

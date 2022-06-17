@@ -2,7 +2,9 @@
   max-width: 490px;
   width: 100%;
   border-radius: 12px;
-  overflow: hidden !important;
+  overflow-x: hidden !important;
+  max-height: 600px;
+  overflow-y: auto;
 
   header {
     --start: 15%;

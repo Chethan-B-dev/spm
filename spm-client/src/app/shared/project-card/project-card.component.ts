@@ -12,7 +12,7 @@ import {
   MatDialogConfig,
   MatDialogRef,
 } from "@angular/material/dialog";
-import { Route, Router } from "@angular/router";
+import { Router } from "@angular/router";
 
 // rxjs
 import { EMPTY, Observable, Subject } from "rxjs";
@@ -28,12 +28,12 @@ import { SnackbarService } from "../services/snackbar.service";
 
 // interfaces
 import { IProject } from "../interfaces/project.interface";
-import { IAppUser } from "../interfaces/user.interface";
 import {
   getTaskStatistics,
   TaskStatistics,
 } from "../interfaces/task.interface";
 import { getProjectProgress } from "../interfaces/todo.interface";
+import { IAppUser } from "../interfaces/user.interface";
 
 @Component({
   selector: "app-project-card",
@@ -42,12 +42,12 @@ import { getProjectProgress } from "../interfaces/todo.interface";
 })
 export class ProjectCardComponent implements OnInit, OnDestroy {
   @Input() project: IProject;
-  @Input() showAddTask: boolean = false;
-  @Input() showBackButton: boolean = false;
-  @Input() showAddEmps: boolean = false;
-  @Input() showIssueStats: boolean = false;
-  @Input() showViewDetailsButton: boolean = true;
-  @Output() showIssues: EventEmitter<void> = new EventEmitter<void>();
+  @Input() showAddTask = false;
+  @Input() showBackButton = false;
+  @Input() showAddEmps = false;
+  @Input() showIssueStats = false;
+  @Input() showViewDetailsButton = true;
+  @Output() showIssues = new EventEmitter<void>();
   users$?: Observable<IAppUser[]> | undefined;
   employees: IAppUser[] = [];
   projectProgress: number;
@@ -56,8 +56,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialog: MatDialog,
-    private managerService: ManagerService,
-    private snackbarService: SnackbarService,
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService,
     private router: Router
   ) {}
 
@@ -89,7 +89,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   addEmployees(): void {
-    if (this.employees.length === 0) {
+    if (!this.employees.length) {
       this.snackbarService.showSnackBar("Please add Employees before syncing");
       return;
     }
@@ -124,8 +124,6 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    // dialogConfig.width = "400px";
-
     dialogConfig.data = project;
 
     const dialogRef = this.dialog.open(CreateTaskComponent, dialogConfig);
@@ -147,7 +145,6 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    // dialogConfig.width = "400px";
 
     dialogConfig.data = project;
 
@@ -162,7 +159,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   showAddTaskButton(): boolean {
-    const isExpired: boolean =
+    const isExpired =
       new Date().getTime() > new Date(this.project.toDate).getTime();
     return !isExpired;
   }

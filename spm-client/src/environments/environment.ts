@@ -4,6 +4,11 @@
 
 export const environment = {
   production: false,
+  employeeUrl: "http://localhost:8080/api/employee",
+  managerUrl: "http://localhost:8080/api/manager",
+  adminUrl: "http://localhost:8080/api/admin",
+  authUrl: "http://localhost:8080/api/auth",
+  loginUrl: "http://localhost:8080/api/login",
 };
 
 /*

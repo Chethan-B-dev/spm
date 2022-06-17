@@ -7,7 +7,6 @@ import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { stopLoading } from "src/app/shared/utility/loading";
 import { EmployeeService } from "../employee.service";
-declare let Highcharts: any;
 
 @Component({
   selector: "app-employee-dashboard",
@@ -15,7 +14,7 @@ declare let Highcharts: any;
   styleUrls: ["./employee-dashboard.component.scss"],
 })
 export class EmployeeDashboardComponent implements OnInit, OnDestroy {
-  currentUser: IAppUser = this.authService.currentUser;
+  currentUser = this.authService.currentUser;
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
   private isLoadingSubject = new BehaviorSubject<boolean>(true);
@@ -23,12 +22,12 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private authService: AuthService,
-    private snackbarService: SnackbarService,
-    private employeeService: EmployeeService
+    private readonly authService: AuthService,
+    private readonly snackbarService: SnackbarService,
+    private readonly employeeService: EmployeeService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.projects$ = this.employeeService.projects$.pipe(
       takeUntil(this.destroy$),
       tap((_) => stopLoading(this.isLoadingSubject)),
