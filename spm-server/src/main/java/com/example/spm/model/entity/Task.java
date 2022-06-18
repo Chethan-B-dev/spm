@@ -39,9 +39,11 @@ public class Task {
     @Column(nullable = false)
     private String name;
     private String description;
+    @Column(nullable = false)
     private TaskStatus status;
     private LocalDate createdDate;
     private LocalDate deadLine;
+    @Column(nullable = false)
     private TaskPriority priority;
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(

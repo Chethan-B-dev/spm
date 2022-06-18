@@ -29,6 +29,7 @@ public class Issue {
 
     @Column(nullable = false)
     private String summary;
+    @Column(nullable = false)
     private IssueStatus status;
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(

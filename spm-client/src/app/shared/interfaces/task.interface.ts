@@ -41,7 +41,7 @@ export function getTaskStatistics(tasks: ITask[]): TaskStatistics {
   return TaskStatistics;
 }
 
-export const TaskStatusOptions = [TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED];
+export const TaskStatusOptions = [...Object.keys(TaskStatus)];
 
 export enum TaskPriority {
   LOW = "LOW",

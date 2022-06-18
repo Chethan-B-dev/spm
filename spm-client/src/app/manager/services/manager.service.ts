@@ -1,5 +1,5 @@
 // angular
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 // rxjs
 import {
@@ -27,7 +27,6 @@ import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   ITask,
   ITaskRequestDTO,
-  TaskStatus,
 } from "src/app/shared/interfaces/task.interface";
 import { ITodo } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
@@ -71,11 +70,7 @@ export class ManagerService {
   private loadMoreUsersSubject = new ReplaySubject<boolean>(1);
   loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
 
-  refresh(): void {
-    this.refreshSubject.next();
-  }
-
-  projects$: Observable<IProject[]> = this.http
+  projects$ = this.http
     .get<IProject[]>(`${this.managerUrl}/projects`)
     .pipe(shareReplay(1), catchError(handleError));
 
@@ -93,7 +88,7 @@ export class ManagerService {
   );
 
   // todo: this is not used anywhere, keeping it as reference to use in the future
-  selectedSingleProject$: Observable<IProject> = combineLatest(
+  selectedSingleProject$ = combineLatest(
     this.projectsWithAdd$,
     this.projectId$
   ).pipe(
@@ -103,7 +98,7 @@ export class ManagerService {
     catchError(handleError)
   );
 
-  users$: Observable<IAppUser[]> = this.userPageNumber$.pipe(
+  users$ = this.userPageNumber$.pipe(
     concatMap((pageNumber) => this.getMoreUsers(pageNumber)),
     tap((pagedUsers: IPagedData<IAppUser>) => {
       if (
@@ -120,15 +115,12 @@ export class ManagerService {
     catchError(handleError)
   );
 
-  tasks$: Observable<ITask[]> = this.selectedProject$.pipe(
+  tasks$ = this.selectedProject$.pipe(
     switchMap((project) => of(project.tasks)),
     catchError(handleError)
   );
 
-  tasksWithAdd$: Observable<ITask[]> = merge(
-    this.tasks$,
-    this.taskInsertedAction$
-  ).pipe(
+  tasksWithAdd$ = merge(this.tasks$, this.taskInsertedAction$).pipe(
     scan(
       (acc, value) => (value instanceof Array ? [...value] : [value, ...acc]),
       [] as ITask[]
@@ -136,7 +128,12 @@ export class ManagerService {
     shareReplay(1),
     catchError(handleError)
   );
+
   constructor(private http: HttpClient) {}
+
+  refresh(): void {
+    this.refreshSubject.next();
+  }
 
   loadMoreUsers(): void {
     this.loadMoreUsersSubject.next(true);
@@ -289,10 +286,8 @@ export class ManagerService {
   }
 
   private mapSearchResults(searchResults: ISearchResult): ISearchGroup[] {
-    const searchGroups: ISearchGroup[] = [];
-    for (const entry of Object.entries(searchResults)) {
-      const key = entry[0];
-      const values = entry[1] as any[];
+    const searchGroups = [] as ISearchGroup[];
+    for (const [key, values] of Object.entries(searchResults)) {
       if (!values.length) continue;
       switch (key) {
         case "projects":

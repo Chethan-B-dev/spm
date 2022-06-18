@@ -1,7 +1,7 @@
 // angular
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
-import { ActivatedRoute, ParamMap, Router } from "@angular/router";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 
 // rxjs
 import { combineLatest, EMPTY, Observable, Subject } from "rxjs";

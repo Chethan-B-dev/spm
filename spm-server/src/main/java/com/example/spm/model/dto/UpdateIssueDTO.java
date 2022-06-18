@@ -1,9 +1,9 @@
 package com.example.spm.model.dto;
 
 import com.example.spm.model.enums.IssueStatus;
-import com.example.spm.model.enums.TodoStatus;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 @Getter
@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @ToString
 @Builder
 public class UpdateIssueDTO {
+    @NotBlank(message = "issue cannot be empty")
     private String summary;
     private IssueStatus status;
     private Integer projectId;

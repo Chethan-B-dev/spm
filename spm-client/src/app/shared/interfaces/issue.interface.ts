@@ -12,6 +12,5 @@ export interface IIssue {
 
 export enum IssueStatus {
   UNRESOLVED = "UNRESOLVED",
-  VIEWED = "VIEWED",
   RESOLVED = "RESOLVED",
 }

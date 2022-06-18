@@ -1,12 +1,8 @@
 package com.example.spm.model.dto;
 
-import com.example.spm.model.enums.TaskPriority;
-import com.example.spm.model.enums.TodoStatus;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -15,6 +11,6 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 public class CreateTodoDTO {
-    @NotNull
+    @NotBlank(message = "todo message cannot be empty")
     private String todoName;
 }

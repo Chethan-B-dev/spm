@@ -17,6 +17,7 @@ import com.example.spm.repository.IssueCommentRepository;
 import com.example.spm.repository.IssueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -39,6 +40,7 @@ public class IssueService {
     }
 
     @Transactional
+    @Modifying
     public Issue updateIssue(UpdateIssueDTO updateIssueDTO, Integer issueId){
         Issue issue = checkIfIssueExists(issueId);
         issue.setSummary(updateIssueDTO.getSummary());

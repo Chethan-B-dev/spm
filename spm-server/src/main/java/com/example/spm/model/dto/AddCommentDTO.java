@@ -2,7 +2,7 @@ package com.example.spm.model.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @ToString
 @Builder
 public class AddCommentDTO {
-    @NotNull
+    @NotBlank(message = "comment cannot be empty")
     private String comment;
     private Integer userId;
 }

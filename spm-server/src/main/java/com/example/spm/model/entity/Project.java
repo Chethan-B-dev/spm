@@ -27,7 +27,6 @@ public class Project {
             generator = "project_sequence"
     )
     private Integer id;
-    // Normal user but the role is the manager
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(
             name = "manager_id",
@@ -38,6 +37,7 @@ public class Project {
     private String name;
     private LocalDate fromDate;
     private LocalDate toDate;
+    @Column(nullable = false)
     private ProjectStatus status;
     private String description;
     @ManyToMany(cascade = CascadeType.MERGE)

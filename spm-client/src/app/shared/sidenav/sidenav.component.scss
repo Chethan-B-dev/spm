@@ -50,10 +50,8 @@ mat-sidenav {
   }
 }
 
-::ng-deep .cdk-overlay-pane {
-  /* Do you changes here */
-  min-width: 450px;
-}
+::ng-deep .cdk-overlay-pane,
 .searchForm {
-  min-width: 450px;
+  /* Do you changes here */
+  min-width: 390px;
 }

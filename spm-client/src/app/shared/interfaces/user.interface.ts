@@ -1,7 +1,7 @@
 export interface IAppUser {
   id: number;
   username: string;
-  password: string;
+  password?: string;
   email: string;
   status: UserStatus;
   role: UserRole;
@@ -56,3 +56,9 @@ export enum UserDesignation {
   TESTER = "TESTER",
   DEVOPS = "DEVOPS",
 }
+
+export interface UserDesignationStatistics {
+  [designation: string]: number;
+}
+
+export const UserDesignations = [...Object.keys(UserDesignation)];
