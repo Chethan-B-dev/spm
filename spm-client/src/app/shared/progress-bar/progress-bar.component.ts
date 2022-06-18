@@ -4,6 +4,7 @@ import {
   OnInit,
   ElementRef,
   AfterViewInit,
+  Renderer2,
 } from "@angular/core";
 
 @Component({
@@ -14,17 +15,16 @@ import {
 export class ProgressBarComponent implements OnInit, AfterViewInit {
   @Input() value: string;
   @Input() text: string;
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
 
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    const degree: number = +this.value ? (+this.value / 100) * 180 : 0;
-    const progressBar: HTMLElement = this.elementRef.nativeElement;
+    const degree = +this.value ? (+this.value / 100) * 180 : 0;
+    const progressBar = this.elementRef.nativeElement as HTMLElement;
     const nodes = progressBar.querySelectorAll(".value");
-    for (let index = 0; index < nodes.length; index++) {
-      const element = nodes[index] as HTMLElement;
-      element.style.transform = `rotate(${degree}deg)`;
-    }
+    Array.from(nodes).forEach((element) =>
+      this.renderer.setStyle(element, "transform", `rotate(${degree}deg)`)
+    );
   }
 }

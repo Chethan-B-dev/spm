@@ -14,34 +14,25 @@ export enum TodoStatus {
   DONE = "DONE",
 }
 
-export const TodoStatusOptions = [
-  TodoStatus.TO_DO,
-  TodoStatus.IN_PROGRESS,
-  TodoStatus.DONE,
-];
+export const TodoStatusOptions = [...Object.keys(TodoStatus)];
 
 export interface TodoStatistics {
   [status: string]: number;
 }
 
 export function getTodoStatistics(todos: ITodo[]): TodoStatistics {
-  const todoStatistics = {
-    TO_DO: 0,
-    IN_PROGRESS: 0,
-    DONE: 0,
+  const todoStatistics: TodoStatistics = {
+    [TodoStatus.TO_DO]: 0,
+    [TodoStatus.IN_PROGRESS]: 0,
+    [TodoStatus.DONE]: 0,
   };
-  todos.forEach((todo) => {
-    todoStatistics[todo.status] += 1;
-  });
-
+  todos.forEach((todo) => (todoStatistics[todo.status] += 1));
   return todoStatistics;
 }
 
 export function getProjectProgress(tasks: ITask[]): number {
-  let completedTasks: number = 0;
-  tasks.forEach((task: ITask) => {
-    if (task.status === TaskStatus.COMPLETED) completedTasks += 1;
-  });
-  if (!completedTasks) return 0;
-  return (completedTasks / tasks.length) * 100;
+  let completedTasks = tasks.filter(
+    (task) => task.status === TaskStatus.COMPLETED
+  ).length;
+  return ((completedTasks / tasks.length) * 100) | 0;
 }
