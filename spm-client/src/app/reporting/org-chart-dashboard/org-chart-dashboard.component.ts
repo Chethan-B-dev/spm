@@ -47,7 +47,7 @@ export class OrgChartDashboardComponent implements OnInit {
 
       series: [{
           type: 'organization',
-          name: 'Highsoft',
+          name: 'Project Name',
           keys: ['from', 'to'],
           data: [
               ['Shareholders', 'Board'],

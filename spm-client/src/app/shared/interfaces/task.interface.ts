@@ -32,6 +32,8 @@ export interface TaskStatistics {
   [status: string]: number;
 }
 
+export const userTasks = [...Object.keys(TaskStatus)];
+
 export function getTaskStatistics(tasks: ITask[]): TaskStatistics {
   const TaskStatistics: TaskStatistics = {
     [TaskStatus.IN_PROGRESS]: 0,
@@ -50,3 +52,12 @@ export enum TaskPriority {
 }
 
 export const TaskPriorityOptions = [...Object.keys(TaskPriority)];
+export interface taskPriority{
+  [priority: string]: number;
+}
+
+// export interface taskStatistics {
+//   [taskStatus: string]: string;
+// }
+
+// export const taskStatus = [...Object.keys(taskSta)]

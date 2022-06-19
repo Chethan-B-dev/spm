@@ -1,8 +1,14 @@
-import { Component, OnInit } from "@angular/core";
-require("highcharts/modules/exporting")(Highcharts);
-require("highcharts/modules/export-data")(Highcharts);
-require("highcharts/modules/annotations")(Highcharts);
+import { Component, OnInit } from '@angular/core';
+import { IProject, ProjectStatus } from "src/app/shared/interfaces/project.interface";
+import { TaskPriority, TaskStatus } from 'src/app/shared/interfaces/task.interface';
+import { TodoStatus } from 'src/app/shared/interfaces/todo.interface';
+import { UserDesignation, UserRole, UserStatus } from 'src/app/shared/interfaces/user.interface';
+import { ReportsService } from '../../services/reports.service';
 
+
+require('highcharts/modules/exporting')(Highcharts);
+require('highcharts/modules/export-data')(Highcharts);
+require('highcharts/modules/annotations')(Highcharts);
 declare let Highcharts: any;
 @Component({
   selector: "app-each-project-progress-board",
@@ -10,13 +16,165 @@ declare let Highcharts: any;
   styleUrls: ["./each-project-progress-board.component.scss"],
 })
 export class EachProjectProgressBoardComponent implements OnInit {
-  constructor() {}
 
+  constructor(private reportService: ReportsService) { }
+
+  project: IProject = {
+    id: 13,
+    manager: {
+      id: 32,
+      email: "test@test2.com",
+      username: "test2",
+      password: "lol",
+      role: UserRole.MANAGER,
+      phone: null,
+      status: UserStatus.VERIFIED,
+    },
+    name: "new p2",
+    fromDate: new Date(""),
+    toDate: new Date(),
+    status: ProjectStatus.IN_PROGRESS,
+    description: "test project 2",
+    users: [
+      {
+        id: 30,
+        email: "test@test1.com",
+        username: "test1",
+        password: "lol",
+        role: UserRole.EMPLOYEE,
+        designation: UserDesignation.DEVELOPER,
+        phone: null,
+        status: UserStatus.VERIFIED,
+      },
+      {
+        id: 31,
+        email: "test@test2.com",
+        username: "test2",
+        password: "lol",
+        role: UserRole.EMPLOYEE,
+        designation: UserDesignation.TESTER,
+        phone: null,
+        status: UserStatus.VERIFIED,
+      },
+      // [1, 1, 0]
+    ],
+    tasks: [
+      {
+        id: 1,
+        name: "testt1",
+        description: "dsafdfsfsdfsdff",
+        status: TaskStatus.IN_PROGRESS,
+        createdDate: new Date(),
+        deadLine: new Date(),
+        priority: TaskPriority.MEDIUM,
+        user: {
+          id: 30,
+          email: "test@test1.com",
+          username: "test1",
+          password: "lol",
+          role: UserRole.EMPLOYEE,
+          phone: "9591833072",
+          status: UserStatus.VERIFIED,
+        },
+        todos: [
+          {
+            id: 3,
+            name: "dsfsddsfs",
+            status: TodoStatus.IN_PROGRESS,
+            createdOn: new Date("2022-06-29"),
+          },
+        ],
+      },
+      {
+        id: 2,
+        name: "test-task 2",
+        description: "dsafdfasdsfsdfsdff",
+        status: TaskStatus.IN_PROGRESS,
+        createdDate: new Date("2022-19-06"),
+        deadLine: new Date("2022-28-06"),
+        priority: TaskPriority.MEDIUM,
+        user: {
+          id: 30,
+          email: "test@test1.com",
+          username: "test1",
+          password: "lol",
+          role: UserRole.EMPLOYEE,
+          phone: "9591833072",
+          status: UserStatus.VERIFIED,
+        },
+        todos: [
+          {
+            id: 4,
+            name: "dsdaaaafsddsfs",
+            status: TodoStatus.IN_PROGRESS,
+            createdOn: new Date("2022-06-29"),
+          },
+        ],
+      },
+    ],
+    issues: [],
+  };
   ngOnInit() {
-    Highcharts.chart("container-donut-chart", {
-      chart: {
-        type: "pie",
-        plotShadow: false,
+
+    // Processing Data start
+
+    //  Processing for Donut Chart and Pie Chart
+    const userStats = this.reportService.getUserDesignationStatistics(this.project);
+
+    console.log(userStats);
+    console.log("Developer count",userStats.DEVELOPER);
+
+    //  Processing for Stacked Bar Graph
+    // ----------------------Hard coded for only one Task-----------------------------
+    const taskStatusBarGraph = this.reportService.getProjectTaskStatistics(this.project.tasks);
+    console.log("Task bar graph",taskStatusBarGraph);
+
+    // Processing Data end
+
+// donut chart start
+
+Highcharts.chart('container-donut-chart', {
+  chart: {
+    type: "pie",
+    plotShadow: false,
+  },
+  credits: {
+    enabled: false
+  },
+  plotOptions: {
+    pie: {
+      innerSize: '99%',
+      borderWidth:50,
+      borderColor: null,
+      slicedOffset: 20,
+      dataLabels: {
+        connectorWidth: 0
+      }
+    }
+  },
+  title: {
+    verticalAlign: 'middle',
+    floating: true,
+    text: 'Donut Chart',
+  },
+  legend: {
+    enabled: false,
+  },
+  series: [{
+    type: 'pie',
+    data: [
+      {name:'Developers',y:userStats.DEVELOPER,color: '#eeeeee'},
+      {name:'Testers',y:userStats.TESTER,color: '#393e46'},
+      {name:'Devops',y:userStats.DEVOPS,color: '#00adb5'},
+      {name:'Quality Analysts',y:1,color: '#506ef9'},
+      // change the value of y in order to change the data
+
+    ]
+  }],
+  exporting: {
+    buttons: {
+      contextButton: {
+        menuItems: ['downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG'],
       },
       credits: {
         enabled: false,
@@ -100,26 +258,15 @@ export class EachProjectProgressBoardComponent implements OnInit {
         allowDecimals: false,
         labels: {
           formatter: function () {
-            return this.value; // clean, unformatted number for year
-          },
-        },
-      },
-      yAxis: {
-        title: {
-          text: "Percentage of Completion",
-        },
-        labels: {
-          formatter: function () {
-            return this.value / 1000 + "%";
-          },
-        },
-      },
-      tooltip: {
-        pointFormat:
-          "{series.name} had completed <b>{point.y:,.0f}</b><br/>on {point.x}",
-      },
-      plotOptions: {
-        area: {
+              return this.value / 100 + '%';
+          }
+      }
+  },
+  tooltip: {
+      pointFormat: '{series.name} had completed <b>{point.y:,.0f}</b><br/>on {point.x}'
+  },
+  plotOptions: {
+      area: {
           pointStart: 0,
           marker: {
             enabled: false,
@@ -305,85 +452,106 @@ export class EachProjectProgressBoardComponent implements OnInit {
 
     // area chart end
 
-    // Pie chart start
-    Highcharts.chart("container-pie-chart", {
-      chart: {
-        plotBackgroundColor: null,
-        plotBorderWidth: null,
-        plotShadow: false,
-        type: "pie",
-      },
-      credits: {
-        enabled: false,
-      },
-      title: {
-        text: "Pie Chart",
-      },
-      tooltip: {
-        pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
-      },
-      accessibility: {
-        point: {
-          valueSuffix: "%",
-        },
-      },
-      plotOptions: {
-        pie: {
+// area chart end
+
+// Pie chart start
+Highcharts.chart('container-pie-chart', {
+  chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+  },
+  credits: {
+    enabled: false
+  },
+  title: {
+      text: 'Pie Chart'
+  },
+  tooltip: {
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+  },
+  accessibility: {
+      point: {
+          valueSuffix: '%'
+      }
+  },
+  plotOptions: {
+      pie: {
           allowPointSelect: true,
-          cursor: "pointer",
+          cursor: 'pointer',
           dataLabels: {
-            enabled: true,
-            format: "<b>{point.name}</b>: {point.percentage:.1f} %",
-          },
-        },
-      },
-      series: [
-        {
-          name: "Brands",
-          colorByPoint: true,
-          data: [
-            {
-              name: "Chrome",
-              y: 61.41,
-              sliced: true,
-              selected: true,
-            },
-            {
-              name: "Internet Explorer",
-              y: 11.84,
-            },
-            {
-              name: "Firefox",
-              y: 10.85,
-            },
-            {
-              name: "Edge",
-              y: 4.67,
-            },
-            {
-              name: "Safari",
-              y: 4.18,
-            },
-            {
-              name: "Sogou Explorer",
-              y: 1.64,
-            },
-            {
-              name: "Opera",
-              y: 1.6,
-            },
-            {
-              name: "QQ",
-              y: 1.2,
-            },
-            {
-              name: "Other",
-              y: 2.61,
-            },
-          ],
-        },
-      ],
-    });
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+          }
+      }
+  },
+  series: [{
+      name: 'Brands',
+      colorByPoint: true,
+      data: [{
+          name: 'Developers',
+          y: userStats.DEVELOPER,
+          sliced: true,
+          selected: true
+      }, {
+          name: 'Testers',
+          y: userStats.TESTER
+      }, {
+          name: 'Devops',
+          y: userStats.DEVOPS
+      }, {
+        name: 'Quality Analysts',
+        y: 2
+    }]
+  }]
+  // change the value of y to change the data
+});
+
+// Pie chart end
+
+
+// bar chart start
+Highcharts.chart('container-bar-chart', {
+  chart: {
+      type: 'bar'
+  },
+  credits: {
+    enabled: false
+  },
+  title: {
+      text: 'Stacked bar chart'
+  },
+  xAxis: {
+      categories: ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5']
+  },
+  yAxis: {
+      min: 0,
+      max: 100,
+      title: {
+          text: "All Tasks's Live Progress"
+      }
+  },
+  legend: {
+      reversed: true
+  },
+  plotOptions: {
+      series: {
+          stacking: 'normal'
+      }
+  },
+  series: [{
+      name: 'To-Do',
+      data: [5, 30, 34, 74, 32]
+  }, {
+      name: 'In-Progress',
+      data: [taskStatusBarGraph.IN_PROGRESS, 25, 43, 52, 10]
+  }, {
+      name: 'Completed',
+      data: [taskStatusBarGraph.COMPLETED, 1, 4, 12, 8]
+  }]
+});
+// bar chart end
 
     // Pie chart end
 
