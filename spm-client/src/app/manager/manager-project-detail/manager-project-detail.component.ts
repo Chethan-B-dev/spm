@@ -1,11 +1,24 @@
 // angular
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 
 // rxjs
-import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
-import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
+import { combineLatest, EMPTY, Observable, of, Subject } from "rxjs";
+import {
+  catchError,
+  ignoreElements,
+  map,
+  switchMap,
+  takeUntil,
+  tap,
+} from "rxjs/operators";
 
 // services
 import { SnackbarService } from "src/app/shared/services/snackbar.service";

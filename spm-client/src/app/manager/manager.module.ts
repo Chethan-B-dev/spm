@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { SharedModule } from "../shared/shared.module";
 import { DashboardComponent } from "./dashboard/dashboard.component";
@@ -17,6 +17,7 @@ import { BoardDndComponent } from "./manager-scrum-board/board-dnd/board-dnd.com
 import { IssueCardComponent } from "./manager-scrum-board/issue-card/issue-card.component";
 import { ManagerScrumBoardComponent } from "./manager-scrum-board/manager-scrum-board.component";
 import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-detail.component";
+import { SetDesignationComponent } from "./dialogs/set-designation/set-designation.component";
 
 @NgModule({
   declarations: [
@@ -31,12 +32,14 @@ import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-d
     BoardDndListComponent,
     IssueCardComponent,
     CreateTodoComponent,
+    SetDesignationComponent,
   ],
   entryComponents: [
     CreateTaskComponent,
     AddProjectComponent,
     ShowEmployeesComponent,
     CreateTodoComponent,
+    SetDesignationComponent,
   ],
 
   imports: [
@@ -44,6 +47,7 @@ import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-d
     SharedModule,
     RouterModule,
     ReactiveFormsModule,
+    FormsModule,
     MaterialModule,
     ManagerRoutingModule,
   ],

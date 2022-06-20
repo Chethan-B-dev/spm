@@ -1,0 +1,45 @@
+<article class="leaderboard">
+  <header>
+    <h1 class="leaderboard__title">
+      <span class="leaderboard__title--top">Set Designation of Employees</span>
+    </h1>
+  </header>
+
+  <main class="leaderboard__profiles">
+    <article
+      class="leaderboard__profile"
+      *ngFor="let user of employees; let i = index"
+    >
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1024px-User-avatar.svg.png"
+        [alt]="user.username"
+        class="leaderboard__picture"
+      />
+      <span class="leaderboard__name ml-2">{{ user.username }}</span>
+      <!-- todo: add designation select here -->
+      <mat-form-field>
+        <mat-label>Designation</mat-label>
+        <mat-select [(ngModel)]="designations[i]">
+          <mat-option value="DEVELOPER">Developer</mat-option>
+          <mat-option value="TESTER">Tester</mat-option>
+          <mat-option value="DEVOPS">Devops</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </article>
+    <div mat-dialog-actions class="right">
+      <button
+        mat-raised-button
+        color="warn"
+        mat-dialog-close
+        mat-dialog-close="true"
+        [disabled]="!allDesignationsAreSet()"
+        (click)="setDesignations()"
+      >
+        Continue
+      </button>
+      <button mat-button mat-dialog-close mat-dialog-close="false">
+        Close
+      </button>
+    </div>
+  </main>
+</article>

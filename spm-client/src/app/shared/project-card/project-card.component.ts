@@ -15,7 +15,7 @@ import {
 import { Router } from "@angular/router";
 
 // rxjs
-import { EMPTY, Observable, Subject } from "rxjs";
+import { EMPTY, Observable, of, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
 
 // components
@@ -34,6 +34,7 @@ import {
 } from "../interfaces/task.interface";
 import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
+import { SetDesignationComponent } from "src/app/manager/dialogs/set-designation/set-designation.component";
 
 @Component({
   selector: "app-project-card",
@@ -94,19 +95,31 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.managerService
-      .addEmployees(this.project.id, this.employees)
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
-      )
-      .subscribe(() => {
-        this.snackbarService.showSnackBar("Employees have been added");
-        this.employees = [];
-      });
+    // todo: add designation to users
+
+    const employeesWithoutDesignation = this.employees.filter(
+      (employee) => !employee.designation
+    );
+
+    this.openSetDesignationDialog(employeesWithoutDesignation).subscribe(
+      (result: boolean) => {
+        if (result) {
+          this.managerService
+            .addEmployees(this.project.id, this.employees)
+            .pipe(
+              takeUntil(this.destroy$),
+              catchError((err) => {
+                this.snackbarService.showSnackBar(err);
+                return EMPTY;
+              })
+            )
+            .subscribe(() => {
+              this.snackbarService.showSnackBar("Employees have been added");
+              this.employees = [];
+            });
+        }
+      }
+    );
   }
 
   goBack(): void {
@@ -131,6 +144,20 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     dialogRef
       .afterClosed()
       .subscribe((data) => console.log("Dialog output:", data));
+  }
+
+  openSetDesignationDialog(employees: IAppUser[]): Observable<any> {
+    if (!employees.length) return of(true);
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = employees;
+
+    const dialogRef = this.dialog.open(SetDesignationComponent, dialogConfig);
+
+    return dialogRef.afterClosed();
   }
 
   openShowEmployeesDialog(project: IProject): void {

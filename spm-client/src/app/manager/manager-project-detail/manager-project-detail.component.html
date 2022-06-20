@@ -8,7 +8,10 @@
 <div class="row row-height">
   <!-- project card -->
 
-  <div class="col-md-9 border-right" *ngIf="project$ | async as project">
+  <div
+    class="col-md-9 border-right"
+    *ngIf="project$ | async as project; else loadingProject"
+  >
     <div class="container my-3">
       <app-project-card
         [showBackButton]="true"
@@ -26,7 +29,6 @@
       <h4 class="my-3">Project Issues</h4>
 
       <div class="horizontal-row">
-        <!-- issue start-->
         <mat-card class="card mr-3" *ngFor="let issue of project.issues">
           <div class="left-and-right">
             <mat-card-title class="reduce-font text-danger">
@@ -42,7 +44,6 @@
             <button mat-button>View Details</button>
           </mat-card-actions>
         </mat-card>
-        <!-- issue end -->
 
         <mat-card *ngIf="!project.issues.length"
           >No issues found for this project</mat-card
@@ -50,6 +51,10 @@
       </div>
     </div>
   </div>
+
+  <ng-template #loadingProject>
+    <app-loading-spinner class="center"></app-loading-spinner>
+  </ng-template>
 
   <!-- stats -->
   <div class="col-md-3 tasks">
@@ -69,7 +74,7 @@
       </mat-form-field>
 
       <!-- task -->
-      <div *ngIf="tasks$ | async as tasks">
+      <div *ngIf="tasks$ | async as tasks; else loadingTasks">
         <mat-card class="my-2" *ngFor="let task of tasks">
           <div class="left-and-right">
             <mat-card-title class="reduce-font">{{ task.name }}</mat-card-title>
@@ -113,6 +118,9 @@
         </mat-card>
         <mat-card *ngIf="tasks.length === 0">There are no tasks</mat-card>
       </div>
+      <ng-template #loadingTasks>
+        <app-loading-spinner class="center"></app-loading-spinner>
+      </ng-template>
     </div>
   </div>
 </div>

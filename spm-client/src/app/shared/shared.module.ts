@@ -13,7 +13,7 @@ import { LoadingSpinnerComponent } from "./loading-spinner/loading-spinner.compo
 import { ProjectCardComponent } from "./project-card/project-card.component";
 
 import { HttpClientModule } from "@angular/common/http";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MaterialModule } from "./material/material.module";
 import { NotifcationMenuComponent } from "./notifcation-menu/notifcation-menu.component";
 import { PieChartComponent } from "./pie-chart/pie-chart.component";
@@ -40,6 +40,7 @@ import { TaskCardComponent } from "./task-card/task-card.component";
     AuthModule,
     MaterialModule,
     HttpClientModule,
+    FormsModule,
     ReactiveFormsModule,
   ],
   exports: [

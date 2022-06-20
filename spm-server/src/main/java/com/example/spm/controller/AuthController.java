@@ -1,6 +1,7 @@
 package com.example.spm.controller;
 
 import com.example.spm.model.dto.EditProfileDTO;
+import com.example.spm.model.dto.SetDesignationDTO;
 import com.example.spm.model.dto.UserRegisterDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.service.AppUserService;
@@ -37,6 +38,16 @@ public class AuthController {
         );
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<AppUser> getUserById(
+            @PathVariable Integer id
+    ) {
+        return new ResponseEntity<>(
+                appUserService.getUserById(id),
+                HttpStatus.OK
+        );
+    }
+
     @PutMapping("/user/edit")
     public ResponseEntity<AppUser> editUser(
             @RequestBody @Valid final EditProfileDTO editProfileDTO,
@@ -47,6 +58,19 @@ public class AuthController {
         managerService.handleValidationErrors(bindingResult);
         return new ResponseEntity<>(
                 appUserService.editProfile(editProfileDTO, loggedInUser),
+                HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("/user/designation/{id}")
+    public ResponseEntity<AppUser> setDesignation(
+            @PathVariable final Integer id,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @RequestBody final SetDesignationDTO setDesignationDTO
+            ) {
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                appUserService.setDesignation(id, setDesignationDTO.getDesignation()),
                 HttpStatus.CREATED
         );
     }

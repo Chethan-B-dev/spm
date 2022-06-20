@@ -1,11 +1,13 @@
 package com.example.spm.service;
 
 import com.example.spm.exception.ActionNotAllowedException;
+import com.example.spm.exception.UserNotFoundException;
 import com.example.spm.exception.UserNotLoggedInException;
 import com.example.spm.model.dto.EditProfileDTO;
 import com.example.spm.model.dto.PagedData;
 import com.example.spm.model.dto.UserRegisterDTO;
 import com.example.spm.model.entity.AppUser;
+import com.example.spm.model.enums.UserDesignation;
 import com.example.spm.model.enums.UserRole;
 import com.example.spm.model.enums.UserStatus;
 import com.example.spm.repository.AppUserRepository;
@@ -66,6 +68,18 @@ public class AppUserService {
     public AppUser getUser(String email) {
         log.info("Fetching user {}", email);
         return appUserRepository.findByEmail(email);
+    }
+
+    @Transactional
+    @Modifying
+    public AppUser setDesignation(Integer userId, UserDesignation designation) {
+        AppUser user = adminService.checkIfUserExists(userId);
+        user.setDesignation(designation);
+        return appUserRepository.save(user);
+    }
+
+    public AppUser getUserById(Integer id) {
+        return appUserRepository.findById(id).orElseThrow(() -> new UserNotFoundException("user not found"));
     }
 
     public boolean deleteUserByEmail(String email) {
