@@ -7,72 +7,95 @@
   rel="stylesheet"
 />
 
-<mat-card class="mx-3 my-2"><h3>Issue Details</h3></mat-card>
-<div class="container">
-  <mat-card>
-    <mat-chip color="accent" class="my-2" selected>Project name</mat-chip
-    ><button mat-flat-button color="primary" class="float-right">
-      Status: Resolved
-    </button>
-    <mat-divider class="my-1"></mat-divider>
-    <mat-grid-list cols="2" rowHeight="2:1">
-      <mat-grid-tile>
-        <div class="card my-4 mx-1" style="width: 18rem">
-          <div class="card-header">
-            <b>Issue Details:</b>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <mat-chip>Created By: User Name</mat-chip>
-            </li>
-            <li class="list-group-item">
-              <mat-chip>Task Priority: High ^</mat-chip>
-            </li>
-            <li class="list-group-item">
-              <mat-chip>Created Date: 02/03/2022</mat-chip>
-            </li>
-          </ul>
-        </div></mat-grid-tile
-      >
-      <mat-grid-tile>
-        <div class="card" style="width: 18rem">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Issue Description:</li>
-            <li class="list-group-item">
-              Dapibus ac facilisis in lorem ipsum dolor sit amet, consectetur
-              adip
-            </li>
-          </ul>
-        </div></mat-grid-tile
-      >
-    </mat-grid-list>
+<div class="container" *ngIf="issue$ | async as issue">
+  <mat-card class="my-3">
+    <div>
+      <div class="left-and-right">
+        <mat-card-title class="push-down"
+          >Issue Summary: {{ issue.summary }}</mat-card-title
+        >
+        <button
+          mat-raised-button
+          color="accent"
+          [disabled]="!canResolve(issue)"
+          (click)="resolveIssue(issue)"
+          matTooltip="only managers can resolve issues"
+        >
+          <mat-icon>settings</mat-icon>
+          <span> {{ isResolved(issue) ? "Resolved" : "Resolve" }}</span>
+        </button>
+      </div>
+      <mat-card-subtitle>{{ issue.createdDate | date }}</mat-card-subtitle>
+      <mat-chip-list>
+        <mat-chip
+          color="primary"
+          selected
+          [matTooltip]="'Issue Status - ' + (issue.status | titlecase)"
+          >{{ issue.status | titlecase }}</mat-chip
+        >
+        <mat-chip>Assignee - {{ issue.user?.username }}</mat-chip>
+      </mat-chip-list>
+    </div>
   </mat-card>
   <mat-divider></mat-divider>
-  <mat-card class="my-2"
-    >Comments <mat-divider></mat-divider>
-    <div class="my-4">
-      <mat-card class="example-card">
-        <mat-card-title>Username</mat-card-title>
-        <mat-card-subtitle>Date here maybe</mat-card-subtitle>
+  <mat-card class="my-2">
+    <mat-card-title>Comments</mat-card-title>
+    <mat-divider></mat-divider>
+    <div class="my-4" *ngIf="comments$ | async as comments">
+      <mat-card class="comment-card my-2" *ngFor="let comment of comments">
+        <div class="left-and-right">
+          <mat-card-title [class.text-success]="isMyIssue(comment)">
+            <mat-icon>person</mat-icon>
+            {{ comment.user?.username }}</mat-card-title
+          >
+          <button
+            mat-mat-icon-button
+            *ngIf="isMyIssue(comment)"
+            (click)="deleteComment(comment.id)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        <mat-card-subtitle>{{
+          comment.createdDateTime | date
+        }}</mat-card-subtitle>
         <mat-card-content>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit nobis
-            odio eius tempora. Officia quos consequuntur distinctio ipsam
-            commodi quod.
+            {{ comment.comment }}
           </p>
         </mat-card-content>
       </mat-card>
     </div>
 
-    <div>
-      <mat-form-field class="comment-full-width col-8" appearance="fill">
-        <mat-label>Leave a comment</mat-label>
-        <textarea
-          matInput
-          placeholder="Ex. This bug must be resolved..."
-        ></textarea>
-      </mat-form-field>
-    </div>
-    <button mat-flat-button color="accent">Add comment</button>
+    <mat-form-field
+      class="comment-full-width"
+      appearance="fill"
+      [formGroup]="addCommentForm"
+    >
+      <mat-label>Leave a comment</mat-label>
+      <textarea
+        matInput
+        placeholder="Ex. This bug must be resolved..."
+        formControlName="comment"
+      ></textarea>
+      <mat-error
+        *ngIf="
+          (this.addCommentForm.get('comment').dirty ||
+            this.addCommentForm.get('comment').touched) &&
+          this.addCommentForm.get('comment').errors?.required
+        "
+      >
+        Comment cannot be <strong>empty</strong>
+      </mat-error>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="warn"
+      class="my-2"
+      [disabled]="this.addCommentForm.invalid || !isResolved()"
+      (click)="addComment(issue.id)"
+    >
+      Add comment
+    </button>
   </mat-card>
 </div>

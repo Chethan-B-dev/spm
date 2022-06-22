@@ -4,9 +4,22 @@ import { IAppUser } from "./user.interface";
 export interface IIssue {
   id: number;
   summary: string;
-  project: IProject;
+  project?: IProject;
   user: IAppUser;
   createdDate: Date;
+  status: IssueStatus;
+}
+
+export interface IComment {
+  id: number;
+  user: IAppUser;
+  comment: string;
+  issue?: IIssue;
+  createdDateTime: Date;
+}
+
+export interface IUpdateIssueDTO {
+  summary: string;
   status: IssueStatus;
 }
 

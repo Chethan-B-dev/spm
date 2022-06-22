@@ -40,6 +40,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   private searchTermSubject = new Subject<string>();
   searchTerm$ = this.searchTermSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
+  currentUser = this.authService.currentUser;
 
   constructor(
     private dialog: MatDialog,
@@ -126,17 +127,18 @@ export class SidenavComponent implements OnInit, OnDestroy {
 
   getRedirectLink(type: DataType, searchData: ISearchData): string {
     // todo: redirect to appropriate place for todo and user and issue
+    const role = this.currentUser.role.toLowerCase();
     switch (type) {
       case DataType.PROJECT:
-        return `/manager/project-detail/${searchData.id}`;
+        return `/${role}/project-detail/${searchData.id}`;
       case DataType.ISSUE:
-        return `/manager/issue-detail/${searchData.id}`;
+        return `/issue-detail/${searchData.id}`;
       case DataType.TASK:
-        return `/manager/task-detail/${searchData.id}`;
+        return `/${role}/task-detail/${searchData.id}`;
       case DataType.TODO:
-        return `/manager/todo-detail/${searchData.id}`;
+        return `/${role}/todo-detail/${searchData.id}`;
       case DataType.USER:
-        return `/manager/project-detail/${searchData.id}`;
+        if (searchData.id === this.currentUser.id) return `/profile`;
     }
   }
 

@@ -4,9 +4,10 @@
 
 export const environment = {
   production: false,
-  employeeUrl: "http://localhost:8080/api/employee",
   managerUrl: "http://localhost:8080/api/manager",
+  employeeUrl: "http://localhost:8080/api/employee",
   adminUrl: "http://localhost:8080/api/admin",
+  sharedUrl: "http://localhost:8080/api/shared",
   authUrl: "http://localhost:8080/api/auth",
   loginUrl: "http://localhost:8080/api/login",
 };

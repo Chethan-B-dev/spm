@@ -2,12 +2,10 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { AdminGuard } from "./admin/admin.guard";
 import { AuthGuard } from "./auth/auth.guard";
+import { LoggedInGuard } from "./auth/isloggedin.guard";
 import { LoginComponent } from "./auth/login/login.component";
 import { SignupComponent } from "./auth/signup/signup.component";
-import { EmployeeDashboardComponent } from "./employee/employee-dashboard/employee-dashboard.component";
 import { EmployeeIssueDetailComponent } from "./employee/employee-issue-detail/employee-issue-detail.component";
-import { EmployeeProjectDetailComponent } from "./employee/employee-project-detail/employee-project-detail.component";
-import { EmployeeScrumBoardComponent } from "./employee/employee-scrum-board/employee-scrum-board.component";
 import { ManagerGuard } from "./manager/manager.guard";
 import { BurnDownChartDashboardComponent } from "./reporting/burn-down-chart-dashboard/burn-down-chart-dashboard.component";
 import { EmpReportListComponent } from "./reporting/employee-reports-dashboard/emp-report-list/emp-report-list.component";
@@ -33,6 +31,11 @@ const routes: Routes = [
   {
     path: "employee",
     loadChildren: "./employee/employee.module#EmployeeModule",
+  },
+  {
+    path: "issue-detail/:id",
+    component: EmployeeIssueDetailComponent,
+    canActivate: [LoggedInGuard],
   },
   { path: "reporting-dashboard", component: ReportsDashboardComponent },
   {

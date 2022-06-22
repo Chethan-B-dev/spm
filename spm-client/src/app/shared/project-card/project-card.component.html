@@ -36,6 +36,7 @@
     <mat-chip>Tasks - {{ project.tasks?.length }}</mat-chip>
     <mat-chip>Backlogs - {{ projectTaskStatistics["IN_PROGRESS"] }}</mat-chip>
     <mat-chip>Completed - {{ projectTaskStatistics["COMPLETED"] }}</mat-chip>
+    <mat-chip>Issues - {{ project.issues?.length }}</mat-chip>
     <mat-chip color="accent" selected>{{ project.manager?.username }}</mat-chip>
   </mat-chip-list>
 

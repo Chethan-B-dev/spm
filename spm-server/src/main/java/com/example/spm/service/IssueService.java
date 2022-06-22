@@ -45,8 +45,6 @@ public class IssueService {
         Issue issue = checkIfIssueExists(issueId);
         issue.setSummary(updateIssueDTO.getSummary());
         issue.setStatus(updateIssueDTO.getStatus());
-        issue.setProject(projectService.getProjectById(updateIssueDTO.getProjectId()));
-        issue.setCreatedDate(updateIssueDTO.getCreatedDate());
         return issue;
     }
 
@@ -84,10 +82,11 @@ public class IssueService {
 
     public List<IssueComment> getComments(Integer issueId){
         checkIfIssueExists(issueId);
-        return issueCommentRepository.findAllByIssueId(issueId);
+        return issueCommentRepository.findAllByIssueIdOrderByIdDesc(issueId);
     }
 
     @Transactional
+    @Modifying
     public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser){
         checkIfCommentBelongsToUser(commentId, loggedInUser);
         issueCommentRepository.deleteById(commentId);
