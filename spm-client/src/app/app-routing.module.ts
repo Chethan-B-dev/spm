@@ -30,14 +30,10 @@ const routes: Routes = [
     loadChildren: "./manager/manager.module#ManagerModule",
     canActivate: [ManagerGuard],
   },
-  { path: "employee", component: EmployeeDashboardComponent },
   {
-    path: "employee-project-detail",
-    component: EmployeeProjectDetailComponent,
+    path: "employee",
+    loadChildren: "./employee/employee.module#EmployeeModule",
   },
-  { path: "employee-issue-detail", component: EmployeeIssueDetailComponent },
-  { path: "employee-scrum-board", component: EmployeeScrumBoardComponent },
-
   { path: "reporting-dashboard", component: ReportsDashboardComponent },
   {
     path: "reporting-all-progress-dashboard",

@@ -1,13 +1,10 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { EMPTY, forkJoin, Observable, Subject } from "rxjs";
-import { catchError, takeUntil } from "rxjs/operators";
-import { AuthService } from "src/app/auth/auth.service";
-import {
-  IAppUser,
-  IEditProfileRequest,
-} from "src/app/shared/interfaces/user.interface";
+import { EMPTY, forkJoin, Subject } from "rxjs";
+import { catchError } from "rxjs/operators";
+import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { ManagerService } from "../../services/manager.service";
 
 @Component({
   selector: "app-set-designation",
@@ -21,7 +18,7 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
   constructor(
     private dialogRef: MatDialogRef<SetDesignationComponent>,
     @Inject(MAT_DIALOG_DATA) employees,
-    private readonly authService: AuthService,
+    private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService
   ) {
     this.employees = employees;
@@ -50,7 +47,7 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
     );
 
     const requests = this.employees.map((employee) =>
-      this.authService.setEmployeeDesignation(employee)
+      this.managerService.setEmployeeDesignation(employee)
     );
 
     forkJoin(requests)

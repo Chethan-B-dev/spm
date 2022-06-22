@@ -27,7 +27,7 @@ import { ManagerService } from "../services/manager.service";
 // interfaces
 import { IIssue } from "src/app/shared/interfaces/issue.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
-import { ITask } from "src/app/shared/interfaces/task.interface";
+import { ITask, TaskStatus } from "src/app/shared/interfaces/task.interface";
 
 @Component({
   selector: "app-manager-project-detail",

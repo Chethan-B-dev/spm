@@ -1,21 +1,30 @@
 <h2 mat-dialog-title>
-  Create Issue for <span style="color: red"> Project Name </span>
+  Create Issue for <span style="color: red"> {{ project.name }} </span>
 </h2>
 
-<mat-dialog-content>
-   <p>
+<mat-dialog-content [formGroup]="createIssueForm">
+  <p>
     <mat-form-field
       class="example-full-width"
       appearance="fill"
       style="width: 100%"
     >
-      <mat-label>Describe here</mat-label>
+      <mat-label>Issue Summary</mat-label>
       <textarea
         matInput
-        placeholder="Add Description"
-
+        placeholder="write Issue Description"
+        formControlName="summary"
       ></textarea>
     </mat-form-field>
+    <mat-error
+      *ngIf="
+        (this.createIssueForm.get('summary').dirty ||
+          this.createIssueForm.get('summary').touched) &&
+        this.createIssueForm.get('summary').errors?.required
+      "
+    >
+      Issue Summary is <strong>required</strong>
+    </mat-error>
   </p>
 </mat-dialog-content>
 
@@ -23,7 +32,11 @@
   <button class="mat-raised-button" (click)="close()" style="margin-right: 8px">
     Close
   </button>
-  <button class="mat-raised-button mat-primary">
+  <button
+    class="mat-raised-button mat-primary"
+    [disabled]="this.createIssueForm.invalid"
+    (click)="createIssue(project.id)"
+  >
     Create Issue
   </button>
 </mat-dialog-actions>

@@ -121,6 +121,15 @@ public class EmployeeController {
         );
     }
 
+    @GetMapping("/issues/{projectId}")
+    public ResponseEntity<List<Issue>> getAllProjectIssues(
+            @PathVariable final Integer projectId,
+            MyAppUserDetails myAppUserDetails
+    ) {
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(employeeService.getAllIssues(projectId), HttpStatus.OK);
+    }
+
     @PostMapping("/create-issue/{projectId}")
     public ResponseEntity<Issue> createIssue(
             @PathVariable Integer projectId,

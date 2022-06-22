@@ -45,14 +45,6 @@ export class AuthService {
     );
   }
 
-  setEmployeeDesignation(employee: IAppUser): Observable<IAppUser> {
-    return this.http
-      .put<IAppUser>(`${this.authUrl}/user/designation/${employee.id}`, {
-        designation: employee.designation,
-      })
-      .pipe(catchError(handleError));
-  }
-
   signup(signupData: ISignUpRequest): Observable<IAppUser> {
     return this.http
       .post<IAppUser>(`${this.authUrl}/user/save`, signupData)

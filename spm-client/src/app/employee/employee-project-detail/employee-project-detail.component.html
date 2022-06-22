@@ -4,12 +4,20 @@
 />
 
 <div class="row">
-  <div class="col-8">
+  <!-- project -->
+  <div class="col-md-8" *ngIf="project$ | async as project">
     <div class="container my-3">
-      <mat-card
-        >Project Title
-        <mat-chip color="primary">Manager</mat-chip>
-        <mat-chip class="mx-2" color="primary">Employees: 12</mat-chip><br />
+      <mat-card>
+        <p class="lead" style="font-weight: 500">{{ project.name }}</p>
+        <mat-chip color="primary">{{ project.manager?.username }}</mat-chip>
+        <mat-chip
+          class="mx-2"
+          color="primary"
+          matTooltip="click here to view employees"
+          [matTooltipPosition]="'right'"
+          (click)="openShowEmployeesDialog(project)"
+          >Employees: {{ project.users?.length }}</mat-chip
+        ><br />
         <mat-divider></mat-divider><br /><br />
         <div class="row">
           <div class="col">
@@ -17,123 +25,165 @@
               class="mat-chip-list-stacked"
               aria-label="Color selection"
             >
-              <mat-chip
-                *ngFor="let chip of availableColors"
-                selected
-                [color]="chip.color"
-              >
-                {{ chip.name }}
+              <mat-chip selected>
+                Status: {{ project.status.replace("_", " ") | titlecase }}
+              </mat-chip>
+              <mat-chip color="primary">
+                Deadline: {{ project.toDate | date }}
+              </mat-chip>
+              <!-- todo: substitue project tasks here -->
+              <mat-chip color="accent"> Backlogs: 3 </mat-chip>
+              <mat-chip color="warn">
+                Tasks: {{ project.tasks?.length }}
               </mat-chip>
             </mat-chip-list>
           </div>
           <div class="col-5">
-            <app-progress-bar value="70"></app-progress-bar>
+            <app-progress-bar [value]="projectProgress"></app-progress-bar>
           </div>
           <div class="col">
             <div class="card" style="width: 18rem">
               <div class="card-header">Issues</div>
               <ul class="list-group list-group-flush">
-                <mat-chip class="m-2" (click)="createIssue()"
+                <mat-chip class="m-2" (click)="createIssue(project)"
                   >Create a Issue</mat-chip
                 >
-                <mat-chip class="m-2">View All Issues</mat-chip>
-                <mat-chip class="m-2">Vestibulum at eros</mat-chip>
+                <mat-chip class="m-2" (click)="toggleShowIssues()"
+                  >View All Issues</mat-chip
+                >
               </ul>
             </div>
           </div>
         </div>
       </mat-card>
     </div>
+
+    <!-- issue progress bar  -->
     <div class="container">
-      <mat-card
-        ><button mat-raised-button color="warn" class="mx-3">Issues</button
-        ><mat-chip>Solved 4/10</mat-chip><br /><mat-progress-bar
+      <mat-card class="center">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+          "
+        >
+          <button
+            mat-raised-button
+            color="warn"
+            class="mx-3"
+            (click)="toggleShowIssues()"
+          >
+            Issues</button
+          ><mat-chip>Solved 4/10</mat-chip><br />
+        </div>
+        <mat-progress-bar
           class="container col-7"
           mode="determinate"
-          value="40"
-          >Solved 6/10</mat-progress-bar
-        ></mat-card
-      >
-
+          [value]="issueProgress"
+          [matTooltip]="'Resolved: ' + issueProgress + ' %'"
+          [matTooltipPosition]="'right'"
+        ></mat-progress-bar>
+      </mat-card>
       <mat-divider></mat-divider>
     </div>
-    <br />
-    <div class="row container">
-      <div class="col-sm-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Special title treatment</h5>
-            <p class="card-text">
-              With supporting text below as a natural lead-in to additional
-              content.
-            </p>
-            <button mat-raised-button color="primary">Go somewhere</button>
-          </div>
+    <!-- end issue progress bar  -->
+
+    <!-- issues -->
+    <div class="container my-3" *ngIf="showIssues">
+      <h4 class="my-3">Project Issues</h4>
+
+      <mat-card class="card mr-3 my-2" *ngFor="let issue of project.issues">
+        <div class="left-and-right">
+          <mat-card-title class="reduce-font text-danger">
+            {{ getIssueKey(project.name, issue.id) }}</mat-card-title
+          >
+          <mat-chip>{{ issue.status | titlecase }}</mat-chip>
         </div>
-      </div>
-      <div class="col-sm-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Special title treatment</h5>
-            <p class="card-text">
-              With supporting text below as a natural lead-in to additional
-              content.
-            </p>
-            <button mat-raised-button color="primary">Go somewhere</button>
+        <mat-card-subtitle>{{ issue.createdDate | date }}</mat-card-subtitle>
+        <mat-card-content>
+          <p>{{ issue.summary }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button>View Details</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <mat-card *ngIf="!project.issues.length"
+        >No issues found for this project</mat-card
+      >
+    </div>
+    <!-- end issues -->
+  </div>
+
+  <!-- end of project -->
+  <mat-divider [vertical]="true"></mat-divider>
+  <!-- tasks -->
+  <div class="col-md-3 tasks">
+    <div class="stats container my-3">
+      <mat-card-title class="mb-3"> Tasks </mat-card-title>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Task Progress</mat-label>
+        <mat-select
+          [(value)]="defaultTaskCategory"
+          (selectionChange)="onTaskCategoryChange($event.value)"
+        >
+          <mat-option value="ALL">All</mat-option>
+          <mat-option value="IN_PROGRESS">In Progress</mat-option>
+          <mat-option value="COMPLETED">Completed</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- task -->
+      <div *ngIf="tasks$ | async as tasks; else loadingTasks">
+        <mat-card class="my-2" *ngFor="let task of tasks">
+          <div class="left-and-right">
+            <mat-card-title class="reduce-font">{{ task.name }}</mat-card-title>
+            <mat-icon *ngIf="task.priority === 'LOW'" matTooltip="Low Priority"
+              >keyboard_arrow_down</mat-icon
+            >
+            <mat-icon
+              *ngIf="task.priority === 'MEDIUM'"
+              matTooltip="Medium Priority"
+              >unfold_more</mat-icon
+            >
+            <mat-icon
+              *ngIf="task.priority === 'HIGH'"
+              matTooltip="High Priority"
+              >keyboard_arrow_up</mat-icon
+            >
           </div>
-        </div>
+          <mat-chip-list>
+            <mat-chip color="primary">
+              <mat-chip-avatar>
+                <mat-icon>person</mat-icon>
+              </mat-chip-avatar>
+              {{ task.user.username }}
+            </mat-chip>
+            <mat-chip color="warn" selected
+              >Deadline - {{ task.deadLine | date }}</mat-chip
+            >
+          </mat-chip-list>
+          <mat-card-subtitle class="my-2">{{
+            task.description
+          }}</mat-card-subtitle>
+          <mat-card-actions>
+            <button
+              mat-button
+              color="warn"
+              [routerLink]="['../../task-detail', task.id]"
+            >
+              View Details
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        <mat-card *ngIf="tasks.length === 0">There are no tasks</mat-card>
       </div>
+      <ng-template #loadingTasks>
+        <app-loading-spinner class="center"></app-loading-spinner>
+      </ng-template>
     </div>
   </div>
-  <mat-divider [vertical]="true"></mat-divider>
-  <div class="col-3 my-3">
-    <mat-card class="my-2">
-      <mat-card-title>Task Name</mat-card-title>
-      <mat-chip-list aria-label="Fish selection">
-        <mat-chip color="primary">
-          <mat-chip-avatar>
-            <mat-icon>person</mat-icon>
-          </mat-chip-avatar>
-          Assignee
-        </mat-chip>
-        <mat-chip color="warn" selected
-          >Deadline - {{ deadLine | date }}</mat-chip
-        >
-      </mat-chip-list>
-      <mat-card-subtitle class="my-2"
-        >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
-        alias?</mat-card-subtitle
-      >
-      <mat-card-actions>
-        <button mat-button color="warn">View Details</button>
-      </mat-card-actions>
-    </mat-card>
-    <mat-card class="my-2">
-      <mat-card-title>Task Name</mat-card-title>
-      <mat-chip-list aria-label="Fish selection">
-        <mat-chip color="primary">
-          <mat-chip-avatar>
-            <mat-icon>person</mat-icon>
-          </mat-chip-avatar>
-          Assignee
-        </mat-chip>
-        <mat-chip color="warn" selected
-          >Deadline - {{ deadLine | date }}</mat-chip
-        >
-      </mat-chip-list>
-      <mat-card-subtitle class="my-2"
-        >Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias,
-        alias?</mat-card-subtitle
-      >
-      <mat-card-actions>
-        <button mat-button color="warn">View Details</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+  <!-- end of tasks -->
 </div>
-
-<!-- <div class="container col-8"> -->
-
-<!-- </div> -->
-
-<!--scrollable test carousal -->

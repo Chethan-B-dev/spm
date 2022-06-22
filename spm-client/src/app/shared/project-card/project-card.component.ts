@@ -95,8 +95,6 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // todo: add designation to users
-
     const employeesWithoutDesignation = this.employees.filter(
       (employee) => !employee.designation
     );

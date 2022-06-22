@@ -2,7 +2,7 @@ package com.example.spm.model.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -11,6 +11,6 @@ import javax.validation.constraints.NotNull;
 @ToString
 @Builder
 public class CreateIssueDTO {
-    @NotNull
+    @NotBlank(message = "issue summary cannot be blank")
     private String summary;
 }

@@ -23,6 +23,7 @@ import java.util.List;
 public class ManagerController {
 
     private final ManagerService managerService;
+    private final AppUserService appUserService;
 
     @GetMapping("/projects")
     public ResponseEntity<List<Project>> getAllProjectsByManagerId (
@@ -312,6 +313,19 @@ public class ManagerController {
         return new ResponseEntity<>(
                 managerService.getSearchResult(searchKey, loggedInUser),
                 HttpStatus.OK
+        );
+    }
+
+    @PutMapping("/edit-designation/{id}")
+    public ResponseEntity<AppUser> setDesignation(
+            @PathVariable final Integer id,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @RequestBody final SetDesignationDTO setDesignationDTO
+    ) {
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                appUserService.setDesignation(id, setDesignationDTO.getDesignation()),
+                HttpStatus.CREATED
         );
     }
 

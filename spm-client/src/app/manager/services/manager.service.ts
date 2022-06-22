@@ -217,6 +217,14 @@ export class ManagerService {
       );
   }
 
+  setEmployeeDesignation(employee: IAppUser): Observable<IAppUser> {
+    return this.http
+      .put<IAppUser>(`${this.managerUrl}/edit-designation/${employee.id}`, {
+        designation: employee.designation,
+      })
+      .pipe(catchError(handleError));
+  }
+
   getProjectById(projectId: number): Observable<IProject> {
     return this.http
       .get<IProject>(`${this.managerUrl}/project/${projectId}`)

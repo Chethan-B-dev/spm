@@ -2,11 +2,9 @@ package com.example.spm.service;
 
 import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.ProjectNotFoundException;
-import com.example.spm.exception.TaskNotFoundException;
 import com.example.spm.model.dto.*;
 import com.example.spm.model.entity.*;
 import com.example.spm.repository.ProjectRepository;
-import com.example.spm.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +32,10 @@ public class EmployeeService {
         // if the employee is present in the project
         checkIfProjectBelongsToEmployee(project, loggedInUser.getUser());
         return projectService.getProjectById(projectId);
+    }
+
+    public List<Issue> getAllIssues(Integer projectId) {
+        return issueService.getAllIssues(projectId);
     }
 
     private void checkIfProjectBelongsToEmployee(Project project, AppUser user) {
