@@ -24,7 +24,7 @@ public class EmployeeService {
 
     private final IssueService issueService;
 
-    public List<Project> getAllProjectsByEmployeeId(AppUser employee) {
+    public List<Project> getAllProjectsByEmployee(AppUser employee) {
         return  projectService.getAllProjectsByEmployeeId(employee);
     }
     public Project getProjectById(Integer projectId, MyAppUserDetails loggedInUser) {

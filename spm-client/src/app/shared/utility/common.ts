@@ -10,6 +10,7 @@ export enum DataType {
   PROJECT = "PROJECT",
   TASK = "TASK",
   ISSUE = "ISSUE",
+  COMMENT = "COMMENT",
 }
 
 export interface DeleteData {

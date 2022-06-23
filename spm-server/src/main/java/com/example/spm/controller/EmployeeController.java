@@ -4,7 +4,6 @@ import com.example.spm.model.dto.*;
 import com.example.spm.model.entity.*;
 import com.example.spm.service.AppUserService;
 import com.example.spm.service.EmployeeService;
-import com.example.spm.service.IssueService;
 import com.example.spm.service.MyAppUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +20,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmployeeController {
     private final EmployeeService employeeService;
-    private final IssueService issueService;
 
     @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getAllProjectsByEmployeeId (
+    public ResponseEntity<List<Project>> getAllProjectsByEmployee (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ) {
         System.out.println("hitting this");
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
-                employeeService.getAllProjectsByEmployeeId(loggedInUser.getUser()), HttpStatus.OK
+                employeeService.getAllProjectsByEmployee(loggedInUser.getUser()), HttpStatus.OK
         );
     }
 

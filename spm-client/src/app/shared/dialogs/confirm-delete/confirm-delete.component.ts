@@ -1,9 +1,10 @@
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { SnackbarService } from "../../services/snackbar.service";
+import { SharedService } from "../../shared.service";
 import { DataType, DeleteData } from "../../utility/common";
 
 @Component({
@@ -18,27 +19,47 @@ export class ConfirmDeleteComponent implements OnDestroy {
     private dialogRef: MatDialogRef<ConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) deleteData,
     private managerService: ManagerService,
+    private sharedService: SharedService,
     private snackbarService: SnackbarService
   ) {
     this.deleteData = deleteData;
   }
 
   onDeleteClick(): void {
-    if (this.deleteData.deleteType === DataType.TODO) {
-      this.managerService
-        .deleteTodo(this.deleteData.id)
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            this.snackbarService.showSnackBar(err);
+    switch (this.deleteData.deleteType) {
+      case DataType.TODO:
+        this.managerService
+          .deleteTodo(this.deleteData.id)
+          .pipe(
+            takeUntil(this.destroy$),
+            catchError((err) => {
+              this.snackbarService.showSnackBar(err);
+              this.close();
+              return EMPTY;
+            })
+          )
+          .subscribe((_) => {
+            this.snackbarService.showSnackBar("Todo has been deleted");
             this.close();
-            return EMPTY;
-          })
-        )
-        .subscribe((_) => {
-          this.snackbarService.showSnackBar("Todo has been deleted");
-          this.close();
-        });
+          });
+        break;
+      case DataType.COMMENT:
+        this.sharedService
+          .deleteComment(this.deleteData.id)
+          .pipe(
+            takeUntil(this.destroy$),
+            catchError((err) => {
+              this.snackbarService.showSnackBar(err);
+              return EMPTY;
+            })
+          )
+          .subscribe((res) => {
+            if (res)
+              this.snackbarService.showSnackBar(`comment has been deleted`);
+          });
+        break;
+      default:
+        this.close();
     }
   }
 

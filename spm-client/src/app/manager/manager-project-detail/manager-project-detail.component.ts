@@ -1,24 +1,11 @@
 // angular
-import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 
 // rxjs
-import { combineLatest, EMPTY, Observable, of, Subject } from "rxjs";
-import {
-  catchError,
-  ignoreElements,
-  map,
-  switchMap,
-  takeUntil,
-  tap,
-} from "rxjs/operators";
+import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
+import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
 
 // services
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
@@ -27,7 +14,7 @@ import { ManagerService } from "../services/manager.service";
 // interfaces
 import { IIssue } from "src/app/shared/interfaces/issue.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
-import { ITask, TaskStatus } from "src/app/shared/interfaces/task.interface";
+import { ITask } from "src/app/shared/interfaces/task.interface";
 
 @Component({
   selector: "app-manager-project-detail",

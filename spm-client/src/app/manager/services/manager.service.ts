@@ -20,7 +20,10 @@ import {
   switchMap,
   tap,
 } from "rxjs/operators";
-import { IIssue } from "src/app/shared/interfaces/issue.interface";
+import {
+  IIssue,
+  IUpdateIssueDTO,
+} from "src/app/shared/interfaces/issue.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
@@ -30,6 +33,7 @@ import {
 } from "src/app/shared/interfaces/task.interface";
 import { ITodo } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { SharedService } from "src/app/shared/shared.service";
 import {
   DataType,
   ISearchData,
@@ -48,6 +52,9 @@ export class ManagerService {
 
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
+
+  private stateRefreshSubject = new BehaviorSubject<void>(null);
+  stateRefresh$ = this.stateRefreshSubject.asObservable();
 
   private projectInsertedSubject = new Subject<IProject>();
   projectInsertedAction$ = this.projectInsertedSubject.asObservable();
@@ -70,9 +77,10 @@ export class ManagerService {
   private loadMoreUsersSubject = new ReplaySubject<boolean>(1);
   loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
 
-  projects$ = this.http
-    .get<IProject[]>(`${this.managerUrl}/projects`)
-    .pipe(shareReplay(1), catchError(handleError));
+  projects$ = this.stateRefresh$.pipe(
+    switchMap(() => this.getAllProjects()),
+    catchError(handleError)
+  );
 
   projectsWithAdd$: Observable<IProject[]> = merge(
     this.projects$,
@@ -129,10 +137,14 @@ export class ManagerService {
     catchError(handleError)
   );
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private sharedService: SharedService) {}
 
   refresh(): void {
     this.refreshSubject.next();
+  }
+
+  stateRefresh(): void {
+    this.stateRefreshSubject.next();
   }
 
   loadMoreUsers(): void {
@@ -196,7 +208,7 @@ export class ManagerService {
   getAllProjects(): Observable<IProject[]> {
     return this.http
       .get<IProject[]>(`${this.managerUrl}/projects`)
-      .pipe(catchError(handleError));
+      .pipe(shareReplay(1), catchError(handleError));
   }
 
   getAllEmployees(projectId: number): Observable<IAppUser[]> {
@@ -271,6 +283,18 @@ export class ManagerService {
       })
       .pipe(
         tap(() => this.refresh()),
+        catchError(handleError)
+      );
+  }
+
+  updateIssue(
+    updateIssueDTO: IUpdateIssueDTO,
+    issueId: number
+  ): Observable<IIssue> {
+    return this.http
+      .put<IIssue>(`${this.managerUrl}/edit-issue/${issueId}`, updateIssueDTO)
+      .pipe(
+        tap(() => this.sharedService.refresh()),
         catchError(handleError)
       );
   }

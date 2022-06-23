@@ -30,7 +30,7 @@ public class TaskService {
                 // if task priority is not provided let us default it to LOW
                 .priority(createTaskDTO.getPriority() != null ? createTaskDTO.getPriority() : TaskPriority.LOW)
                 // todo: later change this to in progress
-                .status(TaskStatus.COMPLETED)
+                .status(TaskStatus.IN_PROGRESS)
                 .user(employee)
                 .deadLine(createTaskDTO.getDeadLine().toLocalDate())
                 .build();

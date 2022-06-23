@@ -3,6 +3,8 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
+import { EmployeeService } from "../employee/employee.service";
+import { ManagerService } from "../manager/services/manager.service";
 import {
   IAppUser,
   IEditProfileRequest,

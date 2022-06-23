@@ -17,6 +17,7 @@ import {
   takeUntil,
 } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
+import { EmployeeService } from "src/app/employee/employee.service";
 import { AddProjectComponent } from "src/app/manager/dialogs/add-project/add-project.component";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IAppUser } from "../interfaces/user.interface";
@@ -40,13 +41,13 @@ export class SidenavComponent implements OnInit, OnDestroy {
   private searchTermSubject = new Subject<string>();
   searchTerm$ = this.searchTermSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
-  currentUser = this.authService.currentUser;
 
   constructor(
     private dialog: MatDialog,
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
+    private readonly employeeService: EmployeeService,
     private router: Router,
     private renderer: Renderer2
   ) {}
@@ -122,23 +123,22 @@ export class SidenavComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
+    this.managerService.stateRefresh();
+    this.employeeService.stateRefresh();
     this.router.navigate(["/login"]);
   }
 
   getRedirectLink(type: DataType, searchData: ISearchData): string {
     // todo: redirect to appropriate place for todo and user and issue
-    const role = this.currentUser.role.toLowerCase();
     switch (type) {
       case DataType.PROJECT:
-        return `/${role}/project-detail/${searchData.id}`;
+        return `/manager/project-detail/${searchData.id}`;
       case DataType.ISSUE:
         return `/issue-detail/${searchData.id}`;
       case DataType.TASK:
-        return `/${role}/task-detail/${searchData.id}`;
+        return `/manager/task-detail/${searchData.id}`;
       case DataType.TODO:
-        return `/${role}/todo-detail/${searchData.id}`;
-      case DataType.USER:
-        if (searchData.id === this.currentUser.id) return `/profile`;
+        return `/manager/todo-detail/${searchData.id}`;
     }
   }
 

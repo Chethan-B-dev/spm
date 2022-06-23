@@ -1,11 +1,26 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from "rxjs";
-import { catchError, shareReplay, switchMap, tap } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  of,
+  ReplaySubject,
+  Subject,
+} from "rxjs";
+import {
+  catchError,
+  filter,
+  shareReplay,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 import { environment } from "src/environments/environment";
+import { AuthService } from "../auth/auth.service";
 import { IIssue } from "../shared/interfaces/issue.interface";
 import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
+import { SharedService } from "../shared/shared.service";
 import { handleError } from "../shared/utility/error";
 
 @Injectable({
@@ -17,6 +32,9 @@ export class EmployeeService {
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
 
+  private stateRefreshSubject = new BehaviorSubject<void>(null);
+  stateRefresh$ = this.stateRefreshSubject.asObservable();
+
   private taskCategorySelectedSubject = new BehaviorSubject<string>("ALL");
   taskCategorySelectedAction$ = this.taskCategorySelectedSubject.asObservable();
 
@@ -26,19 +44,33 @@ export class EmployeeService {
   private selectedProjectSubject = new Subject<IProject>();
   selectedProject$ = this.selectedProjectSubject.asObservable();
 
-  projects$ = this.http
-    .get<IProject[]>(`${this.employeeUrl}/projects`)
-    .pipe(shareReplay(1), catchError(handleError));
-
-  tasks$ = this.selectedProject$.pipe(
-    switchMap((project) => of(project.tasks)),
+  projects$ = this.stateRefresh$.pipe(
+    switchMap(() => this.getAllProjects()),
     catchError(handleError)
   );
 
-  constructor(private http: HttpClient) {}
+  tasks$ = combineLatest(
+    this.selectedProject$,
+    this.authService.currentUser$
+  ).pipe(
+    filter(([project, currentUser]) => Boolean(project && currentUser)),
+    switchMap(([project, currentUser]) => {
+      const myTasks = project.tasks.filter(
+        (task) => task.user.id === currentUser.id
+      );
+      return of(myTasks);
+    }),
+    catchError(handleError)
+  );
+
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   refresh(): void {
     this.refreshSubject.next();
+  }
+
+  stateRefresh(): void {
+    this.stateRefreshSubject.next();
   }
 
   selectTaskCategory(selectedTaskCategory: string): void {
@@ -51,6 +83,12 @@ export class EmployeeService {
 
   setProject(project: IProject): void {
     this.selectedProjectSubject.next(project);
+  }
+
+  getAllProjects(): Observable<IProject[]> {
+    return this.http
+      .get<IProject[]>(`${this.employeeUrl}/projects`)
+      .pipe(shareReplay(1), catchError(handleError));
   }
 
   getProjectById(projectId: number): Observable<IProject> {

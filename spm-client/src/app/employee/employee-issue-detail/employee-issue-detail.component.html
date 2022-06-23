@@ -44,13 +44,13 @@
     <div class="my-4" *ngIf="comments$ | async as comments">
       <mat-card class="comment-card my-2" *ngFor="let comment of comments">
         <div class="left-and-right">
-          <mat-card-title [class.text-success]="isMyIssue(comment)">
+          <mat-card-title [class.text-success]="isMyComment(comment)">
             <mat-icon>person</mat-icon>
             {{ comment.user?.username }}</mat-card-title
           >
           <button
             mat-mat-icon-button
-            *ngIf="isMyIssue(comment)"
+            *ngIf="isMyComment(comment)"
             (click)="deleteComment(comment.id)"
           >
             <mat-icon>delete</mat-icon>
@@ -92,7 +92,7 @@
       mat-raised-button
       color="warn"
       class="my-2"
-      [disabled]="this.addCommentForm.invalid || !isResolved()"
+      [disabled]="this.addCommentForm.invalid"
       (click)="addComment(issue.id)"
     >
       Add comment

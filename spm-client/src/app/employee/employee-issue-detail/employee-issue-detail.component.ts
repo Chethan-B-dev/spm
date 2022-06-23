@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatDialog } from "@angular/material";
 import { ActivatedRoute } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
+import { ConfirmDeleteComponent } from "src/app/shared/dialogs/confirm-delete/confirm-delete.component";
 import {
   IComment,
   IIssue,
@@ -14,6 +16,7 @@ import {
 import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/shared.service";
+import { DataType, DeleteData } from "src/app/shared/utility/common";
 
 @Component({
   selector: "app-employee-issue-detail",
@@ -30,8 +33,8 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
+    public dialog: MatDialog,
     private readonly authService: AuthService,
-    // todo: move resolve issue to manger service
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
     private readonly sharedService: SharedService
@@ -81,25 +84,20 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe((_) => {
+      .subscribe(() => {
         this.snackbarService.showSnackBar(`comment added`);
         this.addCommentForm.reset();
       });
   }
 
   deleteComment(commentId: number): void {
-    this.sharedService
-      .deleteComment(commentId)
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
-      )
-      .subscribe((res: boolean) => {
-        if (res) this.snackbarService.showSnackBar(`comment has been deleted`);
-      });
+    const deleteData: DeleteData = {
+      deleteType: DataType.COMMENT,
+      id: commentId,
+    };
+    this.dialog.open(ConfirmDeleteComponent, {
+      data: deleteData,
+    });
   }
 
   resolveIssue(issue: IIssue): void {
@@ -107,7 +105,7 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
       summary: issue.summary,
       status: IssueStatus.RESOLVED,
     };
-    this.sharedService
+    this.managerService
       .updateIssue(updateIssueDTO, issue.id)
       .pipe(
         takeUntil(this.destroy$),
@@ -116,7 +114,7 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe((_) => {
+      .subscribe(() => {
         this.snackbarService.showSnackBar(`issue has been resolved`);
       });
   }
@@ -132,7 +130,7 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
     return issue.status === IssueStatus.RESOLVED;
   }
 
-  isMyIssue(comment: IComment): boolean {
+  isMyComment(comment: IComment): boolean {
     return comment.user.id === this.currentUser.id;
   }
 }

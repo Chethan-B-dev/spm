@@ -60,16 +60,4 @@ export class SharedService {
         catchError(handleError)
       );
   }
-
-  updateIssue(
-    updateIssueDTO: IUpdateIssueDTO,
-    issueId: number
-  ): Observable<IIssue> {
-    return this.http
-      .put<IIssue>(`${this.sharedUrl}/edit-issue/${issueId}`, updateIssueDTO)
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(handleError)
-      );
-  }
 }
