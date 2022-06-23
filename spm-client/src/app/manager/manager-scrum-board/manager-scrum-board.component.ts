@@ -7,7 +7,6 @@ import { ITask } from "src/app/shared/interfaces/task.interface";
 import {
   getTodoStatistics,
   ITodo,
-  TodoStatistics,
   TodoStatus,
 } from "src/app/shared/interfaces/todo.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
@@ -61,15 +60,11 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
     dialogConfig.autoFocus = true;
     dialogConfig.data = this.taskId;
 
-    const dialogRef = this.dialog.open(CreateTodoComponent, dialogConfig);
-
-    dialogRef
-      .afterClosed()
-      .subscribe((data) => console.log("Dialog output:", data));
+    this.dialog.open(CreateTodoComponent, dialogConfig);
   }
 
   getCompletedPercentage(todos: ITodo[]): number {
     const todoStatistics = getTodoStatistics(todos);
-    return (todoStatistics[TodoStatus.DONE] / todos.length) * 100;
+    return ((todoStatistics[TodoStatus.DONE] / todos.length) * 100) | 0;
   }
 }

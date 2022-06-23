@@ -8,6 +8,12 @@ export interface ITodo {
   createdOn: Date;
 }
 
+export interface IUpdateTodoDTO {
+  todoName: string;
+  taskId: number;
+  status: TodoStatus;
+}
+
 export enum TodoStatus {
   TO_DO = "TO_DO",
   IN_PROGRESS = "IN_PROGRESS",

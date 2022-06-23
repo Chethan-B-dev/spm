@@ -1,11 +1,11 @@
 .board-dnd-list {
-  margin-right: .5rem;
+  margin-right: 0.5rem;
   display: flex;
   flex-direction: column;
-  border-radius: .125rem;
-  background-color: #f4f5f7;
+  border-radius: 0.125rem;
+  background-color: #f3f4f7;
   flex-shrink: 0;
-  width: calc(25% - 8px);
+  width: 33%;
   min-height: 400px;
   min-width: 200px;
 }

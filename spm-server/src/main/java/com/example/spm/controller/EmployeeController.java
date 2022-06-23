@@ -25,7 +25,6 @@ public class EmployeeController {
     public ResponseEntity<List<Project>> getAllProjectsByEmployee (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ) {
-        System.out.println("hitting this");
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 employeeService.getAllProjectsByEmployee(loggedInUser.getUser()), HttpStatus.OK
@@ -49,7 +48,7 @@ public class EmployeeController {
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable Integer taskId
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 employeeService.getTaskById(taskId),
                 HttpStatus.OK
@@ -63,7 +62,7 @@ public class EmployeeController {
             @RequestBody UpdateTaskDTO updateTaskDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 employeeService.updateTask(taskId, updateTaskDTO),
                 HttpStatus.OK
@@ -75,7 +74,7 @@ public class EmployeeController {
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable Integer todoId
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 employeeService.getTodoById(todoId),
                 HttpStatus.OK
@@ -100,7 +99,7 @@ public class EmployeeController {
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable Integer todoId
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 employeeService.updateTodo(todoId, updateTodoDTO),
                 HttpStatus.OK
@@ -112,7 +111,7 @@ public class EmployeeController {
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable Integer issueId
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 employeeService.getIssueById(issueId),
                 HttpStatus.OK
@@ -144,7 +143,7 @@ public class EmployeeController {
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable Integer issueId
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 employeeService.updateIssue(issueId, updateIssueDTO),
                 HttpStatus.OK
@@ -157,7 +156,7 @@ public class EmployeeController {
             @RequestBody AddCommentDTO addCommentDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(employeeService.addComment(addCommentDTO, issueId), HttpStatus.OK);
     }
 
@@ -166,7 +165,7 @@ public class EmployeeController {
             @PathVariable Integer issueId,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
-        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(employeeService.getComments(issueId), HttpStatus.OK);
     }
     @DeleteMapping("/delete-comment/{commentId}")

@@ -1,10 +1,25 @@
 <div class="status-list">
-	<div class="px-3 pb-4 pt-3">
-		{{ lane.title }}
-	</div>
-	<div class="issue-card-container pl-2" cdkDropList [cdkDropListData]="lane.issues"
-		(cdkDropListDropped)="drop($event)" [id]="lane.id">
-		<issue-card *ngFor="let issue of lane.issues" [issue]="issue" [cdkDragData]="issue" cdkDrag>
-		</issue-card>
-	</div>
+  <div class="px-3 pb-4 pt-3">
+    <mat-chip-list class="mat-chip-list-stacked" aria-label="Color selection">
+      <mat-chip color="warn" class="center">
+        {{ lane.title }}
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+  <div
+    class="issue-card-container pl-2"
+    cdkDropList
+    [cdkDropListData]="lane.todos"
+    (cdkDropListDropped)="drop($event)"
+    [id]="lane.title"
+  >
+    <issue-card
+      *ngFor="let todo of lane.todos"
+      [todo]="todo"
+      [cdkDragData]="todo"
+      cdkDrag
+      class="my-2"
+    >
+    </issue-card>
+  </div>
 </div>

@@ -6,13 +6,7 @@
       </mat-chip>
     </mat-chip-list>
   </div>
-  <div
-    class="issue-card-container pl-2"
-    cdkDropList
-    [cdkDropListData]="lane.todos"
-    (cdkDropListDropped)="drop($event)"
-    [id]="lane.title"
-  >
+  <div class="issue-card-container pl-2" [id]="lane.title">
     <issue-card *ngFor="let todo of lane.todos" [todo]="todo" class="my-2">
     </issue-card>
   </div>

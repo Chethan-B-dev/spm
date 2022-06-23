@@ -20,7 +20,7 @@ import { AuthService } from "../auth/auth.service";
 import { IIssue } from "../shared/interfaces/issue.interface";
 import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
-import { SharedService } from "../shared/shared.service";
+import { ITodo, IUpdateTodoDTO } from "../shared/interfaces/todo.interface";
 import { handleError } from "../shared/utility/error";
 
 @Injectable({
@@ -118,6 +118,15 @@ export class EmployeeService {
         `${this.employeeUrl}/create-issue/${projectId}`,
         issueRequest
       )
+      .pipe(
+        tap(() => this.refresh()),
+        catchError(handleError)
+      );
+  }
+
+  updateTodo(updateTodoDTO: IUpdateTodoDTO, todoId: number): Observable<ITodo> {
+    return this.http
+      .put<ITodo>(`${this.employeeUrl}/edit-todo/${todoId}`, updateTodoDTO)
       .pipe(
         tap(() => this.refresh()),
         catchError(handleError)
