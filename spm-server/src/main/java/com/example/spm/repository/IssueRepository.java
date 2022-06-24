@@ -10,7 +10,7 @@ public interface IssueRepository extends JpaRepository<Issue, Integer> {
     List<Issue> findAllByProjectIdOrderByCreatedDateDesc(Integer projectId);
 
     @Query(
-            value = "SELECT * FROM issue i, project p WHERE i.project_id = p.id and p.manager_id = :managerId and i.summary LIKE %:searchKey%",
+            value = "SELECT * FROM issue i, project p WHERE i.project_id = p.id and p.manager_id = :managerId and LOWER(i.summary) LIKE %:searchKey%",
             nativeQuery = true)
     List<Issue> getAllIssuesWithSearchKey(Integer managerId, String searchKey);
 
