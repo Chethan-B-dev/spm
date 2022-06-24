@@ -47,13 +47,16 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id")
     )
     @ToString.Exclude
+    @Builder.Default
     private List<AppUser> users = new ArrayList<>();
 
     @OneToMany(mappedBy = "project")
     @ToString.Exclude
+    @Builder.Default
     private List<Task> tasks = new ArrayList<>();
 
     @OneToMany(mappedBy = "project")
     @ToString.Exclude
+    @Builder.Default
     private List<Issue> issues = new ArrayList<>();
 }

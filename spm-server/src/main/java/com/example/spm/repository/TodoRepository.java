@@ -1,6 +1,5 @@
 package com.example.spm.repository;
 
-import com.example.spm.model.entity.Task;
 import com.example.spm.model.entity.Todo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

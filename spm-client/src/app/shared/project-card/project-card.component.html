@@ -1,7 +1,12 @@
 <mat-card class="example-card">
   <div class="left-and-right">
     <div class="my-flex-start">
-      <button *ngIf="showBackButton" (click)="goBack()" mat-icon-button>
+      <button
+        *ngIf="showBackButton"
+        (click)="goBack()"
+        mat-icon-button
+        matTooltip="Go to Previous page"
+      >
         <mat-icon>keyboard_backspace</mat-icon>
       </button>
 
@@ -79,7 +84,7 @@
 
     <div class="col-md-8" *ngIf="showIssueStats">
       <mat-card>
-        <!-- <app-pie-chart></app-pie-chart> -->
+        <app-pie-chart [pieData]="pieChartData"></app-pie-chart>
         <mat-card-actions>
           <button
             mat-button

@@ -19,7 +19,7 @@
     <mat-form-field appearance="fill" style="width: 50%">
       <mat-label>Choose a Deadline Date</mat-label>
       <input matInput [matDatepicker]="picker" formControlName="toDate" />
-      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-hint>DD/MM/YYYY</mat-hint>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
       <span

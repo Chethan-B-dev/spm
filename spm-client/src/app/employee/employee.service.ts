@@ -132,4 +132,13 @@ export class EmployeeService {
         catchError(handleError)
       );
   }
+
+  completeTask(taskId: number): Observable<ITask> {
+    return this.http
+      .put<ITask>(`${this.employeeUrl}/complete-task/${taskId}`, {})
+      .pipe(
+        tap(() => this.refresh()),
+        catchError(handleError)
+      );
+  }
 }

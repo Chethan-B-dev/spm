@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog, MatDialogConfig } from "@angular/material";
-import { ThemePalette } from "@angular/material/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
 import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
@@ -10,16 +9,14 @@ import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   getTaskStatistics,
   ITask,
+  TaskPriorityOptions,
   TaskStatistics,
 } from "src/app/shared/interfaces/task.interface";
 import { getProjectProgress } from "src/app/shared/interfaces/todo.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { EmployeeService } from "../employee.service";
 import { CreateIssueComponent } from "./Dialogs/create-issue/create-issue.component";
-export interface ChipColor {
-  name: string;
-  color: ThemePalette;
-}
+
 @Component({
   selector: "app-employee-project-detail",
   templateUrl: "./employee-project-detail.component.html",
@@ -64,6 +61,8 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.employeeService.selectTaskCategory(this.defaultTaskCategory);
+
     // todo: add pagination to this stream and scan to add more elements
     this.tasks$ = combineLatest(
       this.employeeService.tasks$,
@@ -74,6 +73,15 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
         selectedTaskCategory === "ALL"
           ? tasks
           : tasks.filter((task) => task.status === selectedTaskCategory)
+      ),
+      map((tasks) =>
+        tasks.sort(
+          (a, b) =>
+            TaskPriorityOptions.findIndex(
+              (priority) => priority === b.priority
+            ) -
+            TaskPriorityOptions.findIndex((priority) => priority === a.priority)
+        )
       ),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
@@ -88,6 +96,10 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
 
   toggleShowIssues(): void {
     this.showIssues = !this.showIssues;
+  }
+
+  goBack(): void {
+    window.history.go(-1);
   }
 
   getIssueKey(projectName: string, issueId: number): string {

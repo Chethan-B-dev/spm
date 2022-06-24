@@ -111,7 +111,7 @@ public class ManagerService {
     }
 
     public Todo createTodo(CreateTodoDTO createTodoDTO, MyAppUserDetails loggedInUser, Integer taskId) {
-        return todoService.createTodo(createTodoDTO, loggedInUser, taskId);
+        return todoService.createTodo(createTodoDTO, loggedInUser,  taskId);
     }
 
     public Todo getTodoById(Integer todoId) {

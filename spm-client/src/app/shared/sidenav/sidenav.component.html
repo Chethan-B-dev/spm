@@ -24,10 +24,29 @@
       </a> -->
     </mat-nav-list>
 
+    <mat-nav-list *ngIf="isEmployee$ | async">
+      <a mat-list-item [routerLink]="'/employee'"> Dashboard </a>
+      <!-- <a mat-list-item [routerLink]="'/manager'"> Manager </a>
+      <a mat-list-item [routerLink]="'/employee-dashboard'"> Employee </a>
+      <a mat-list-item [routerLink]="'/employee-project-detail'">
+        Employee Project Detail
+      </a>
+      <a mat-list-item [routerLink]="'/employee-issue-detail'">
+        Employee Issue Detail
+      </a>
+      <a mat-list-item [routerLink]="'/employee-scrum-board'">
+        Employee Scrum Board
+      </a>
+      <a mat-list-item [routerLink]="'/manager-issue-detail'">
+        Manager Scrum Board
+      </a> -->
+    </mat-nav-list>
+
     <mat-nav-list *ngIf="isManager$ | async">
       <a mat-list-item (click)="openAddProjectDialog()">
         <mat-icon class="mr-2">work</mat-icon> Add Project
       </a>
+      <a mat-list-item [routerLink]="'/manager'"> Dashboard </a>
       <!-- <a mat-list-item [routerLink]="'/manager'">
         <mat-icon class="mr-2">dashboard</mat-icon> Reports Dashboard
       </a>
@@ -77,9 +96,9 @@
 
       <!-- search -->
       <mat-form-field
+        *ngIf="(isLoggedIn$ | async) && (isManager$ | async)"
         appearance="fill"
         class="searchForm"
-        *ngIf="(isLoggedIn$ | async) && (isManager$ | async)"
       >
         <input
           type="text"
@@ -98,6 +117,7 @@
             <mat-option
               *ngFor="let data of group.data"
               [routerLink]="getRedirectLink(group.type, data)"
+              (click)="clearSearchTerm()"
             >
               <span *ngIf="group.type === 'PROJECT'"
                 ><mat-icon class="mr-2">work</mat-icon></span
@@ -128,12 +148,14 @@
         routerLink="/profile"
         *ngIf="isLoggedIn$ | async"
         [matTooltip]="(currentUser$ | async)?.username"
+        [matTooltipPosition]="'right'"
       >
         <mat-icon>person</mat-icon>
         Profile
       </button>
       <button
         matTooltip="Notifications"
+        [matTooltipPosition]="'right'"
         mat-icon-button
         class="mr-4"
         (click)="toggleNotifications()"

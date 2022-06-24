@@ -4,8 +4,8 @@ import com.example.spm.model.enums.TaskPriority;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 public class CreateTaskDTO {
-    @NotNull
+    @NotBlank(message = "task name cannot be empty")
     private String name;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime deadLine;
-    @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate deadLine;
+    @NotBlank(message = "task description cannot be empty")
     private String description;
     private TaskPriority priority;
     private Integer userId;

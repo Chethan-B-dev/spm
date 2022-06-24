@@ -14,7 +14,10 @@ import { ManagerService } from "../services/manager.service";
 // interfaces
 import { IIssue } from "src/app/shared/interfaces/issue.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
-import { ITask } from "src/app/shared/interfaces/task.interface";
+import {
+  ITask,
+  TaskPriorityOptions,
+} from "src/app/shared/interfaces/task.interface";
 
 @Component({
   selector: "app-manager-project-detail",
@@ -46,6 +49,8 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log("calling again");
+
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
     });
@@ -61,6 +66,8 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.managerService.selectTaskCategory(this.defaultTaskCategory);
+
     // todo: add pagination to this stream and scan to add more elements
     this.tasks$ = combineLatest(
       this.managerService.tasksWithAdd$,
@@ -71,6 +78,15 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
         selectedTaskCategory === "ALL"
           ? tasks
           : tasks.filter((task) => task.status === selectedTaskCategory)
+      ),
+      map((tasks) =>
+        tasks.sort(
+          (a, b) =>
+            TaskPriorityOptions.findIndex(
+              (priority) => priority === b.priority
+            ) -
+            TaskPriorityOptions.findIndex((priority) => priority === a.priority)
+        )
       ),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);

@@ -7,12 +7,7 @@ import {
   OnInit,
   Output,
 } from "@angular/core";
-import {
-  MatDialog,
-  MatDialogConfig,
-  MatDialogRef,
-} from "@angular/material/dialog";
-import { Router } from "@angular/router";
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 
 // rxjs
 import { EMPTY, Observable, of, Subject } from "rxjs";
@@ -27,6 +22,8 @@ import { ManagerService } from "src/app/manager/services/manager.service";
 import { SnackbarService } from "../services/snackbar.service";
 
 // interfaces
+import { SetDesignationComponent } from "src/app/manager/dialogs/set-designation/set-designation.component";
+import { IIssue } from "../interfaces/issue.interface";
 import { IProject } from "../interfaces/project.interface";
 import {
   getTaskStatistics,
@@ -34,7 +31,7 @@ import {
 } from "../interfaces/task.interface";
 import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
-import { SetDesignationComponent } from "src/app/manager/dialogs/set-designation/set-designation.component";
+import { DataType, PieData } from "../utility/common";
 
 @Component({
   selector: "app-project-card",
@@ -58,8 +55,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private readonly managerService: ManagerService,
-    private readonly snackbarService: SnackbarService,
-    private router: Router
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +70,13 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     }
     this.projectProgress = getProjectProgress(this.project.tasks);
     this.projectTaskStatistics = getTaskStatistics(this.project.tasks);
+  }
+
+  get pieChartData(): PieData<IIssue> {
+    return {
+      type: DataType.ISSUE,
+      data: this.project.issues,
+    } as PieData<IIssue>;
   }
 
   scrollToBottom(): void {
@@ -137,11 +140,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     dialogConfig.autoFocus = true;
     dialogConfig.data = project;
 
-    const dialogRef = this.dialog.open(CreateTaskComponent, dialogConfig);
-
-    dialogRef
-      .afterClosed()
-      .subscribe((data) => console.log("Dialog output:", data));
+    this.dialog.open(CreateTaskComponent, dialogConfig);
   }
 
   openSetDesignationDialog(employees: IAppUser[]): Observable<any> {
@@ -170,26 +169,14 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-
     dialogConfig.data = project;
 
-    const dialogRef: MatDialogRef<ShowEmployeesComponent> = this.dialog.open(
-      ShowEmployeesComponent,
-      dialogConfig
-    );
-
-    dialogRef
-      .afterClosed()
-      .subscribe((data) => console.log("Dialog output:", data));
+    this.dialog.open(ShowEmployeesComponent, dialogConfig);
   }
 
   showAddTaskButton(): boolean {
     const isExpired =
       new Date().getTime() > new Date(this.project.toDate).getTime();
     return !isExpired;
-  }
-
-  navigateToProjectDetail(): void {
-    this.router.navigate(["manager", "project-detail", this.project.id]);
   }
 }

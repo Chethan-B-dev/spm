@@ -15,8 +15,17 @@
       *ngFor="let project of projects"
       [project]="project"
     ></app-project-card>
+    <mat-card *ngIf="projects?.length === 0"
+      >You have not been assigned to any projects yet</mat-card
+    >
   </div>
 </ng-container>
+
+<div class="container" *ngIf="error">
+  <div class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+</div>
 
 <div class="center loading-screen" *ngIf="isLoading$ | async">
   <app-loading-spinner></app-loading-spinner>

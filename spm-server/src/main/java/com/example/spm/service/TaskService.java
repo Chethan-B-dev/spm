@@ -27,12 +27,10 @@ public class TaskService {
                 .createdDate(LocalDate.now())
                 .description(createTaskDTO.getDescription())
                 .project(project)
-                // if task priority is not provided let us default it to LOW
                 .priority(createTaskDTO.getPriority() != null ? createTaskDTO.getPriority() : TaskPriority.LOW)
-                // todo: later change this to in progress
                 .status(TaskStatus.IN_PROGRESS)
                 .user(employee)
-                .deadLine(createTaskDTO.getDeadLine().toLocalDate())
+                .deadLine(createTaskDTO.getDeadLine())
                 .build();
         return taskRepository.save(task);
     }
@@ -60,7 +58,7 @@ public class TaskService {
     public Task updateTask(Integer taskId, UpdateTaskDTO updateTaskDTO) {
         Task task = checkIfTaskExists(taskId);
         task.setName(updateTaskDTO.getTaskName());
-        task.setDeadLine(updateTaskDTO.getDeadline().toLocalDate());
+        task.setDeadLine(updateTaskDTO.getDeadline());
         task.setPriority(updateTaskDTO.getPriority());
         task.setDescription(updateTaskDTO.getDescription());
         return taskRepository.save(task);
@@ -72,5 +70,16 @@ public class TaskService {
 
     public List<Task> getAllTasksWithSearchKey(String searchKey, Integer managerId) {
         return taskRepository.getAllTasksWithSearchKey(managerId, searchKey);
+    }
+
+    public Task completeTask(Integer taskId) {
+        Task task = checkIfTaskExists(taskId);
+        task.setStatus(TaskStatus.COMPLETED);
+        return taskRepository.save(task);
+    }
+
+    public void checkIfTaskBelongsToManager(Task task, MyAppUserDetails loggedInUser) {
+        if (!task.getProject().getManager().getId().equals(loggedInUser.getUser().getId()))
+            throw new ActionNotAllowedException("Cannot create todo for this task as this project does not belong to you");
     }
 }

@@ -86,11 +86,11 @@ export class ManagerService {
     this.projects$,
     this.projectInsertedAction$
   ).pipe(
-    scan((acc: IProject[], value: IProject) => {
-      if (value instanceof Array) return [...value];
-      value.tasks = [];
-      return [value, ...acc];
-    }, [] as IProject[]),
+    scan(
+      (acc: IProject[], value: IProject) =>
+        value instanceof Array ? [...value] : [value, ...acc],
+      [] as IProject[]
+    ),
     shareReplay(1),
     catchError(handleError)
   );
@@ -251,7 +251,7 @@ export class ManagerService {
     const requestBody = {
       projectName,
       description: projectDescription,
-      toDate: projectDeadLine.toISOString(),
+      toDate: new Date(projectDeadLine + "Z").toISOString().substring(0, 10),
     };
     return this.http
       .post<IProject>(`${this.managerUrl}/create-project`, requestBody)
@@ -266,12 +266,17 @@ export class ManagerService {
     projectId: number
   ): Observable<ITask> {
     return this.http
-      .post<ITask>(
-        `${this.managerUrl}/${projectId}/create-task`,
-        taskRequestDTO
-      )
+      .post<ITask>(`${this.managerUrl}/${projectId}/create-task`, {
+        ...taskRequestDTO,
+        deadLine: new Date(taskRequestDTO.deadLine + "Z")
+          .toISOString()
+          .substring(0, 10),
+      })
       .pipe(
-        tap((task) => this.addTask(task)),
+        tap((task) => {
+          this.addTask(task);
+          this.refresh();
+        }),
         catchError(handleError)
       );
   }

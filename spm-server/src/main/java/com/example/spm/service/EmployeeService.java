@@ -7,6 +7,7 @@ import com.example.spm.model.entity.*;
 import com.example.spm.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -69,9 +70,16 @@ public class EmployeeService {
     }
 
     @Transactional
+    @Modifying
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
         todoService.checkIfTodoExists(todoId);
         return todoService.updateTodo(todoId, updateTodoDTO);
+    }
+
+    @Transactional
+    @Modifying
+    public Task completeTask(Integer taskId) {
+        return taskService.completeTask(taskId);
     }
 
     public Issue createIssue(Integer projectId, CreateIssueDTO createIssueDTO, MyAppUserDetails loggedInUser) {

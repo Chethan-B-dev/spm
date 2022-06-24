@@ -26,6 +26,8 @@ public class TodoService {
 
     public Todo createTodo(CreateTodoDTO createTodoDTO, MyAppUserDetails loggedInUser, Integer taskId) {
         Task task = taskService.checkIfTaskExists(taskId);
+        taskService.checkIfTaskBelongsToManager(task, loggedInUser);
+
         Todo todo = Todo.builder()
                 .name(createTodoDTO.getTodoName())
                 .status(TodoStatus.TO_DO)
