@@ -53,5 +53,6 @@ public class Task {
     private AppUser user;
     @OneToMany(mappedBy = "task")
     @ToString.Exclude
+    @Builder.Default
     private List<Todo> todos = new ArrayList<>();
 }

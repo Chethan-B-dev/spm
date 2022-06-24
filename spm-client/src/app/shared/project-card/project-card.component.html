@@ -1,7 +1,12 @@
 <mat-card class="example-card">
   <div class="left-and-right">
     <div class="my-flex-start">
-      <button *ngIf="showBackButton" (click)="goBack()" mat-icon-button>
+      <button
+        *ngIf="showBackButton"
+        (click)="goBack()"
+        mat-icon-button
+        matTooltip="Go to Previous page"
+      >
         <mat-icon>keyboard_backspace</mat-icon>
       </button>
 

@@ -1,6 +1,5 @@
 package com.example.spm.repository;
 
-import com.example.spm.model.entity.Project;
 import com.example.spm.model.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +13,7 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findAllByProjectIdAndUserId(Integer projectId, Integer userId);
 
     @Query(
-            value = "SELECT * FROM task t, project p WHERE t.project_id = p.id and p.manager_id = :managerId and t.name LIKE %:searchKey%",
+            value = "SELECT * FROM task t, project p WHERE t.project_id = p.id and p.manager_id = :managerId and LOWER(t.name) LIKE %:searchKey%",
             nativeQuery = true)
     List<Task> getAllTasksWithSearchKey(Integer managerId, String searchKey);
 

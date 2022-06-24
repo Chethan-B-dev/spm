@@ -46,6 +46,8 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log("calling again");
+
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
     });
@@ -60,6 +62,8 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
         return EMPTY;
       })
     );
+
+    this.managerService.selectTaskCategory(this.defaultTaskCategory);
 
     // todo: add pagination to this stream and scan to add more elements
     this.tasks$ = combineLatest(

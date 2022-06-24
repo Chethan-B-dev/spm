@@ -126,6 +126,10 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
     );
   }
 
+  goBack(): void {
+    window.history.go(-1);
+  }
+
   isResolved(issue: IIssue): boolean {
     return issue.status === IssueStatus.RESOLVED;
   }

@@ -40,7 +40,7 @@ public class ProjectService {
                 .name(createProjectDTO.getProjectName())
                 .manager(appUserService.getUser(myAppUserDetails.getUsername()))
                 .fromDate(LocalDate.now())
-                .toDate(createProjectDTO.getToDate().toLocalDate())
+                .toDate(createProjectDTO.getToDate())
                 .status(ProjectStatus.IN_PROGRESS)
                 .build();
 

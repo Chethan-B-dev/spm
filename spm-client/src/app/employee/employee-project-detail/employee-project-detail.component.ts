@@ -64,6 +64,8 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.employeeService.selectTaskCategory(this.defaultTaskCategory);
+
     // todo: add pagination to this stream and scan to add more elements
     this.tasks$ = combineLatest(
       this.employeeService.tasks$,
@@ -88,6 +90,10 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
 
   toggleShowIssues(): void {
     this.showIssues = !this.showIssues;
+  }
+
+  goBack(): void {
+    window.history.go(-1);
   }
 
   getIssueKey(projectName: string, issueId: number): string {

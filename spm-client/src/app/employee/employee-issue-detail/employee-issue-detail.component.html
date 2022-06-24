@@ -11,9 +11,19 @@
   <mat-card class="my-3">
     <div>
       <div class="left-and-right">
-        <mat-card-title class="push-down"
-          >Issue Summary: {{ issue.summary }}</mat-card-title
-        >
+        <div class="left">
+          <button
+            (click)="goBack()"
+            mat-icon-button
+            matTooltip="Go to Previous page"
+          >
+            <mat-icon>keyboard_backspace</mat-icon>
+          </button>
+
+          <mat-card-title class="push-down"
+            >Issue Summary: {{ issue.summary }}</mat-card-title
+          >
+        </div>
         <button
           mat-raised-button
           color="accent"
@@ -92,7 +102,7 @@
       mat-raised-button
       color="warn"
       class="my-2"
-      [disabled]="this.addCommentForm.invalid"
+      [disabled]="this.addCommentForm.invalid || isResolved(issue)"
       (click)="addComment(issue.id)"
     >
       Add comment

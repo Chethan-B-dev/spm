@@ -8,7 +8,16 @@
   <div class="col-md-8" *ngIf="project$ | async as project">
     <div class="container my-3">
       <mat-card>
-        <p class="lead" style="font-weight: 500">{{ project.name }}</p>
+        <div class="left">
+          <button
+            (click)="goBack()"
+            mat-icon-button
+            matTooltip="Go to Previous page"
+          >
+            <mat-icon>keyboard_backspace</mat-icon>
+          </button>
+          <p class="lead mt-3" style="font-weight: 500">{{ project.name }}</p>
+        </div>
         <div class="my-2">
           <mat-chip
             color="primary"

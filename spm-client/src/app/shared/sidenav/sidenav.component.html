@@ -77,9 +77,9 @@
 
       <!-- search -->
       <mat-form-field
+        *ngIf="(isLoggedIn$ | async) && (isManager$ | async)"
         appearance="fill"
         class="searchForm"
-        *ngIf="(isLoggedIn$ | async) && (isManager$ | async)"
       >
         <input
           type="text"
@@ -98,6 +98,7 @@
             <mat-option
               *ngFor="let data of group.data"
               [routerLink]="getRedirectLink(group.type, data)"
+              (click)="clearSearchTerm()"
             >
               <span *ngIf="group.type === 'PROJECT'"
                 ><mat-icon class="mr-2">work</mat-icon></span

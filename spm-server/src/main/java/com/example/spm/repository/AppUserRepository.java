@@ -25,7 +25,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
     boolean existsByEmail(String email);
 
     @Query(
-            value = "SELECT * FROM app_user a WHERE a.username LIKE %:searchKey%",
+            value = "SELECT * FROM app_user a WHERE LOWER(a.username) LIKE %:searchKey%",
             nativeQuery = true)
     List<AppUser> getAllUsersWithSearchKey(String searchKey);
 

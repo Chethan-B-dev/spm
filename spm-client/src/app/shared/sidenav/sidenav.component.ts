@@ -129,7 +129,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   }
 
   getRedirectLink(type: DataType, searchData: ISearchData): string {
-    // todo: redirect to appropriate place for todo and user and issue
+    // todo: redirect to appropriate place for todo and user
     switch (type) {
       case DataType.PROJECT:
         return `/manager/project-detail/${searchData.id}`;
@@ -137,9 +137,11 @@ export class SidenavComponent implements OnInit, OnDestroy {
         return `/issue-detail/${searchData.id}`;
       case DataType.TASK:
         return `/manager/task-detail/${searchData.id}`;
-      case DataType.TODO:
-        return `/manager/todo-detail/${searchData.id}`;
     }
+  }
+
+  clearSearchTerm(): void {
+    this.searchTermSubject.next("");
   }
 
   toggleNotifications(): void {

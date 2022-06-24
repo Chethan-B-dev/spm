@@ -11,11 +11,13 @@
   <div class="col-md-9 border-right">
     <div class="container my-3">
       <h4 class="py-2">Projects</h4>
-
       <app-project-card
         *ngFor="let project of projects"
         [project]="project"
       ></app-project-card>
+      <mat-card *ngIf="projects?.length === 0"
+        >There are no Projects, Please Add A Project</mat-card
+      >
     </div>
   </div>
   <!-- stats -->
@@ -39,6 +41,7 @@
             {{ user.username }}
           </mat-chip>
         </mat-chip-list>
+        <mat-card *ngIf="users?.length === 0">There are no users</mat-card>
       </ng-container>
 
       <div class="center my-3" *ngIf="loadMore$ | async">

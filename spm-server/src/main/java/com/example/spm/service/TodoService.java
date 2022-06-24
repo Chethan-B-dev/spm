@@ -28,8 +28,7 @@ public class TodoService {
         Task task = taskService.checkIfTaskExists(taskId);
         Todo todo = Todo.builder()
                 .name(createTodoDTO.getTodoName())
-                // todo: change this back to TO_DO
-                .status(TodoStatus.IN_PROGRESS)
+                .status(TodoStatus.TO_DO)
                 .task(task)
                 .createdOn(LocalDate.now())
                 .build();

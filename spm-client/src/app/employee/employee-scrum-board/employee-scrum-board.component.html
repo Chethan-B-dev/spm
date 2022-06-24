@@ -8,12 +8,13 @@
   <mat-card class="mx-3 my-2">
     <div class="row">
       <div class="col-3">
-        <mat-card-title>{{ task.name }} Scrum Board</mat-card-title>
+        <!-- back button does not look good on this page -->
+        <mat-card-title> {{ task.name }} Scrum Board</mat-card-title>
         <mat-card-subtitle
           [matTooltip]="'Created Date: ' + (task.createdDate | date)"
           >{{ task.createdDate | date }}</mat-card-subtitle
         >
-        <mat-chip-list aria-label="Task Details">
+        <mat-chip-list aria-label="Task Details" class="pb-2">
           <mat-chip color="primary" selected
             >Deadline: {{ task.deadLine | date }}</mat-chip
           >
@@ -24,20 +25,23 @@
       </div>
       <div class="col-8 p-2">
         <div class="p-2">
-          <mat-chip-list aria-label="Todo Statistics">
-            <mat-chip color="primary" selected
-              >Total todos: {{ task.todos?.length }}</mat-chip
-            >
-            <mat-chip color="warn" selected
-              >To Do: {{ getStats(task.todos)["TO_DO"] }}</mat-chip
-            >
-            <mat-chip color="accent" selected
-              >In Progress: {{ getStats(task.todos)["IN_PROGRESS"] }}</mat-chip
-            >
-            <mat-chip class="bg-success" selected
-              >Done: {{ getStats(task.todos)["DONE"] }}</mat-chip
-            >
-          </mat-chip-list>
+          <div class="left-and-right">
+            <mat-chip-list aria-label="Todo Statistics">
+              <mat-chip color="primary" selected
+                >Total todos: {{ task.todos?.length }}</mat-chip
+              >
+              <mat-chip color="warn" selected
+                >To Do: {{ getStats(task.todos)["TO_DO"] }}</mat-chip
+              >
+              <mat-chip color="accent" selected
+                >In Progress:
+                {{ getStats(task.todos)["IN_PROGRESS"] }}</mat-chip
+              >
+              <mat-chip class="bg-success" selected
+                >Done: {{ getStats(task.todos)["DONE"] }}</mat-chip
+              >
+            </mat-chip-list>
+          </div>
         </div>
         <mat-progress-bar
           mode="determinate"

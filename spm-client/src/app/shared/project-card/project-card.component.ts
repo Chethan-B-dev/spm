@@ -137,11 +137,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     dialogConfig.autoFocus = true;
     dialogConfig.data = project;
 
-    const dialogRef = this.dialog.open(CreateTaskComponent, dialogConfig);
-
-    dialogRef
-      .afterClosed()
-      .subscribe((data) => console.log("Dialog output:", data));
+    this.dialog.open(CreateTaskComponent, dialogConfig);
   }
 
   openSetDesignationDialog(employees: IAppUser[]): Observable<any> {
@@ -170,17 +166,9 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-
     dialogConfig.data = project;
 
-    const dialogRef: MatDialogRef<ShowEmployeesComponent> = this.dialog.open(
-      ShowEmployeesComponent,
-      dialogConfig
-    );
-
-    dialogRef
-      .afterClosed()
-      .subscribe((data) => console.log("Dialog output:", data));
+    this.dialog.open(ShowEmployeesComponent, dialogConfig);
   }
 
   showAddTaskButton(): boolean {

@@ -35,7 +35,7 @@ export class PieChartComponent implements OnInit {
         {
           type: "pie",
           showInLegend: true,
-          toolTipContent: "<b>{name}</b>: ${y} (#percent%)",
+          toolTipContent: "<b>{name}</b>: (#percent%)",
           indexLabel: "{name} - #percent%",
           dataPoints: this.pieChartData(),
         },
