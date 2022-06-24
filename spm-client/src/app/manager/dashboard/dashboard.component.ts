@@ -1,6 +1,5 @@
 // angular
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
 
 // rxjs
 import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
@@ -27,6 +26,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadMore$: Observable<boolean>;
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
+  error: string;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -44,6 +44,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       catchError((err) => {
         stopLoading(this.isLoadingSubject);
         this.snackbarService.showSnackBar(err);
+        this.error = err;
         return EMPTY;
       })
     );
@@ -52,6 +53,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       catchError((err) => {
         // this.snackbarService.showSnackBar(err);
+        this.error = err;
         return EMPTY;
       })
     );
@@ -60,6 +62,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
+        this.error = err;
         return EMPTY;
       })
     );

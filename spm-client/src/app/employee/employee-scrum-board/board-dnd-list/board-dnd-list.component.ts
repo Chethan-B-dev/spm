@@ -31,6 +31,7 @@ import { EmployeeService } from "../../employee.service";
 export class BoardDndListComponent implements OnChanges, OnDestroy {
   @Input() lane: ILane;
   @Input() taskId: number;
+  @Input() canDrag: boolean;
   private readonly refreshLane$ = new BehaviorSubject<void>(null);
   private readonly destroy$ = new Subject<void>();
 
@@ -41,6 +42,7 @@ export class BoardDndListComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.lane = changes.lane.currentValue;
+    this.canDrag = changes.canDrag.currentValue;
     this.refreshLane$.next();
   }
 

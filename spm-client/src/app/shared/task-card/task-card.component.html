@@ -25,6 +25,7 @@
         color="primary"
         selected
         [matTooltip]="'Task Status - ' + task.status"
+        [matTooltipPosition]="'right'"
         >{{ task.status.replace("_", " ") | titlecase }}</mat-chip
       >
       <mat-chip color="warn" selected
@@ -32,15 +33,24 @@
       >
       <mat-chip>Assignee - {{ task.user?.username }}</mat-chip>
       <mat-chip>Created date - {{ task.createdDate | date }}</mat-chip>
-      <mat-chip *ngIf="task.priority === 'LOW'" matTooltip="Low Priority"
+      <mat-chip
+        *ngIf="task.priority === 'LOW'"
+        matTooltip="Low Priority"
+        [matTooltipPosition]="'right'"
         ><mat-icon>keyboard_arrow_down</mat-icon>
         {{ task.priority | titlecase }}</mat-chip
       >
-      <mat-chip *ngIf="task.priority === 'MEDIUM'" matTooltip="Medium Priority"
+      <mat-chip
+        *ngIf="task.priority === 'MEDIUM'"
+        matTooltip="Medium Priority"
+        [matTooltipPosition]="'right'"
         ><mat-icon>unfold_more</mat-icon
         >{{ task.priority | titlecase }}</mat-chip
       >
-      <mat-chip *ngIf="task.priority === 'HIGH'" matTooltip="High Priority"
+      <mat-chip
+        *ngIf="task.priority === 'HIGH'"
+        matTooltip="High Priority"
+        [matTooltipPosition]="'right'"
         ><mat-icon>keyboard_arrow_up</mat-icon
         >{{ task.priority | titlecase }}</mat-chip
       >

@@ -21,6 +21,12 @@
   </div>
 </ng-container>
 
+<div class="container" *ngIf="error">
+  <div class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+</div>
+
 <div class="center loading-screen" *ngIf="isLoading$ | async">
   <app-loading-spinner></app-loading-spinner>
 </div>

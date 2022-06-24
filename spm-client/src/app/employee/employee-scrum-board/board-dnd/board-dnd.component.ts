@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, SimpleChanges } from "@angular/core";
-import { Observable, BehaviorSubject, Subject, of, EMPTY } from "rxjs";
-import { takeUntil, switchMap, catchError } from "rxjs/operators";
+import { Component, Input, OnInit, SimpleChanges } from "@angular/core";
+import { BehaviorSubject, EMPTY, Observable, of, Subject } from "rxjs";
+import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { ILane } from "src/app/manager/manager-scrum-board/interface/lane";
 import {
   ITodo,
@@ -15,6 +15,7 @@ import { SnackbarService } from "src/app/shared/services/snackbar.service";
 export class BoardDndComponent implements OnInit {
   @Input() todos: ITodo[];
   @Input() taskId: number;
+  @Input() canDrag: boolean;
   lanes$: Observable<ILane[]>;
   private readonly refreshLane$ = new BehaviorSubject<void>(null);
   private readonly destroy$ = new Subject<void>();
@@ -42,6 +43,7 @@ export class BoardDndComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.todos = changes.todos.currentValue;
+    this.canDrag = changes.canDrag.currentValue;
     this.refreshLane$.next();
   }
 

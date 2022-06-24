@@ -69,6 +69,18 @@ public class EmployeeController {
         );
     }
 
+    @PutMapping("/complete-task/{taskId}")
+    public ResponseEntity<Task> completeTask (
+            @PathVariable Integer taskId,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ){
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                employeeService.completeTask(taskId),
+                HttpStatus.OK
+        );
+    }
+
     @GetMapping("/todo/{todoId}")
     public ResponseEntity<Todo> getTodoByTodoId(
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,

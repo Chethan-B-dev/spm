@@ -1,9 +1,13 @@
 import { Component, Input, OnInit } from "@angular/core";
 import * as CanvasJS from "../../../assets/canvasjs.min.js";
 import {
+  getIssueStatistics,
+  IssueStatistics,
+  IssueStatusOptions,
+} from "../interfaces/issue.interface.js";
+import {
   getTodoStatistics,
   TodoStatistics,
-  TodoStatus,
   TodoStatusOptions,
 } from "../interfaces/todo.interface.js";
 import { DataType, myTitleCase, PieData } from "../utility/common.js";
@@ -16,12 +20,15 @@ import { DataType, myTitleCase, PieData } from "../utility/common.js";
 export class PieChartComponent implements OnInit {
   @Input() pieData: PieData<any>;
   todoStats: TodoStatistics;
+  issueStats: IssueStatistics;
 
   ngOnInit() {
     switch (this.pieData.type) {
       case DataType.TODO:
         this.todoStats = getTodoStatistics(this.pieData.data);
         break;
+      case DataType.ISSUE:
+        this.issueStats = getIssueStatistics(this.pieData.data);
     }
 
     const chart = new CanvasJS.Chart("chartContainer", {
@@ -47,23 +54,47 @@ export class PieChartComponent implements OnInit {
 
   private pieChartData(): { y: number; name: string }[] {
     const pieData: { y: number; name: string }[] = [];
-    if (this.pieData.type === DataType.TODO) {
-      const noTodos = TodoStatusOptions.every(
-        (todoStatus) => this.todoStats[todoStatus] === 0
-      );
-      if (noTodos)
-        return [
-          {
-            y: 100,
-            name: `No ${myTitleCase(this.pieData.type)}'s have been added yet`,
-          },
-        ];
-      TodoStatusOptions.forEach((todoStatus) => {
-        pieData.push({
-          y: this.todoStats[todoStatus],
-          name: todoStatus.replace("_", " "),
+    switch (this.pieData.type) {
+      case DataType.TODO:
+        const noTodos = TodoStatusOptions.every(
+          (todoStatus) => this.todoStats[todoStatus] === 0
+        );
+        if (noTodos)
+          return [
+            {
+              y: 100,
+              name: `No ${myTitleCase(
+                this.pieData.type
+              )}'s have been added yet`,
+            },
+          ];
+        TodoStatusOptions.forEach((todoStatus) => {
+          pieData.push({
+            y: this.todoStats[todoStatus],
+            name: todoStatus.replace("_", " "),
+          });
         });
-      });
+        break;
+      case DataType.ISSUE:
+        const noIssues = IssueStatusOptions.every(
+          (issueStatus) => this.issueStats[issueStatus] === 0
+        );
+        if (noIssues)
+          return [
+            {
+              y: 100,
+              name: `No ${myTitleCase(
+                this.pieData.type
+              )}'s have been Reported yet`,
+            },
+          ];
+        IssueStatusOptions.forEach((issueStatus) => {
+          pieData.push({
+            y: this.issueStats[issueStatus],
+            name: issueStatus.replace("_", " "),
+          });
+        });
+        break;
     }
     return pieData;
   }

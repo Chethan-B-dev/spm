@@ -48,3 +48,5 @@ export enum TaskPriority {
   MEDIUM = "MEDIUM",
   HIGH = "HIGH",
 }
+
+export const TaskPriorityOptions = [...Object.keys(TaskPriority)];

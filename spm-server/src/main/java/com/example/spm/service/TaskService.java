@@ -71,4 +71,15 @@ public class TaskService {
     public List<Task> getAllTasksWithSearchKey(String searchKey, Integer managerId) {
         return taskRepository.getAllTasksWithSearchKey(managerId, searchKey);
     }
+
+    public Task completeTask(Integer taskId) {
+        Task task = checkIfTaskExists(taskId);
+        task.setStatus(TaskStatus.COMPLETED);
+        return taskRepository.save(task);
+    }
+
+    public void checkIfTaskBelongsToManager(Task task, MyAppUserDetails loggedInUser) {
+        if (!task.getProject().getManager().getId().equals(loggedInUser.getUser().getId()))
+            throw new ActionNotAllowedException("Cannot create todo for this task as this project does not belong to you");
+    }
 }

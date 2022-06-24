@@ -84,7 +84,7 @@
 
     <div class="col-md-8" *ngIf="showIssueStats">
       <mat-card>
-        <!-- <app-pie-chart></app-pie-chart> -->
+        <app-pie-chart [pieData]="pieChartData"></app-pie-chart>
         <mat-card-actions>
           <button
             mat-button
