@@ -5,6 +5,7 @@ import com.example.spm.exception.ActionNotAllowedException;
 import com.example.spm.exception.ProjectNotFoundException;
 import com.example.spm.exception.RoleNotAcceptableException;
 import com.example.spm.model.dto.CreateProjectDTO;
+import com.example.spm.model.dto.PagedData;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.enums.ProjectStatus;
@@ -12,6 +13,10 @@ import com.example.spm.model.enums.UserRole;
 import com.example.spm.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,6 +34,17 @@ public class ProjectService {
 
     public List<Project> getAllProjectsByManagerId(Integer managerId) {
         return projectRepository.findByManagerIdOrderByFromDateDesc(managerId);
+    }
+
+    public PagedData<Project> getPagedProjectsByManagerId(int pageNumber, int pageSize, Integer managerId) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
+        Page<Project> pagedProjects = projectRepository.findByManagerIdOrderByFromDateDesc(managerId, pageable);
+        return PagedData
+                .<Project>builder()
+                .data(pagedProjects.getContent())
+                .totalPages(pagedProjects.getTotalPages())
+                .currentPage(pageNumber)
+                .build();
     }
     public List<Project> getAllProjectsByEmployeeId(AppUser employee) {
         return projectRepository.findAllByUsers(employee);

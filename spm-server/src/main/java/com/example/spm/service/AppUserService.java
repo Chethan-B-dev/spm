@@ -46,7 +46,6 @@ public class AppUserService {
                 .email(userRegisterDTO.getEmail())
                 .username(userRegisterDTO.getUsername())
                 .password(passwordEncoder.encode(userRegisterDTO.getPassword()))
-                // todo: change this later to unverified
                 .status(UserStatus.UNVERIFIED)
                 .phone(userRegisterDTO.getPhone())
                 .role(userRegisterDTO.getUserRole())

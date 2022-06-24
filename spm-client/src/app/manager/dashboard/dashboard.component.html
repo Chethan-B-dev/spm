@@ -15,6 +15,17 @@
         *ngFor="let project of projects"
         [project]="project"
       ></app-project-card>
+      <div class="center my-3">
+        <button
+          *ngIf="loadMoreProjects$ | async"
+          mat-button
+          color="accent"
+          class="content-center"
+          (click)="loadMoreProjects()"
+        >
+          Load More <mat-icon>arrow_downward</mat-icon>
+        </button>
+      </div>
       <mat-card *ngIf="projects?.length === 0"
         >There are no Projects, Please Add A Project</mat-card
       >
@@ -44,8 +55,9 @@
         <mat-card *ngIf="users?.length === 0">There are no users</mat-card>
       </ng-container>
 
-      <div class="center my-3" *ngIf="loadMore$ | async">
+      <div class="center my-3">
         <button
+          *ngIf="loadMoreUsers$ | async"
           mat-button
           color="accent"
           class="content-center"
@@ -58,8 +70,8 @@
   </div>
 </div>
 
-<div class="container" *ngIf="error">
-  <div class="alert alert-danger" role="alert">
+<div class="container" *ngIf="errors.length">
+  <div class="alert alert-danger" role="alert" *ngFor="let error of errors">
     {{ error }}
   </div>
 </div>

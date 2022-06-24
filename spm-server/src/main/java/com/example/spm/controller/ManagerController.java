@@ -35,6 +35,18 @@ public class ManagerController {
         );
     }
 
+    @GetMapping("/projects/paged")
+    public ResponseEntity<PagedData<Project>> getAllPagedProjectsByManagerId (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @RequestParam(required = false) Integer pageNumber
+    ) {
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        pageNumber = pageNumber != null ? pageNumber - 1 : 0;
+        return new ResponseEntity<>(
+                managerService.getAllPagedProjectsByManagerId(pageNumber, 7, loggedInUser.getUser().getId()), HttpStatus.OK
+        );
+    }
+
     @GetMapping("/employees")
     public ResponseEntity<PagedData<AppUser>> getAllPagedEmployees (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,

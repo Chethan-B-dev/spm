@@ -15,9 +15,13 @@ import {
   catchError,
   concatMap,
   map,
+  pluck,
   scan,
+  share,
   shareReplay,
   switchMap,
+  takeUntil,
+  takeWhile,
   tap,
 } from "rxjs/operators";
 import {
@@ -65,6 +69,9 @@ export class ManagerService {
   private userPageNumberSubject = new ReplaySubject<number>(1);
   userPageNumber$ = this.userPageNumberSubject.asObservable();
 
+  private projectPageNumberSubject = new ReplaySubject<number>(1);
+  projectPageNumber$ = this.projectPageNumberSubject.asObservable();
+
   private projectIdSubject = new ReplaySubject<number>(1);
   projectId$ = this.projectIdSubject.asObservable();
 
@@ -77,15 +84,62 @@ export class ManagerService {
   private loadMoreUsersSubject = new ReplaySubject<boolean>(1);
   loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
 
+  private loadMoreProjectsSubject = new ReplaySubject<boolean>(1);
+  loadMoreProjects$ = this.loadMoreProjectsSubject.asObservable();
+
   projects$ = this.stateRefresh$.pipe(
     switchMap(() => this.getAllProjects()),
     catchError(handleError)
   );
 
-  projectsWithAdd$: Observable<IProject[]> = merge(
-    this.projects$,
-    this.projectInsertedAction$
-  ).pipe(
+  pagedProjects$ = this.stateRefresh$.pipe(
+    tap(() => {
+      this.loadMoreProjects(true);
+      this.changeProjectPageNumber(1);
+    }),
+    switchMap(() => this.projectPageNumber$),
+    concatMap((pageNumber) => this.getPagedProjects(pageNumber)),
+    takeWhile((pagedData) => {
+      const isNotOver = pagedData.currentPage < pagedData.totalPages;
+      if (!isNotOver) this.loadMoreProjects(false);
+      return isNotOver;
+    }),
+    pluck("data"),
+    scan(
+      (acc: IProject[], value: IProject[]) => [...acc, ...value],
+      [] as IProject[]
+    ),
+    catchError(handleError)
+  );
+
+  users$ = this.stateRefresh$.pipe(
+    tap(() => {
+      this.loadMoreUsers(true);
+      this.changeUserPageNumber(1);
+    }),
+    switchMap(() => this.userPageNumber$),
+    concatMap((pageNumber) => this.getMoreUsers(pageNumber)),
+    takeWhile((pagedData) => {
+      const isNotOver = pagedData.currentPage < pagedData.totalPages;
+      if (!isNotOver) this.loadMoreUsers(false);
+      return isNotOver;
+    }),
+    pluck("data"),
+    scan(
+      (acc: IAppUser[], value: IAppUser[]) => [...acc, ...value],
+      [] as IAppUser[]
+    ),
+    catchError(handleError)
+  );
+
+  projectsWithAdd$: Observable<IProject[]> = this.stateRefresh$.pipe(
+    switchMap(() =>
+      merge(
+        // todo: change this back to projects$ later if pagination does not work
+        this.pagedProjects$,
+        this.projectInsertedAction$
+      )
+    ),
     scan(
       (acc: IProject[], value: IProject) =>
         value instanceof Array ? [...value] : [value, ...acc],
@@ -102,23 +156,6 @@ export class ManagerService {
   ).pipe(
     map(([projects, projectId]) =>
       projects.find((project) => project.id === projectId)
-    ),
-    catchError(handleError)
-  );
-
-  users$ = this.userPageNumber$.pipe(
-    concatMap((pageNumber) => this.getMoreUsers(pageNumber)),
-    tap((pagedUsers: IPagedData<IAppUser>) => {
-      if (
-        pagedUsers.data.length === 0 ||
-        pagedUsers.currentPage > pagedUsers.totalPages
-      ) {
-        this.loadMoreUsersSubject.next(false);
-      }
-    }),
-    scan(
-      (acc: IAppUser[], value: IPagedData<IAppUser>) => [...acc, ...value.data],
-      [] as IAppUser[]
     ),
     catchError(handleError)
   );
@@ -147,8 +184,12 @@ export class ManagerService {
     this.stateRefreshSubject.next();
   }
 
-  loadMoreUsers(): void {
-    this.loadMoreUsersSubject.next(true);
+  loadMoreUsers(value: boolean): void {
+    this.loadMoreUsersSubject.next(value);
+  }
+
+  loadMoreProjects(value: boolean): void {
+    this.loadMoreProjectsSubject.next(value);
   }
 
   selectTaskCategory(selectedTaskCategory: string): void {
@@ -161,6 +202,15 @@ export class ManagerService {
 
   setProject(project: IProject): void {
     this.selectedProjectSubject.next(project);
+  }
+
+  getPagedProjects(pageNumber: number): Observable<IPagedData<IProject>> {
+    const params = new HttpParams().set("pageNumber", pageNumber.toString());
+    return this.http
+      .get<IPagedData<IProject>>(`${this.managerUrl}/projects/paged`, {
+        params,
+      })
+      .pipe(catchError(handleError));
   }
 
   getAllTasks(projectId: number): Observable<ITask[]> {
@@ -182,10 +232,7 @@ export class ManagerService {
   }
 
   getMoreUsers(pageNumber: number): Observable<IPagedData<IAppUser>> {
-    const params: HttpParams = new HttpParams().set(
-      "pageNumber",
-      pageNumber.toString()
-    );
+    const params = new HttpParams().set("pageNumber", pageNumber.toString());
     return this.http
       .get<IPagedData<IAppUser>>(`${this.managerUrl}/employees`, {
         params,
@@ -195,6 +242,10 @@ export class ManagerService {
 
   changeUserPageNumber(userPageNumber: number): void {
     this.userPageNumberSubject.next(userPageNumber);
+  }
+
+  changeProjectPageNumber(projectPageNumber: number): void {
+    this.projectPageNumberSubject.next(projectPageNumber);
   }
 
   addProject(newProject?: IProject): void {

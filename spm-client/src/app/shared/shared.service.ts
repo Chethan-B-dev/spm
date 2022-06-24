@@ -3,11 +3,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
-import {
-  IComment,
-  IIssue,
-  IUpdateIssueDTO,
-} from "./interfaces/issue.interface";
+import { IComment, IIssue } from "./interfaces/issue.interface";
 import { handleError } from "./utility/error";
 
 @Injectable({

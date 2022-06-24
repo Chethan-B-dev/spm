@@ -34,6 +34,10 @@ public class ManagerService {
         return projectService.getAllProjectsByManagerId(managerId);
     }
 
+    public PagedData<Project> getAllPagedProjectsByManagerId(int pageNumber, int pageSize, Integer managerId) {
+        return projectService.getPagedProjectsByManagerId(pageNumber, pageSize, managerId);
+    }
+
     public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
         if (projectService.projectExistsByName(createProjectDTO.getProjectName())) {
             throw new ProjectAlreadyExistsException(

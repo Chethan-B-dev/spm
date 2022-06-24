@@ -17,7 +17,7 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
   currentUser = this.authService.currentUser;
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
-  error: string;
+  errors: string[] = [];
   private isLoadingSubject = new BehaviorSubject<boolean>(true);
   isLoading$ = this.isLoadingSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
@@ -35,7 +35,7 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
       catchError((err) => {
         stopLoading(this.isLoadingSubject);
         this.snackbarService.showSnackBar(err);
-        this.error = err;
+        this.errors.push(err);
         return EMPTY;
       })
     );

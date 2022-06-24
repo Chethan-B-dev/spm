@@ -21,8 +21,8 @@
   </div>
 </ng-container>
 
-<div class="container" *ngIf="error">
-  <div class="alert alert-danger" role="alert">
+<div class="container" *ngIf="errors.length">
+  <div class="alert alert-danger" role="alert" *ngFor="let error of errors">
     {{ error }}
   </div>
 </div>

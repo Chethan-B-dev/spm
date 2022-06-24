@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
+import { EmployeeService } from "src/app/employee/employee.service";
+import { ManagerService } from "src/app/manager/services/manager.service";
 import {
   ILoginRequest,
   ILoginResponse,
@@ -23,6 +25,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly snackbarService: SnackbarService,
+    private readonly employeeService: EmployeeService,
+    private readonly managerService: ManagerService,
     private router: Router
   ) {}
 
@@ -49,6 +53,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((response: ILoginResponse) => {
+        this.managerService.stateRefresh();
+        this.employeeService.stateRefresh();
         const user = response.user;
         this.snackbarService.showSnackBar(`Welcome ${user.username}`);
         switch (user.role) {

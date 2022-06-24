@@ -21,12 +21,14 @@ import { stopLoading } from "src/app/shared/utility/loading";
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   currentUserPageNumber = 1;
+  currentProjectPageNumber = 1;
   private isLoadingSubject = new BehaviorSubject<boolean>(true);
   isLoading$ = this.isLoadingSubject.asObservable();
-  loadMore$: Observable<boolean>;
+  loadMoreUsers$: Observable<boolean>;
+  loadMoreProjects$: Observable<boolean>;
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
-  error: string;
+  errors: string[] = [];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -35,16 +37,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.managerService.changeUserPageNumber(this.currentUserPageNumber);
-    this.managerService.loadMoreUsers();
-
     this.projects$ = this.managerService.projectsWithAdd$.pipe(
       takeUntil(this.destroy$),
       tap((_) => stopLoading(this.isLoadingSubject)),
       catchError((err) => {
         stopLoading(this.isLoadingSubject);
         this.snackbarService.showSnackBar(err);
-        this.error = err;
+        this.errors.push(err);
         return EMPTY;
       })
     );
@@ -53,28 +52,42 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       catchError((err) => {
         // this.snackbarService.showSnackBar(err);
-        this.error = err;
+        this.errors.push(err);
         return EMPTY;
       })
     );
 
-    this.loadMore$ = this.managerService.loadMoreUsers$.pipe(
+    this.loadMoreProjects$ = this.managerService.loadMoreProjects$.pipe(
       takeUntil(this.destroy$),
       catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        this.error = err;
+        // this.snackbarService.showSnackBar(err);
+        this.errors.push(err);
+        return EMPTY;
+      })
+    );
+
+    this.loadMoreUsers$ = this.managerService.loadMoreUsers$.pipe(
+      takeUntil(this.destroy$),
+      catchError((err) => {
+        // this.snackbarService.showSnackBar(err);
+        this.errors.push(err);
         return EMPTY;
       })
     );
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  loadMoreProjects(): void {
+    this.currentProjectPageNumber += 1;
+    this.managerService.changeProjectPageNumber(this.currentProjectPageNumber);
   }
 
   getMoreUsers(): void {
     this.currentUserPageNumber += 1;
     this.managerService.changeUserPageNumber(this.currentUserPageNumber);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

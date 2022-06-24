@@ -17,7 +17,6 @@ import {
   takeUntil,
 } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
-import { EmployeeService } from "src/app/employee/employee.service";
 import { AddProjectComponent } from "src/app/manager/dialogs/add-project/add-project.component";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IAppUser } from "../interfaces/user.interface";
@@ -47,7 +46,6 @@ export class SidenavComponent implements OnInit, OnDestroy {
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
-    private readonly employeeService: EmployeeService,
     private router: Router,
     private renderer: Renderer2
   ) {}
@@ -123,8 +121,6 @@ export class SidenavComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
-    this.managerService.stateRefresh();
-    this.employeeService.stateRefresh();
     this.router.navigate(["/login"]);
   }
 
