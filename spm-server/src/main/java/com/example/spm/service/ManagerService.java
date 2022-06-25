@@ -173,16 +173,16 @@ public class ManagerService {
                 .collect(Collectors.toList());
     }
 
-    public SearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
+    public ManagerSearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
         // sanitizing search string
         searchKey = Jsoup.clean(searchKey.trim(), Safelist.basic());
         Integer managerId = loggedInUser.getUser().getId();
-        List<Project> projects = projectService.getAllProjectsWithSearchKey(searchKey, managerId);
-        List<Task> tasks = taskService.getAllTasksWithSearchKey(searchKey, managerId);
-        List<Todo> todos = todoService.getAllTasksWithSearchKey(searchKey, managerId);
-        List<Issue> issues = issueService.getAllIssuesWithSearchKey(searchKey, managerId);
+        List<Project> projects = projectService.getAllProjectsWithSearchKeyAndManagerId(searchKey, managerId);
+        List<Task> tasks = taskService.getAllTasksWithSearchKeyAndManagerId(searchKey, managerId);
+        List<Todo> todos = todoService.getAllTodosWithSearchKeyAndManagerId(searchKey, managerId);
+        List<Issue> issues = issueService.getAllIssuesWithSearchKeyAndManagerId(searchKey, managerId);
         List<AppUser> appUsers = appUserService.getAllUsersWithSearchKey(searchKey);
-        return SearchResultDTO
+        return ManagerSearchResultDTO
                 .builder()
                 .projects(projects)
                 .tasks(tasks)

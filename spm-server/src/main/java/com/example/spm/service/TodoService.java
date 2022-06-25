@@ -69,7 +69,11 @@ public class TodoService {
         todoRepository.delete(todo);
     }
 
-    public List<Todo> getAllTasksWithSearchKey(String searchKey, Integer managerId) {
-        return todoRepository.getAllTodosWithSearchKey(managerId, searchKey);
+    public List<Todo> getAllTodosWithSearchKeyAndManagerId(String searchKey, Integer managerId) {
+        return todoRepository.getAllTodosWithSearchKeyAndManagerId(managerId, searchKey);
+    }
+
+    public List<Todo> getAllTodosWithSearchKeyAndEmployeeId(String searchKey, Integer employeeId) {
+        return todoRepository.getAllTodosWithSearchKeyAndEmployeeId(employeeId, searchKey);
     }
 }
