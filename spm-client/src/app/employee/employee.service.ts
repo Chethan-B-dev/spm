@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import {
   BehaviorSubject,
@@ -10,14 +10,21 @@ import {
 } from "rxjs";
 import {
   catchError,
+  concatMap,
   filter,
+  pluck,
+  scan,
+  share,
   shareReplay,
   switchMap,
+  switchMapTo,
+  takeWhile,
   tap,
 } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { AuthService } from "../auth/auth.service";
 import { IIssue } from "../shared/interfaces/issue.interface";
+import { IPagedData } from "../shared/interfaces/pagination.interface";
 import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
 import { ITodo, IUpdateTodoDTO } from "../shared/interfaces/todo.interface";
@@ -41,11 +48,34 @@ export class EmployeeService {
   private projectIdSubject = new ReplaySubject<number>(1);
   projectId$ = this.projectIdSubject.asObservable();
 
+  private projectPageNumberSubject = new ReplaySubject<number>(1);
+  projectPageNumber$ = this.projectPageNumberSubject.asObservable();
+
   private selectedProjectSubject = new Subject<IProject>();
   selectedProject$ = this.selectedProjectSubject.asObservable();
 
+  private loadMoreProjectsSubject = new ReplaySubject<boolean>(1);
+  loadMoreProjects$ = this.loadMoreProjectsSubject.asObservable();
+
   projects$ = this.stateRefresh$.pipe(
     switchMap(() => this.getAllProjects()),
+    catchError(handleError)
+  );
+
+  pagedProjects$ = this.stateRefresh$.pipe(
+    tap(() => {
+      this.loadMoreProjects(true);
+      this.changeProjectPageNumber(1);
+    }),
+    switchMap(() => this.projectPageNumber$),
+    concatMap((pageNumber) => this.getPagedProjects(pageNumber)),
+    takeWhile((pagedData) => {
+      const isNotOver = pagedData.currentPage < pagedData.totalPages;
+      if (!isNotOver) this.loadMoreProjects(false);
+      return isNotOver;
+    }),
+    pluck("data"),
+    scan((acc, value) => [...acc, ...value], [] as IProject[]),
     catchError(handleError)
   );
 
@@ -69,6 +99,14 @@ export class EmployeeService {
     this.refreshSubject.next();
   }
 
+  loadMoreProjects(value: boolean): void {
+    this.loadMoreProjectsSubject.next(value);
+  }
+
+  changeProjectPageNumber(projectPageNumber: number): void {
+    this.projectPageNumberSubject.next(projectPageNumber);
+  }
+
   stateRefresh(): void {
     this.stateRefreshSubject.next();
   }
@@ -89,6 +127,15 @@ export class EmployeeService {
     return this.http
       .get<IProject[]>(`${this.employeeUrl}/projects`)
       .pipe(shareReplay(1), catchError(handleError));
+  }
+
+  getPagedProjects(pageNumber: number): Observable<IPagedData<IProject>> {
+    const params = new HttpParams().set("pageNumber", pageNumber.toString());
+    return this.http
+      .get<IPagedData<IProject>>(`${this.employeeUrl}/projects/paged`, {
+        params,
+      })
+      .pipe(catchError(handleError));
   }
 
   getProjectById(projectId: number): Observable<IProject> {

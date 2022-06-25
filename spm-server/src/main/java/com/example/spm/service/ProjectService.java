@@ -50,6 +50,17 @@ public class ProjectService {
         return projectRepository.findAllByUsers(employee);
     }
 
+    public PagedData<Project> getPagedProjectsByEmployee(int pageNumber, int pageSize, AppUser employee) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
+        Page<Project> pagedProjects = projectRepository.findAllByUsers(employee, pageable);
+        return PagedData
+                .<Project>builder()
+                .data(pagedProjects.getContent())
+                .totalPages(pagedProjects.getTotalPages())
+                .currentPage(pageNumber)
+                .build();
+    }
+
     public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
         Project project = Project.builder()
                 .description(createProjectDTO.getDescription())

@@ -15,7 +15,9 @@ import { EmployeeService } from "../employee.service";
 })
 export class EmployeeDashboardComponent implements OnInit, OnDestroy {
   currentUser = this.authService.currentUser;
+  currentProjectPageNumber = 1;
   projects$: Observable<IProject[]>;
+  loadMoreProjects$: Observable<boolean>;
   users$: Observable<IAppUser[]>;
   errors: string[] = [];
   private isLoadingSubject = new BehaviorSubject<boolean>(true);
@@ -29,7 +31,7 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.projects$ = this.employeeService.projects$.pipe(
+    this.projects$ = this.employeeService.pagedProjects$.pipe(
       takeUntil(this.destroy$),
       tap((_) => stopLoading(this.isLoadingSubject)),
       catchError((err) => {
@@ -39,6 +41,20 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
         return EMPTY;
       })
     );
+
+    this.loadMoreProjects$ = this.employeeService.loadMoreProjects$.pipe(
+      takeUntil(this.destroy$),
+      catchError((err) => {
+        // this.snackbarService.showSnackBar(err);
+        this.errors.push(err);
+        return EMPTY;
+      })
+    );
+  }
+
+  loadMoreProjects(): void {
+    this.currentProjectPageNumber += 1;
+    this.employeeService.changeProjectPageNumber(this.currentProjectPageNumber);
   }
 
   ngOnDestroy(): void {

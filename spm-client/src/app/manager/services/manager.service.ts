@@ -105,10 +105,7 @@ export class ManagerService {
       return isNotOver;
     }),
     pluck("data"),
-    scan(
-      (acc: IProject[], value: IProject[]) => [...acc, ...value],
-      [] as IProject[]
-    ),
+    scan((acc, value) => [...acc, ...value], [] as IProject[]),
     catchError(handleError)
   );
 
@@ -125,10 +122,7 @@ export class ManagerService {
       return isNotOver;
     }),
     pluck("data"),
-    scan(
-      (acc: IAppUser[], value: IAppUser[]) => [...acc, ...value],
-      [] as IAppUser[]
-    ),
+    scan((acc, value) => [...acc, ...value], [] as IAppUser[]),
     catchError(handleError)
   );
 
