@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { EMPTY, Subject } from "rxjs";
-import { catchError, takeUntil } from "rxjs/operators";
+import { catchError, takeUntil, tap } from "rxjs/operators";
 import { EmployeeService } from "src/app/employee/employee.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import {
@@ -47,14 +47,16 @@ export class LoginComponent implements OnInit, OnDestroy {
       .login(this.loginForm.value as ILoginRequest)
       .pipe(
         takeUntil(this.destroy$),
+        tap(() => {
+          this.managerService.stateRefresh();
+          this.employeeService.stateRefresh();
+        }),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
           return EMPTY;
         })
       )
       .subscribe((response: ILoginResponse) => {
-        this.managerService.stateRefresh();
-        this.employeeService.stateRefresh();
         const user = response.user;
         this.snackbarService.showSnackBar(`Welcome ${user.username}`);
         switch (user.role) {

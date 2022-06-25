@@ -17,10 +17,8 @@ import {
   map,
   pluck,
   scan,
-  share,
   shareReplay,
   switchMap,
-  takeUntil,
   takeWhile,
   tap,
 } from "rxjs/operators";
@@ -39,10 +37,9 @@ import { ITodo } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { SharedService } from "src/app/shared/shared.service";
 import {
-  DataType,
-  ISearchData,
   ISearchGroup,
   ISearchResult,
+  mapSearchResults,
 } from "src/app/shared/utility/common";
 // utility
 import { handleError } from "src/app/shared/utility/error";
@@ -362,58 +359,8 @@ export class ManagerService {
     return this.http
       .get<ISearchResult>(`${this.managerUrl}/search/${searchKey}`)
       .pipe(
-        map((searchResults) => this.mapSearchResults(searchResults)),
+        map((searchResults) => mapSearchResults(searchResults)),
         catchError(handleError)
       );
-  }
-
-  private mapSearchResults(searchResults: ISearchResult): ISearchGroup[] {
-    const searchGroups = [] as ISearchGroup[];
-    for (const [key, values] of Object.entries(searchResults)) {
-      if (!values.length) continue;
-      switch (key) {
-        case "projects":
-          searchGroups.push({
-            type: DataType.PROJECT,
-            data: values.map((project: IProject): ISearchData => {
-              return { name: project.name, id: project.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-        case "users":
-          searchGroups.push({
-            type: DataType.USER,
-            data: values.map((user: IAppUser): ISearchData => {
-              return { name: user.username, id: user.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-        case "tasks":
-          searchGroups.push({
-            type: DataType.TASK,
-            data: values.map((task: ITask): ISearchData => {
-              return { name: task.name, id: task.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-        case "todos":
-          searchGroups.push({
-            type: DataType.TODO,
-            data: values.map((todo: ITodo): ISearchData => {
-              return { name: todo.name, id: todo.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-        case "issues":
-          searchGroups.push({
-            type: DataType.ISSUE,
-            data: values.map((issue: IIssue): ISearchData => {
-              return { name: issue.summary, id: issue.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-      }
-    }
-    return searchGroups;
   }
 }

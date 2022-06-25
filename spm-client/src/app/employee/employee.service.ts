@@ -12,6 +12,7 @@ import {
   catchError,
   concatMap,
   filter,
+  map,
   pluck,
   scan,
   share,
@@ -28,6 +29,14 @@ import { IPagedData } from "../shared/interfaces/pagination.interface";
 import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
 import { ITodo, IUpdateTodoDTO } from "../shared/interfaces/todo.interface";
+import { IAppUser } from "../shared/interfaces/user.interface";
+import {
+  DataType,
+  ISearchData,
+  ISearchGroup,
+  ISearchResult,
+  mapSearchResults,
+} from "../shared/utility/common";
 import { handleError } from "../shared/utility/error";
 
 @Injectable({
@@ -185,6 +194,15 @@ export class EmployeeService {
       .put<ITask>(`${this.employeeUrl}/complete-task/${taskId}`, {})
       .pipe(
         tap(() => this.refresh()),
+        catchError(handleError)
+      );
+  }
+
+  globalSearch(searchKey: string): Observable<ISearchGroup[]> {
+    return this.http
+      .get<ISearchResult>(`${this.employeeUrl}/search/${searchKey}`)
+      .pipe(
+        map((searchResults) => mapSearchResults(searchResults)),
         catchError(handleError)
       );
   }

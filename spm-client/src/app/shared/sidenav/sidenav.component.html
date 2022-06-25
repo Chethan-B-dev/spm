@@ -96,7 +96,7 @@
 
       <!-- search -->
       <mat-form-field
-        *ngIf="(isLoggedIn$ | async) && (isManager$ | async)"
+        *ngIf="(isLoggedIn$ | async) && !(isAdmin$ | async)"
         appearance="fill"
         class="searchForm"
       >

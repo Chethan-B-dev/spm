@@ -4,7 +4,12 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
 import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
 import { ShowEmployeesComponent } from "src/app/manager/dialogs/show-employees/show-employees.component";
-import { getIssueProgress } from "src/app/shared/interfaces/issue.interface";
+import {
+  getIssueProgress,
+  getIssueStatistics,
+  IIssue,
+  IssueStatus,
+} from "src/app/shared/interfaces/issue.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   getTaskStatistics,
@@ -119,6 +124,11 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
     dialogConfig.data = project;
 
     this.dialog.open(CreateIssueComponent, dialogConfig);
+  }
+
+  getIssueStats(issues: IIssue[]): string {
+    const issueStatistics = getIssueStatistics(issues);
+    return `${issueStatistics[IssueStatus.RESOLVED]} / ${issues.length}`;
   }
 
   openShowEmployeesDialog(project: IProject): void {
