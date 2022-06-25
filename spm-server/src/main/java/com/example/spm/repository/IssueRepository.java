@@ -12,7 +12,12 @@ public interface IssueRepository extends JpaRepository<Issue, Integer> {
     @Query(
             value = "SELECT * FROM issue i, project p WHERE i.project_id = p.id and p.manager_id = :managerId and LOWER(i.summary) LIKE %:searchKey%",
             nativeQuery = true)
-    List<Issue> getAllIssuesWithSearchKey(Integer managerId, String searchKey);
+    List<Issue> getAllIssuesWithSearchKeyAndManagerId(Integer managerId, String searchKey);
 
 //    List<Issue> findAllByProjectManagerIdAndSummaryContaining(Integer managerId, String searchKey);
+
+    @Query(
+            value = "SELECT * FROM issue i WHERE i.user_id = :employeeId and LOWER(i.summary) LIKE %:searchKey%",
+            nativeQuery = true)
+    List<Issue> getAllIssuesWithSearchKeyAndEmployeeId(Integer employeeId, String searchKey);
 }

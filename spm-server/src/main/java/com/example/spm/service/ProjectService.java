@@ -105,7 +105,11 @@ public class ProjectService {
             throw new ActionNotAllowedException("Cannot Access this project resource");
     }
 
-    public List<Project> getAllProjectsWithSearchKey(String searchKey, Integer managerId) {
-        return projectRepository.getAllProjectsWithSearchKey(managerId, searchKey);
+    public List<Project> getAllProjectsWithSearchKeyAndManagerId(String searchKey, Integer managerId) {
+        return projectRepository.getAllProjectsWithSearchKeyAndManagerId(managerId, searchKey);
+    }
+
+    public List<Project> getAllProjectsWithSearchKeyAndEmployeeId(String searchKey, Integer employeeId) {
+        return projectRepository.getAllProjectsWithSearchKeyAndEmployeeId(employeeId, searchKey);
     }
 }

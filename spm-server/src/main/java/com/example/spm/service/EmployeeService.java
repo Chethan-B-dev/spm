@@ -7,6 +7,8 @@ import com.example.spm.model.entity.*;
 import com.example.spm.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
@@ -106,6 +108,23 @@ public class EmployeeService {
     @Transactional
     public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser){
         issueService.deleteComment(commentId, loggedInUser);
+    }
+
+    public EmployeeSearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
+        // sanitizing search string
+        searchKey = Jsoup.clean(searchKey.trim(), Safelist.basic());
+        Integer employeeId = loggedInUser.getUser().getId();
+        List<Project> projects = projectService.getAllProjectsWithSearchKeyAndEmployeeId(searchKey, employeeId);
+        List<Task> tasks = taskService.getAllTasksWithSearchKeyAndEmployeeId(searchKey, employeeId);
+        List<Todo> todos = todoService.getAllTodosWithSearchKeyAndEmployeeId(searchKey, employeeId);
+        List<Issue> issues = issueService.getAllIssuesWithSearchKeyAndEmployeeId(searchKey, employeeId);
+        return EmployeeSearchResultDTO
+                .builder()
+                .projects(projects)
+                .tasks(tasks)
+                .todos(todos)
+                .issues(issues)
+                .build();
     }
 
 }

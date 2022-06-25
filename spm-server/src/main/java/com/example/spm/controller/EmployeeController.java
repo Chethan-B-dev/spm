@@ -190,4 +190,16 @@ public class EmployeeController {
         return new ResponseEntity<>(true, HttpStatus.GONE);
     }
 
+    @GetMapping("/search/{searchKey}")
+    public ResponseEntity<EmployeeSearchResultDTO> getSearchResult(
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable String searchKey
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                employeeService.getSearchResult(searchKey, loggedInUser),
+                HttpStatus.OK
+        );
+    }
+
 }

@@ -15,8 +15,13 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     @Query(
             value = "SELECT * FROM task t, project p WHERE t.project_id = p.id and p.manager_id = :managerId and LOWER(t.name) LIKE %:searchKey%",
             nativeQuery = true)
-    List<Task> getAllTasksWithSearchKey(Integer managerId, String searchKey);
+    List<Task> getAllTasksWithSearchKeyAndManagerId(Integer managerId, String searchKey);
 
 //    List<Task> findAllByProjectManagerIdAndNameContaining(Integer managerId, String searchKey);
+
+    @Query(
+            value = "SELECT * FROM task t WHERE t.user_id = :employeeId and LOWER(t.name) LIKE %:searchKey%",
+            nativeQuery = true)
+    List<Task> getAllTasksWithSearchKeyAndEmployeeId(Integer employeeId, String searchKey);
 
 }
