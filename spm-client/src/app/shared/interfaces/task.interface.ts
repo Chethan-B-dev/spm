@@ -8,6 +8,7 @@ export interface ITask {
   description: string;
   project?: IProject;
   createdDate: Date;
+  completedDate?: Date;
   deadLine: Date;
   status: TaskStatus;
   priority: TaskPriority;

@@ -34,7 +34,7 @@ import {
   TaskStatus,
   userTasks,
 } from "src/app/shared/interfaces/task.interface";
-import { ITodo, TodoStatus } from "src/app/shared/interfaces/todo.interface";
+import { getTodoStatistics, ITodo, TodoStatus } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser, UserDesignation, UserDesignations, UserDesignationStatistics, UserRole, UserStatus } from "src/app/shared/interfaces/user.interface";
 import {
   DataType,
@@ -110,5 +110,47 @@ getProjectTaskStatistics(tasks: ITask[]): TaskStatistics {
 }
 
 
+getAllTasksAreaProgress(project: IProject): any[] {
+  const res = [];
+  const fromDate = project.fromDate;
+  const toDate = project.toDate;
+  var loop = new Date(fromDate);
+  while(loop <= toDate){
+  let  no_of_Tasks = 0;
+   project.tasks.forEach(task => {
+      if (task.completedDate.toLocaleDateString() === loop.toLocaleDateString()) no_of_Tasks += 1;
+   })
+   res.push({x: loop.toDateString(), y:no_of_Tasks})
+   var newDate = loop.setDate(loop.getDate() + 1);
+   loop = new Date(newDate);
+  }
+  // console.log(res);
+  return res;
+}
+
+getAllTaskStatusCount(project: IProject): any {
+  const result = []
+  const todo = [];
+  const in_progress = []
+  const done = [];
+  const names = [];
+  let max = 0;
+  project.tasks.forEach(task => {
+    const stats = getTodoStatistics(task.todos)
+    console.log(stats)
+    // result.push(y: task.name, y: todoStats)
+    todo.push(stats[TodoStatus.TO_DO])
+    in_progress.push(stats[TodoStatus.IN_PROGRESS])
+    done.push(stats[TodoStatus.DONE])
+    max = Math.max(max, task.todos.length);
+    names.push(task.name);
+  })
+  return {todo, in_progress, done, max, names}
+}
+
   constructor(private http: HttpClient) { }
+
+
+
+
 }

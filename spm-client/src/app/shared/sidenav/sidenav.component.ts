@@ -39,11 +39,13 @@ import { DataType, ISearchData, ISearchGroup } from "../utility/common";
 export class SidenavComponent implements OnInit, OnDestroy {
   @ViewChild("notifications", { static: false }) notifications: ElementRef;
   @HostListener("document:click", ["$event"]) onDocumentClick(event) {
-    this.renderer.setStyle(
-      this.notifications.nativeElement as HTMLElement,
-      "display",
-      "none"
-    );
+    if (this.notifications && this.notifications.nativeElement) {
+      this.renderer.setStyle(
+        this.notifications.nativeElement as HTMLElement,
+        "display",
+        "none"
+      );
+    }
   }
   isExpanded = false;
   isManager$: Observable<boolean>;

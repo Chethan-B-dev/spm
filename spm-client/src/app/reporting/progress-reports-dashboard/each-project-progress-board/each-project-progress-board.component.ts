@@ -30,14 +30,17 @@ export class EachProjectProgressBoardComponent implements OnInit {
 
     const taskPriorityStatistics = this.reportService.getTasksPriorityDetails(this.project.tasks);
 
-
-    console.log(userStats);
-    console.log("Developer count",userStats.DEVELOPER);
-
+    const dates = this.reportService.getAllTasksAreaProgress(this.project);
+    const counts = this.reportService.getAllTaskStatusCount(this.project);
+    console.log(counts)
+    // console.log(dates);
+    // console.log("Second");
+    // console.log("Developer count",userStats.DEVELOPER);
+    // console.log(Object.values(dates).map(({x,y}) => x));
     //  Processing for Stacked Bar Graph
     // ----------------------Hard coded for only one Task-----------------------------
     const taskStatusBarGraph = this.reportService.getProjectTaskStatistics(this.project.tasks);
-    console.log("Task bar graph",taskStatusBarGraph);
+    // console.log("Task bar graph",taskStatusBarGraph);
 
     // Processing Data end
 
@@ -162,15 +165,24 @@ Highcharts.chart('container-donut-chart', {
         text: "Area chart",
       },
       subtitle: {
-        text: "subtitle",
+        text: "Tasks/Issue's Timeline",
       },
       xAxis: {
+        categories:[...Object.values(dates).map(({x}) => x)],
         allowDecimals: false,
-        labels: {
-          formatter: function () {
-              return this.value / 100 + '%';
-          }
-      }
+        // title: {
+        //   text: "Project Timeline",
+        // },
+      //   labels: {
+      //     formatter: function () {
+      //         return Object.values(Object.keys(dates));
+      //     }
+      // }
+  },
+  yAxis: {
+    title: {
+      text: "No. of Tasks/Issues Completed",
+    },
   },
   tooltip: {
       pointFormat: '{series.name} had completed <b>{point.y:,.0f}</b><br/>on {point.x}'
@@ -194,167 +206,7 @@ Highcharts.chart('container-donut-chart', {
         {
           name: "Tasks",
           data: [
-            null,
-            null,
-            null,
-            null,
-            null,
-            6,
-            11,
-            32,
-            110,
-            235,
-            369,
-            640,
-            1005,
-            1436,
-            2063,
-            3057,
-            4618,
-            6444,
-            9822,
-            15468,
-            20434,
-            24126,
-            27387,
-            29459,
-            31056,
-            31982,
-            32040,
-            31233,
-            29224,
-            27342,
-            26662,
-            26956,
-            27912,
-            28999,
-            28965,
-            27826,
-            25579,
-            25722,
-            24826,
-            24605,
-            24304,
-            23464,
-            23708,
-            24099,
-            24357,
-            24237,
-            24401,
-            24344,
-            23586,
-            22380,
-            21004,
-            17287,
-            14747,
-            13076,
-            12555,
-            12144,
-            11009,
-            10950,
-            10871,
-            10824,
-            10577,
-            10527,
-            10475,
-            10421,
-            10358,
-            10295,
-            10104,
-            9914,
-            9620,
-            9326,
-            5113,
-            5113,
-            4954,
-            4804,
-            4761,
-            4717,
-            4368,
-            4018,
-          ],
-        },
-        {
-          name: "Issues",
-          data: [
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            5,
-            25,
-            50,
-            120,
-            150,
-            200,
-            426,
-            660,
-            869,
-            1060,
-            1605,
-            2471,
-            3322,
-            4238,
-            5221,
-            6129,
-            7089,
-            8339,
-            9399,
-            10538,
-            11643,
-            13092,
-            14478,
-            15915,
-            17385,
-            19055,
-            21205,
-            23044,
-            25393,
-            27935,
-            30062,
-            32049,
-            33952,
-            35804,
-            37431,
-            39197,
-            45000,
-            43000,
-            41000,
-            39000,
-            37000,
-            35000,
-            33000,
-            31000,
-            29000,
-            27000,
-            25000,
-            24000,
-            23000,
-            22000,
-            21000,
-            20000,
-            19000,
-            18000,
-            18000,
-            17000,
-            16000,
-            15537,
-            14162,
-            12787,
-            12600,
-            11400,
-            5500,
-            4512,
-            4502,
-            4502,
-            4500,
-            4500,
+            ...Object.values(dates).map(({y}) => y)
           ],
         },
       ],
@@ -414,53 +266,7 @@ Highcharts.chart('container-pie-chart', {
   }]
   // change the value of y to change the data
 });
-
-// Pie chart end
-
-
-// bar chart start
-Highcharts.chart('container-bar-chart', {
-  chart: {
-      type: 'bar'
-  },
-  credits: {
-    enabled: false
-  },
-  title: {
-      text: 'Stacked bar chart'
-  },
-  xAxis: {
-      categories: ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5']
-  },
-  yAxis: {
-      min: 0,
-      max: 100,
-      title: {
-          text: "All Tasks's Live Progress"
-      }
-  },
-  legend: {
-      reversed: true
-  },
-  plotOptions: {
-      series: {
-          stacking: 'normal'
-      }
-  },
-  series: [{
-      name: 'To-Do',
-      data: [5, 30, 34, 74, 32]
-  }, {
-      name: 'In-Progress',
-      data: [taskStatusBarGraph.IN_PROGRESS, 25, 43, 52, 10]
-  }, {
-      name: 'Completed',
-      data: [taskStatusBarGraph.COMPLETED, 1, 4, 12, 8]
-  }]
-});
-// bar chart end
-
-    // Pie chart end
+ // Pie chart end
 
     // bar chart start
     Highcharts.chart("container-bar-chart", {
@@ -474,13 +280,13 @@ Highcharts.chart('container-bar-chart', {
         text: "Stacked bar chart",
       },
       xAxis: {
-        categories: ["Task 1", "Task 2", "Task 3", "Task 4", "Task 5"],
+        categories: [...counts.names],
       },
       yAxis: {
         min: 0,
-        max: 100,
+        max: counts.max,
         title: {
-          text: "All Tasks's Live Progress",
+          text: "To-Do's",
         },
       },
       legend: {
@@ -494,15 +300,17 @@ Highcharts.chart('container-bar-chart', {
       series: [
         {
           name: "In Progress Tasks",
-          data: [taskStatusBarGraph.IN_PROGRESS, 30, 34, 74, 32],
+          data: [...counts.in_progress]
         },
         {
           name: "Completed Tasks",
-          data: [taskStatusBarGraph.COMPLETED, 25, 43, 52, 10],
+          data: [...counts.done],
+          color: "lightgreen"
         },
         {
           name: "To-Do Tasks",
-          data: [3, 1, 4, 12, 8],
+          data: [...counts.todo],
+          color: "orange"
         },
       ],
     });
