@@ -2,11 +2,13 @@ package com.example.spm.controller;
 
 import com.example.spm.model.dto.AddCommentDTO;
 import com.example.spm.model.dto.UpdateIssueDTO;
+import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Issue;
 import com.example.spm.model.entity.IssueComment;
 import com.example.spm.service.AppUserService;
 import com.example.spm.service.IssueService;
 import com.example.spm.service.MyAppUserDetails;
+import com.example.spm.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,11 +25,12 @@ import java.util.List;
 public class SharedController {
 
     private final IssueService issueService;
+    private final TaskService taskService;
 
     @GetMapping("/issue/{issueId}")
     public ResponseEntity<Issue> getIssueByIssueId(
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer issueId
+            @PathVariable final Integer issueId
     ){
         AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
@@ -38,8 +41,8 @@ public class SharedController {
 
     @PostMapping("/comment/{issueId}")
     public ResponseEntity<IssueComment> addComment(
-            @PathVariable Integer issueId,
-            @RequestBody AddCommentDTO addCommentDTO,
+            @PathVariable final Integer issueId,
+            @RequestBody final AddCommentDTO addCommentDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
@@ -48,7 +51,7 @@ public class SharedController {
 
     @GetMapping("/comment/{issueId}")
     public ResponseEntity<List<IssueComment>> getComments(
-            @PathVariable Integer issueId,
+            @PathVariable final Integer issueId,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
@@ -57,7 +60,7 @@ public class SharedController {
 
     @DeleteMapping("/delete-comment/{commentId}")
     public ResponseEntity<Boolean> deleteComment(
-            @PathVariable Integer commentId,
+            @PathVariable final Integer commentId,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
@@ -67,14 +70,23 @@ public class SharedController {
 
     @PutMapping("/edit-issue/{issueId}")
     public ResponseEntity<Issue> updateIssue(
-            @RequestBody UpdateIssueDTO updateIssueDTO,
+            @RequestBody final UpdateIssueDTO updateIssueDTO,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
-            @PathVariable Integer issueId
+            @PathVariable final Integer issueId
     ){
         AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 issueService.updateIssue(updateIssueDTO, issueId),
                 HttpStatus.OK
         );
+    }
+
+    @GetMapping("/task/manager/{taskId}")
+    public ResponseEntity<AppUser> getManagerTask(
+            @PathVariable final Integer taskId,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ){
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(taskService.getManagerOfTask(taskId), HttpStatus.OK);
     }
 }

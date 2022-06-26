@@ -11,7 +11,9 @@ import { EmployeeModule } from "./employee/employee.module";
 import { ManagerModule } from "./manager/manager.module";
 import { ReportingModule } from "./reporting/reporting.module";
 import { SharedModule } from "./shared/shared.module";
-
+import { AngularFireModule } from "@angular/fire";
+import { AngularFirestoreModule } from "@angular/fire/firestore";
+import { environment } from "src/environments/environment";
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -23,6 +25,8 @@ import { SharedModule } from "./shared/shared.module";
     ManagerModule,
     EmployeeModule,
     ReportingModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFirestoreModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { IComment, IIssue } from "./interfaces/issue.interface";
+import { IAppUser } from "./interfaces/user.interface";
 import { handleError } from "./utility/error";
 
 @Injectable({
@@ -55,5 +56,11 @@ export class SharedService {
         tap(() => this.refresh()),
         catchError(handleError)
       );
+  }
+
+  getManagerOfTask(taskId: number): Observable<IAppUser> {
+    return this.http
+      .get<IAppUser>(`${this.sharedUrl}/task/manager/${taskId}`)
+      .pipe(catchError(handleError));
   }
 }

@@ -61,7 +61,7 @@
           mat-raised-button
           color="primary"
           [disabled]="!canMarkAsCompleted(task)"
-          (click)="completeTask(task.id)"
+          (click)="completeTask(task)"
         >
           <mat-icon>done_all</mat-icon>
           {{ task.status === "COMPLETED" ? "Task Completed" : "Complete Task" }}
