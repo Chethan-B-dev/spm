@@ -28,12 +28,14 @@ import {
   ITask,
   ITaskRequestDTO,
   TaskPriority,
+  TaskPriorityOptions,
+  TaskPriorityStatistics,
   TaskStatistics,
   TaskStatus,
   userTasks,
 } from "src/app/shared/interfaces/task.interface";
 import { ITodo, TodoStatus } from "src/app/shared/interfaces/todo.interface";
-import { IAppUser, UserDesignation, userDesignations, UserDesignationStatistics, UserRole, UserStatus } from "src/app/shared/interfaces/user.interface";
+import { IAppUser, UserDesignation, UserDesignations, UserDesignationStatistics, UserRole, UserStatus } from "src/app/shared/interfaces/user.interface";
 import {
   DataType,
   ISearchData,
@@ -77,7 +79,7 @@ export class ReportsService {
       [UserDesignation.TESTER]: 0,
       [UserDesignation.DEVELOPER]: 0,
     };
-    userDesignations.forEach((designation) => {
+    UserDesignations.forEach((designation) => {
       userDesignationStats[designation] = project.users.filter(
         (user) => user.designation === designation
       ).length;
@@ -85,7 +87,16 @@ export class ReportsService {
     return userDesignationStats;
 }
 
-getTasksPriorityDetails(taskPriority: ITask[]) {
+
+getTasksPriorityDetails(tasks: ITask[]) {
+  const taskPriorityStatistics: TaskPriorityStatistics ={
+    [TaskPriority.LOW]: 0,
+    [TaskPriority.MEDIUM]: 0,
+    [TaskPriority.HIGH]: 0
+  }
+
+  tasks.forEach(task => taskPriorityStatistics[task.priority] += 1)
+  return taskPriorityStatistics;
 
 }
 

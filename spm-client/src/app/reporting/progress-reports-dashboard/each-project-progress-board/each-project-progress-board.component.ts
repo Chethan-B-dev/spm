@@ -3,6 +3,7 @@ import { IProject, ProjectStatus } from "src/app/shared/interfaces/project.inter
 import { TaskPriority, TaskStatus } from 'src/app/shared/interfaces/task.interface';
 import { TodoStatus } from 'src/app/shared/interfaces/todo.interface';
 import { UserDesignation, UserRole, UserStatus } from 'src/app/shared/interfaces/user.interface';
+import { mockProject } from '../../project.mock';
 import { ReportsService } from '../../services/reports.service';
 
 
@@ -19,107 +20,16 @@ export class EachProjectProgressBoardComponent implements OnInit {
 
   constructor(private reportService: ReportsService) { }
 
-  project: IProject = {
-    id: 13,
-    manager: {
-      id: 32,
-      email: "test@test2.com",
-      username: "test2",
-      password: "lol",
-      role: UserRole.MANAGER,
-      phone: null,
-      status: UserStatus.VERIFIED,
-    },
-    name: "new p2",
-    fromDate: new Date(""),
-    toDate: new Date(),
-    status: ProjectStatus.IN_PROGRESS,
-    description: "test project 2",
-    users: [
-      {
-        id: 30,
-        email: "test@test1.com",
-        username: "test1",
-        password: "lol",
-        role: UserRole.EMPLOYEE,
-        designation: UserDesignation.DEVELOPER,
-        phone: null,
-        status: UserStatus.VERIFIED,
-      },
-      {
-        id: 31,
-        email: "test@test2.com",
-        username: "test2",
-        password: "lol",
-        role: UserRole.EMPLOYEE,
-        designation: UserDesignation.TESTER,
-        phone: null,
-        status: UserStatus.VERIFIED,
-      },
-      // [1, 1, 0]
-    ],
-    tasks: [
-      {
-        id: 1,
-        name: "testt1",
-        description: "dsafdfsfsdfsdff",
-        status: TaskStatus.IN_PROGRESS,
-        createdDate: new Date(),
-        deadLine: new Date(),
-        priority: TaskPriority.MEDIUM,
-        user: {
-          id: 30,
-          email: "test@test1.com",
-          username: "test1",
-          password: "lol",
-          role: UserRole.EMPLOYEE,
-          phone: "9591833072",
-          status: UserStatus.VERIFIED,
-        },
-        todos: [
-          {
-            id: 3,
-            name: "dsfsddsfs",
-            status: TodoStatus.IN_PROGRESS,
-            createdOn: new Date("2022-06-29"),
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: "test-task 2",
-        description: "dsafdfasdsfsdfsdff",
-        status: TaskStatus.IN_PROGRESS,
-        createdDate: new Date("2022-19-06"),
-        deadLine: new Date("2022-28-06"),
-        priority: TaskPriority.MEDIUM,
-        user: {
-          id: 30,
-          email: "test@test1.com",
-          username: "test1",
-          password: "lol",
-          role: UserRole.EMPLOYEE,
-          phone: "9591833072",
-          status: UserStatus.VERIFIED,
-        },
-        todos: [
-          {
-            id: 4,
-            name: "dsdaaaafsddsfs",
-            status: TodoStatus.IN_PROGRESS,
-            createdOn: new Date("2022-06-29"),
-          },
-        ],
-      },
-    ],
-    issues: [],
-  };
+  project = mockProject;
   ngOnInit() {
 
     // Processing Data start
 
     //  Processing for Donut Chart and Pie Chart
     const userStats = this.reportService.getUserDesignationStatistics(this.project);
+
+    const taskPriorityStatistics = this.reportService.getTasksPriorityDetails(this.project.tasks);
+
 
     console.log(userStats);
     console.log("Developer count",userStats.DEVELOPER);
@@ -235,7 +145,7 @@ Highcharts.chart('container-donut-chart', {
           },
         },
       },
-    });
+    }}});
 
     // donut chart end
 
@@ -490,20 +400,17 @@ Highcharts.chart('container-pie-chart', {
       name: 'Brands',
       colorByPoint: true,
       data: [{
-          name: 'Developers',
-          y: userStats.DEVELOPER,
+          name: 'Low Priority Tasks',
+          y: taskPriorityStatistics.LOW,
           sliced: true,
           selected: true
       }, {
-          name: 'Testers',
-          y: userStats.TESTER
+          name: 'Medium Priority Tasks',
+          y: taskPriorityStatistics.MEDIUM
       }, {
-          name: 'Devops',
-          y: userStats.DEVOPS
-      }, {
-        name: 'Quality Analysts',
-        y: 2
-    }]
+          name: 'High Priority Tasks',
+          y: taskPriorityStatistics.HIGH
+      }]
   }]
   // change the value of y to change the data
 });
@@ -586,15 +493,15 @@ Highcharts.chart('container-bar-chart', {
       },
       series: [
         {
-          name: "Tasks",
-          data: [50, 30, 34, 74, 32],
+          name: "In Progress Tasks",
+          data: [taskStatusBarGraph.IN_PROGRESS, 30, 34, 74, 32],
         },
         {
-          name: "Issues",
-          data: [23, 25, 43, 52, 10],
+          name: "Completed Tasks",
+          data: [taskStatusBarGraph.COMPLETED, 25, 43, 52, 10],
         },
         {
-          name: "Completed",
+          name: "To-Do Tasks",
           data: [3, 1, 4, 12, 8],
         },
       ],

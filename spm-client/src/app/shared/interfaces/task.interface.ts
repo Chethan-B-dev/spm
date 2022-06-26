@@ -52,7 +52,7 @@ export enum TaskPriority {
 }
 
 export const TaskPriorityOptions = [...Object.keys(TaskPriority)];
-export interface taskPriority{
+export interface TaskPriorityStatistics{
   [priority: string]: number;
 }
 
