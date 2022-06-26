@@ -24,7 +24,7 @@
         <mat-card-subtitle
           >Assignee - {{ task.user?.username }}</mat-card-subtitle
         >
-        <button mat-raised-button color="warn" (click)="createTodo()">
+        <button mat-raised-button color="warn" (click)="createTodo(task)">
           Add Todo
         </button>
       </div>

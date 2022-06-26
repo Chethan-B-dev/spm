@@ -172,6 +172,18 @@
         <div #notifications class="notification-overlay">
           <div class="notification-list">
             <mat-card
+              *ngIf="notificationMessages.length"
+              matRipple
+              matRippleColor="red"
+              matTooltip="Clear all notifications"
+              (click)="deleteAllNotifications()"
+            >
+              <div class="left-and-right">
+                Clear All
+                <mat-icon class="mr-2">close</mat-icon>
+              </div>
+            </mat-card>
+            <mat-card
               class="notification-item"
               mat-ripple
               *ngFor="let notification of notificationMessages"

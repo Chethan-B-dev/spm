@@ -3,12 +3,14 @@ import { MatDialog, MatDialogConfig } from "@angular/material";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
+import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { ITask } from "src/app/shared/interfaces/task.interface";
 import {
   getTodoStatistics,
   ITodo,
   TodoStatus,
 } from "src/app/shared/interfaces/todo.interface";
+import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { CreateTodoComponent } from "../dialogs/create-todo/create-todo.component";
 import { ManagerService } from "../services/manager.service";
@@ -26,7 +28,8 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private route: ActivatedRoute,
     private readonly managerService: ManagerService,
-    private readonly snackbarService: SnackbarService
+    private readonly snackbarService: SnackbarService,
+    private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +56,7 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
     window.history.go(-1);
   }
 
-  createTodo(): void {
+  createTodo(task: ITask): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
@@ -61,6 +64,15 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
     dialogConfig.data = this.taskId;
 
     this.dialog.open(CreateTodoComponent, dialogConfig);
+
+    const notification: INotification = {
+      userId: task.user.id,
+      notification: `A new Todo for your task ${
+        task.name
+      } has been added on ${new Date().toLocaleString()}`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
   }
 
   getCompletedPercentage(todos: ITodo[]): number {

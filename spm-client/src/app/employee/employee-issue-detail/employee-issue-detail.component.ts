@@ -13,7 +13,9 @@ import {
   IssueStatus,
   IUpdateIssueDTO,
 } from "src/app/shared/interfaces/issue.interface";
+import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
+import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/shared.service";
 import { DataType, DeleteData } from "src/app/shared/utility/common";
@@ -37,7 +39,8 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
-    private readonly sharedService: SharedService
+    private readonly sharedService: SharedService,
+    private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -115,6 +118,14 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(() => {
+        const notification: INotification = {
+          userId: issue.user.id,
+          notification: `issue: '${
+            issue.summary
+          }' has been resolved on ${new Date().toLocaleString()}`,
+          time: Date.now(),
+        };
+        this.notificationService.addNotification(notification);
         this.snackbarService.showSnackBar(`issue has been resolved`);
       });
   }

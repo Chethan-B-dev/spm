@@ -65,6 +65,17 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
         this.issueProgress = getIssueProgress(project.issues) || 0;
         this.projectProgress = getProjectProgress(project.tasks) || 0;
         this.projectTaskStatistics = getTaskStatistics(project.tasks);
+        const currentDate = new Date();
+        const diffTime = Math.abs(+currentDate - +new Date(project.toDate));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays <= 3) {
+          const notification: INotification = {
+            userId: this.currentUser.id,
+            notification: `Project: ${project.name} is approaching deadline, ${diffDays} days left`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+        }
       }),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);

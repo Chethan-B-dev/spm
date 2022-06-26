@@ -1,4 +1,3 @@
-import { not } from "@angular/compiler/src/output/output_ast";
 import {
   Component,
   ElementRef,
@@ -9,7 +8,7 @@ import {
 } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { Router } from "@angular/router";
-import { EMPTY, Observable, of, Subject } from "rxjs";
+import { EMPTY, Observable, of, Subject, Subscription } from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -51,6 +50,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   searchTerm$ = this.searchTermSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
   notificationMessages: INotification[] = [];
+  notificationSubscription: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -122,7 +122,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.currentUser$
+    this.notificationSubscription = this.currentUser$
       .pipe(
         pluck("id"),
         switchMap((currentUserId) =>
@@ -156,9 +156,19 @@ export class SidenavComponent implements OnInit, OnDestroy {
     this.notificationService.deleteNotification(notificationId);
   }
 
+  deleteAllNotifications(): void {
+    this.notificationMessages.forEach((notification) =>
+      this.deleteNotification(notification.id)
+    );
+    this.notificationMessages = [];
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe();
+    }
   }
 
   search(searchTerm: string): void {

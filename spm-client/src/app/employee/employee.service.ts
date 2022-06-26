@@ -15,24 +15,22 @@ import {
   map,
   pluck,
   scan,
-  share,
   shareReplay,
   switchMap,
-  switchMapTo,
   takeWhile,
   tap,
 } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { AuthService } from "../auth/auth.service";
 import { IIssue } from "../shared/interfaces/issue.interface";
+import { INotification } from "../shared/interfaces/notification.interface";
 import { IPagedData } from "../shared/interfaces/pagination.interface";
 import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
 import { ITodo, IUpdateTodoDTO } from "../shared/interfaces/todo.interface";
-import { IAppUser } from "../shared/interfaces/user.interface";
+import { NotificationService } from "../shared/notification.service";
+import { SidenavComponent } from "../shared/sidenav/sidenav.component";
 import {
-  DataType,
-  ISearchData,
   ISearchGroup,
   ISearchResult,
   mapSearchResults,
@@ -99,10 +97,29 @@ export class EmployeeService {
       );
       return of(myTasks);
     }),
+    tap((tasks) => {
+      tasks.forEach((task) => {
+        const currentDate = new Date();
+        const diffTime = Math.abs(+currentDate - +new Date(task.deadLine));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays <= 3) {
+          const notification: INotification = {
+            userId: task.user.id,
+            notification: `Task: ${task.name} is approaching deadline, ${diffDays} days left`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+        }
+      });
+    }),
     catchError(handleError)
   );
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private notificationService: NotificationService
+  ) {}
 
   refresh(): void {
     this.refreshSubject.next();
