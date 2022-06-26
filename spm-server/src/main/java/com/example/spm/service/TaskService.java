@@ -86,4 +86,9 @@ public class TaskService {
     public List<Task> getAllTasksWithSearchKeyAndEmployeeId(String searchKey, Integer employeeId) {
         return taskRepository.getAllTasksWithSearchKeyAndEmployeeId(employeeId, searchKey);
     }
+
+    public AppUser getManagerOfTask(Integer taskId) {
+        Task task = checkIfTaskExists(taskId);
+        return task.getProject().getManager();
+    }
 }

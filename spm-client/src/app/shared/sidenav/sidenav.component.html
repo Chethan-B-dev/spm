@@ -153,26 +153,49 @@
         <mat-icon>person</mat-icon>
         Profile
       </button>
-      <button
-        matTooltip="Notifications"
-        [matTooltipPosition]="'right'"
-        mat-icon-button
-        class="mr-4"
-        (click)="toggleNotifications()"
-      >
-        <mat-icon matBadge="1" matBadgeColor="warn"
-          >notification_important</mat-icon
-        >
-      </button>
 
-      <div #notifications class="notification-overlay">
-        <div class="notification-list">
-          <mat-card class="notification-item" mat-ripple
-            >Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem,
-            tempore!</mat-card
+      <ng-container *ngIf="isLoggedIn$ | async">
+        <button
+          matTooltip="Notifications"
+          [matTooltipPosition]="'right'"
+          mat-icon-button
+          class="mr-4"
+          (click)="toggleNotifications()"
+        >
+          <mat-icon
+            [matBadge]="notificationMessages.length"
+            matBadgeColor="warn"
+            >notification_important</mat-icon
           >
+        </button>
+
+        <div #notifications class="notification-overlay">
+          <div class="notification-list">
+            <mat-card
+              class="notification-item"
+              mat-ripple
+              *ngFor="let notification of notificationMessages"
+            >
+              <div class="left-and-right">
+                {{ notification.notification }}
+                <button
+                  mat-icon-button
+                  aria-label="Example icon button with a delete icon"
+                  (click)="deleteNotification(notification.id)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </mat-card>
+            <mat-card
+              class="notification-item"
+              mat-ripple
+              *ngIf="notificationMessages.length === 0"
+              >There are no Notifications for you</mat-card
+            >
+          </div>
         </div>
-      </div>
+      </ng-container>
 
       <button mat-button (click)="logout()" *ngIf="isLoggedIn$ | async">
         <mat-icon>exit_to_app</mat-icon> Logout

@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "spm-client",
+      "public": "dist/spm-client",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}
