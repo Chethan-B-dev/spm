@@ -160,7 +160,7 @@
           [matTooltipPosition]="'right'"
           mat-icon-button
           class="mr-4"
-          (click)="toggleNotifications()"
+          (click)="toggleNotifications($event)"
         >
           <mat-icon
             [matBadge]="notificationMessages.length"

@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  HostListener,
   OnDestroy,
   OnInit,
   Renderer2,
@@ -37,6 +38,13 @@ import { DataType, ISearchData, ISearchGroup } from "../utility/common";
 })
 export class SidenavComponent implements OnInit, OnDestroy {
   @ViewChild("notifications", { static: false }) notifications: ElementRef;
+  @HostListener("document:click", ["$event"]) onDocumentClick(event) {
+    this.renderer.setStyle(
+      this.notifications.nativeElement as HTMLElement,
+      "display",
+      "none"
+    );
+  }
   isExpanded = false;
   isManager$: Observable<boolean>;
   isEmployee$: Observable<boolean>;
@@ -208,7 +216,8 @@ export class SidenavComponent implements OnInit, OnDestroy {
     this.searchTermSubject.next("");
   }
 
-  toggleNotifications(): void {
+  toggleNotifications(event: MouseEvent): void {
+    event.stopPropagation();
     const overlay = this.notifications.nativeElement as HTMLElement;
     if (overlay.style.display === "none") {
       this.renderer.setStyle(overlay, "display", "block");
