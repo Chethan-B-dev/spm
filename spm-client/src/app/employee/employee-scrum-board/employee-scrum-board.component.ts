@@ -1,4 +1,3 @@
-import { not } from "@angular/compiler/src/output/output_ast";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute, ParamMap } from "@angular/router";
@@ -26,9 +25,9 @@ import { EmployeeService } from "../employee.service";
 })
 export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
   taskId: number;
-  task$: Observable<ITask>;
   manager: IAppUser;
   canDrag: boolean;
+  task$: Observable<ITask>;
   private readonly currentUser = this.authService.currentUser;
   private readonly destroy$ = new Subject<void>();
   constructor(
@@ -42,9 +41,10 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(
-      (params: ParamMap) => (this.taskId = +params.get("id"))
-    );
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      this.taskId = +params.get("id");
+      this.employeeService.refresh();
+    });
 
     this.task$ = this.employeeService.refresh$.pipe(
       takeUntil(this.destroy$),
@@ -96,22 +96,21 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe((_) => {
+      .subscribe(() => {
+        const notification: INotification = {
+          userId: this.manager.id,
+          notification: `Task '${task.name}' was completed by '${
+            task.user.username
+          }' on ${new Date().toLocaleString()}`,
+          time: Date.now(),
+        };
+
+        this.notificationService.addNotification(notification);
         this.snackbarService.showSnackBar(`This task has been completed`);
         this.canDrag = false;
         // todo: try to make this work without refreshing the page
         window.location.reload();
       });
-
-    const notification: INotification = {
-      userId: this.manager.id,
-      notification: `Task '${task.name}' was completed by '${
-        task.user.username
-      }' on ${new Date().toLocaleString()}`,
-      time: Date.now(),
-    };
-
-    this.notificationService.addNotification(notification);
   }
 
   getTodoStats(todos: ITodo[]): {

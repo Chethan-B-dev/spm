@@ -16,7 +16,7 @@ import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   getTaskStatistics,
   ITask,
-  TaskPriorityOptions,
+  sortTasksByPriority,
   TaskStatistics,
 } from "src/app/shared/interfaces/task.interface";
 import { getProjectProgress } from "src/app/shared/interfaces/todo.interface";
@@ -39,12 +39,12 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
   project$: Observable<IProject>;
   tasks$: Observable<ITask[]>;
   private projectId: number;
-  private readonly destroy$ = new Subject<void>();
   private currentUser = this.authService.currentUser;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private route: ActivatedRoute,
     public dialog: MatDialog,
+    private route: ActivatedRoute,
     private readonly employeeService: EmployeeService,
     private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService,
@@ -54,9 +54,9 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
+      this.employeeService.refresh();
     });
 
-    // ! we are refreshing in case we update project information
     this.project$ = this.employeeService.refresh$.pipe(
       takeUntil(this.destroy$),
       switchMap(() => this.employeeService.getProjectById(this.projectId)),
@@ -96,15 +96,7 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
           ? tasks
           : tasks.filter((task) => task.status === selectedTaskCategory)
       ),
-      map((tasks) =>
-        tasks.sort(
-          (a, b) =>
-            TaskPriorityOptions.findIndex(
-              (priority) => priority === b.priority
-            ) -
-            TaskPriorityOptions.findIndex((priority) => priority === a.priority)
-        )
-      ),
+      map((tasks) => tasks.sort(sortTasksByPriority)),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
@@ -140,17 +132,23 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
     dialogConfig.autoFocus = true;
     dialogConfig.data = project;
 
-    this.dialog.open(CreateIssueComponent, dialogConfig);
+    const dialogRef = this.dialog.open(CreateIssueComponent, dialogConfig);
 
-    const managerId = project.manager.id;
-    const notification: INotification = {
-      userId: managerId,
-      notification: `An Issue was raised for project '${project.name}' by '${
-        this.currentUser.username
-      }' on ${new Date().toLocaleString()}`,
-      time: Date.now(),
-    };
-    this.notificationService.addNotification(notification);
+    dialogRef.afterClosed().subscribe((createdIssue: boolean) => {
+      if (createdIssue) {
+        const managerId = project.manager.id;
+        const notification: INotification = {
+          userId: managerId,
+          notification: `An Issue was raised for project '${
+            project.name
+          }' by '${
+            this.currentUser.username
+          }' on ${new Date().toLocaleString()}`,
+          time: Date.now(),
+        };
+        this.notificationService.addNotification(notification);
+      }
+    });
   }
 
   getIssueStats(issues: IIssue[]): string {

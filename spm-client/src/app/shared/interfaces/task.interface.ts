@@ -53,12 +53,10 @@ export enum TaskPriority {
 }
 
 export const TaskPriorityOptions = [...Object.keys(TaskPriority)];
-export interface TaskPriorityStatistics{
+export interface TaskPriorityStatistics {
   [priority: string]: number;
 }
 
-// export interface taskStatistics {
-//   [taskStatus: string]: string;
-// }
-
-// export const taskStatus = [...Object.keys(taskSta)]
+export const sortTasksByPriority = (a: ITask, b: ITask) =>
+  TaskPriorityOptions.findIndex((priority) => priority === b.priority) -
+  TaskPriorityOptions.findIndex((priority) => priority === a.priority);

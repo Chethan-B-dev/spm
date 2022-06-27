@@ -24,6 +24,7 @@ export class ManagerTaskDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.taskId = +params.get("id");
+      this.managerService.refresh();
     });
 
     this.task$ = this.managerService.refresh$.pipe(

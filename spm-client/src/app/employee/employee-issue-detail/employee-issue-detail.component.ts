@@ -33,9 +33,9 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
   currentUser: IAppUser = this.authService.currentUser;
   private readonly destroy$ = new Subject<void>();
   constructor(
+    public dialog: MatDialog,
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    public dialog: MatDialog,
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
@@ -47,9 +47,10 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
     this.addCommentForm = this.fb.group({
       comment: ["", Validators.required],
     });
-    this.route.paramMap.subscribe(
-      (paramMap) => (this.issueId = +paramMap.get("id"))
-    );
+    this.route.paramMap.subscribe((paramMap) => {
+      this.issueId = +paramMap.get("id");
+      this.sharedService.refresh();
+    });
     this.issue$ = this.sharedService.refresh$.pipe(
       switchMap(() => this.sharedService.getIssueById(this.issueId)),
       takeUntil(this.destroy$),

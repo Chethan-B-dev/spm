@@ -29,13 +29,21 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="push-right">
-  <button class="mat-raised-button" (click)="close()" style="margin-right: 8px">
+  <button
+    class="mat-raised-button"
+    (click)="close()"
+    style="margin-right: 8px"
+    mat-dialog-close
+    mat-dialog-close="false"
+  >
     Close
   </button>
   <button
     class="mat-raised-button mat-primary"
     [disabled]="this.createIssueForm.invalid"
     (click)="createIssue(project.id)"
+    mat-dialog-close
+    mat-dialog-close="true"
   >
     Create Issue
   </button>

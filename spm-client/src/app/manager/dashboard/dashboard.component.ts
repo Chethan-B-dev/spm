@@ -13,8 +13,6 @@ import { ManagerService } from "../services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { stopLoading } from "src/app/shared/utility/loading";
-import { NotificationService } from "src/app/shared/notification.service";
-import { INotification } from "src/app/shared/interfaces/notification.interface";
 
 @Component({
   selector: "app-dashboard",
@@ -24,19 +22,18 @@ import { INotification } from "src/app/shared/interfaces/notification.interface"
 export class DashboardComponent implements OnInit, OnDestroy {
   currentUserPageNumber = 1;
   currentProjectPageNumber = 1;
-  private isLoadingSubject = new BehaviorSubject<boolean>(true);
-  isLoading$ = this.isLoadingSubject.asObservable();
   loadMoreUsers$: Observable<boolean>;
   loadMoreProjects$: Observable<boolean>;
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
   errors: string[] = [];
+  private isLoadingSubject = new BehaviorSubject<boolean>(true);
+  isLoading$ = this.isLoadingSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
 
   constructor(
     private readonly managerService: ManagerService,
-    private readonly snackbarService: SnackbarService,
-    private readonly notificationService: NotificationService
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +57,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.initializeLoadMoreButtons();
+  }
+
+  initializeLoadMoreButtons(): void {
     this.loadMoreProjects$ = this.managerService.loadMoreProjects$.pipe(
       takeUntil(this.destroy$),
       catchError((err) => {

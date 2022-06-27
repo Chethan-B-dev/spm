@@ -13,9 +13,14 @@ import java.util.List;
 @ToString
 @Builder
 public class SearchResultDTO {
+    @Builder.Default
     private List<Project> projects = new ArrayList<>();
+    @Builder.Default
     private List<AppUser> users = new ArrayList<>();
+    @Builder.Default
     private List<Task> tasks = new ArrayList<>();
+    @Builder.Default
     private List<Todo> todos = new ArrayList<>();
+    @Builder.Default
     private List<Issue> issues = new ArrayList<>();
 }

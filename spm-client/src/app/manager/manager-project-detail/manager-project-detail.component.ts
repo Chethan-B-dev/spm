@@ -16,7 +16,7 @@ import { IIssue } from "src/app/shared/interfaces/issue.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   ITask,
-  TaskPriorityOptions,
+  sortTasksByPriority,
 } from "src/app/shared/interfaces/task.interface";
 
 @Component({
@@ -53,6 +53,7 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
 
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
+      this.managerService.refresh();
     });
 
     // ! we are refreshing in case we update project information
@@ -79,15 +80,7 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
           ? tasks
           : tasks.filter((task) => task.status === selectedTaskCategory)
       ),
-      map((tasks) =>
-        tasks.sort(
-          (a, b) =>
-            TaskPriorityOptions.findIndex(
-              (priority) => priority === b.priority
-            ) -
-            TaskPriorityOptions.findIndex((priority) => priority === a.priority)
-        )
-      ),
+      map((tasks) => tasks.sort(sortTasksByPriority)),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;

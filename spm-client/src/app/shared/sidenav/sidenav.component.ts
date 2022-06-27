@@ -38,8 +38,14 @@ import { DataType, ISearchData, ISearchGroup } from "../utility/common";
 })
 export class SidenavComponent implements OnInit, OnDestroy {
   @ViewChild("notifications", { static: false }) notifications: ElementRef;
-  @HostListener("document:click", ["$event"]) onDocumentClick(event) {
-    if (this.notifications && this.notifications.nativeElement) {
+  @HostListener("document:click", ["$event"]) onDocumentClick(
+    event: MouseEvent
+  ) {
+    if (
+      this.notifications &&
+      this.notifications.nativeElement &&
+      !this.notifications.nativeElement.contains(event.target)
+    ) {
       this.renderer.setStyle(
         this.notifications.nativeElement as HTMLElement,
         "display",
@@ -56,11 +62,11 @@ export class SidenavComponent implements OnInit, OnDestroy {
   currentUser$: Observable<IAppUser>;
   currentUserRole: UserRole;
   currentUserId: number;
+  notificationMessages: INotification[] = [];
+  notificationSubscription: Subscription;
   private searchTermSubject = new Subject<string>();
   searchTerm$ = this.searchTermSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
-  notificationMessages: INotification[] = [];
-  notificationSubscription: Subscription;
 
   constructor(
     private dialog: MatDialog,
