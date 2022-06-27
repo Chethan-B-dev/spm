@@ -7,10 +7,7 @@ import com.example.spm.exception.IssueNotFoundException;
 import com.example.spm.model.dto.AddCommentDTO;
 import com.example.spm.model.dto.CreateIssueDTO;
 import com.example.spm.model.dto.UpdateIssueDTO;
-import com.example.spm.model.entity.AppUser;
-import com.example.spm.model.entity.Issue;
-import com.example.spm.model.entity.IssueComment;
-import com.example.spm.model.entity.Project;
+import com.example.spm.model.entity.*;
 import com.example.spm.model.enums.IssueStatus;
 import com.example.spm.model.enums.UserRole;
 import com.example.spm.repository.IssueCommentRepository;
@@ -67,6 +64,14 @@ public class IssueService {
     }
 
     @Transactional
+    @Modifying
+    public void deleteIssue(Integer issueId, MyAppUserDetails loggedInUser) {
+        Issue issue = checkIfIssueExists(issueId);
+        checkIfIssueBelongsToManager(issue, loggedInUser);
+        issueRepository.delete(issue);
+    }
+
+    @Transactional
     public IssueComment addComment(AddCommentDTO addCommentDTO, Integer issueId) {
         Issue issue = checkIfIssueExists(issueId);
         AppUser appUser = adminService.checkIfUserExists(addCommentDTO.getUserId());
@@ -96,6 +101,11 @@ public class IssueService {
         return issueRepository
                 .findById(issueId)
                 .orElseThrow(() -> new IssueNotFoundException("issue with id '" + issueId + "' not found)"));
+    }
+
+    public void checkIfIssueBelongsToManager(Issue issue, MyAppUserDetails loggedInUser) {
+        if (!issue.getProject().getManager().getId().equals(loggedInUser.getUser().getId()))
+            throw new ActionNotAllowedException("Cannot access this issue as this issue does not belong to your project");
     }
 
     private IssueComment checkIfIssueCommentExists(Integer commentId) {
