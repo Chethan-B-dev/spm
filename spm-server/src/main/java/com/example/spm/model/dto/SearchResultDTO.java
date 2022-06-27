@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Builder
-public class ManagerSearchResultDTO {
+public class SearchResultDTO {
     private List<Project> projects = new ArrayList<>();
     private List<AppUser> users = new ArrayList<>();
     private List<Task> tasks = new ArrayList<>();

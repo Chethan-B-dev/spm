@@ -204,7 +204,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/search/{searchKey}")
-    public ResponseEntity<EmployeeSearchResultDTO> getSearchResult(
+    public ResponseEntity<SearchResultDTO> getSearchResult(
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable String searchKey
     ){
