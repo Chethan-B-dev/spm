@@ -175,6 +175,16 @@ public class ManagerController {
         );
     }
 
+    @DeleteMapping("/delete-task/{taskId}")
+    public ResponseEntity<Boolean> deleteTask(
+            @PathVariable final Integer taskId,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        managerService.deleteTask(taskId, loggedInUser);
+        return new ResponseEntity<>(true, HttpStatus.GONE);
+    }
+
     @PostMapping("/{taskId}/create-todo")
     public ResponseEntity<Todo> createTodo(
             @RequestBody @Valid final CreateTodoDTO createTodoDTO,
@@ -273,6 +283,16 @@ public class ManagerController {
                 managerService.updateIssue(issueId, updateIssueDTO),
                 HttpStatus.OK
         );
+    }
+
+    @DeleteMapping("/delete-issue/{issueId}")
+    public ResponseEntity<Boolean> deleteIssue(
+            @PathVariable final Integer issueId,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        managerService.deleteIssue(issueId, loggedInUser);
+        return new ResponseEntity<>(true, HttpStatus.GONE);
     }
 
     @PostMapping("/comment/{issueId}")

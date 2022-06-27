@@ -8,6 +8,8 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -42,6 +44,18 @@ public class AppUser {
     private UserStatus status;
     @Column(nullable = true)
     private UserDesignation designation;
+
+    @OneToMany(mappedBy = "user", cascade =  CascadeType.REMOVE)
+    @ToString.Exclude
+    @Builder.Default
+    @JsonIgnore
+    private List<Task> tasks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade =  CascadeType.REMOVE)
+    @ToString.Exclude
+    @Builder.Default
+    @JsonIgnore
+    private List<Issue> issues = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

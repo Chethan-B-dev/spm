@@ -6,12 +6,15 @@ import com.example.spm.model.dto.*;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Project;
 import com.example.spm.model.entity.Task;
+import com.example.spm.model.entity.Todo;
 import com.example.spm.model.enums.*;
 import com.example.spm.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -66,6 +69,14 @@ public class TaskService {
 
     public List<Task> getUserTasks(Integer projectId, Integer userId) {
         return taskRepository.findAllByProjectIdAndUserId(projectId, userId);
+    }
+
+    @Transactional
+    @Modifying
+    public void deleteTask(Integer taskId, MyAppUserDetails loggedInUser) {
+        Task task = checkIfTaskExists(taskId);
+        checkIfTaskBelongsToManager(task, loggedInUser);
+        taskRepository.delete(task);
     }
 
     public List<Task> getAllTasksWithSearchKeyAndManagerId(String searchKey, Integer managerId) {

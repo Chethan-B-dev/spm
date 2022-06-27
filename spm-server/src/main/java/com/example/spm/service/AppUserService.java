@@ -33,7 +33,6 @@ public class AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AdminService adminService;
 
     public AppUser saveUser(UserRegisterDTO userRegisterDTO) {
 
@@ -69,10 +68,20 @@ public class AppUserService {
         return appUserRepository.findByEmail(email);
     }
 
+    public List<AppUser> getVerifiedUsers() {
+        return appUserRepository.findAllByStatusAndRoleNot(UserStatus.VERIFIED, UserRole.ADMIN);
+    }
+
+    public AppUser checkIfUserExists (Integer userId) {
+        return appUserRepository
+                .findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("user with id " + userId + " not found"));
+    }
+
     @Transactional
     @Modifying
     public AppUser setDesignation(Integer userId, UserDesignation designation) {
-        AppUser user = adminService.checkIfUserExists(userId);
+        AppUser user = checkIfUserExists(userId);
         user.setDesignation(designation);
         return appUserRepository.save(user);
     }

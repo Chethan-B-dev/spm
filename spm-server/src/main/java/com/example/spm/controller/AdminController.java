@@ -60,13 +60,4 @@ public class AdminController {
                 .status(HttpStatus.OK)
                 .body(adminService.takeDecision(adminDecisionDTO));
     }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer userId) {
-        adminService.deleteUser(userId);
-        // todo: make sure to remove all users tasks and all
-        return ResponseEntity
-                .status(HttpStatus.GONE)
-                .build();
-    }
 }

@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final AppUserService appUserService;
-    private final AdminService adminService;
 
     public List<Project> getAllProjectsByManagerId(Integer managerId) {
         return projectRepository.findByManagerIdOrderByFromDateDesc(managerId);
@@ -64,14 +63,14 @@ public class ProjectService {
     }
 
     public List<AppUser> getAllVerifiedEmployees(Project project) {
-        return adminService.getVerifiedUsers().stream().filter(
+        return appUserService.getVerifiedUsers().stream().filter(
                 appUser -> (appUser.getRole().equals(UserRole.EMPLOYEE) && !project.getUsers().contains(appUser))
         ).collect(Collectors.toList());
     }
 
     public Project addUsersToProject(Project project, List<Integer> userIds) {
         userIds.forEach(userId -> {
-            AppUser appUser = adminService.checkIfUserExists(userId);
+            AppUser appUser = appUserService.checkIfUserExists(userId);
             if (appUser.getRole().equals(UserRole.EMPLOYEE))
                 project.getUsers().add(appUser);
             else

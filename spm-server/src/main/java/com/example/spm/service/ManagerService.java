@@ -114,6 +114,10 @@ public class ManagerService {
         return taskService.updateTask(taskId, updateTaskDTO);
     }
 
+    public void deleteTask(Integer taskId, MyAppUserDetails loggedInUser) {
+        taskService.deleteTask(taskId, loggedInUser);
+    }
+
     public Todo createTodo(CreateTodoDTO createTodoDTO, MyAppUserDetails loggedInUser, Integer taskId) {
         return todoService.createTodo(createTodoDTO, loggedInUser,  taskId);
     }
@@ -149,6 +153,10 @@ public class ManagerService {
 
     public Issue updateIssue(Integer issueId, UpdateIssueDTO updateIssueDTO) {
         return issueService.updateIssue(updateIssueDTO, issueId);
+    }
+
+    public void deleteIssue(Integer issueId, MyAppUserDetails loggedInUser) {
+        issueService.deleteIssue(issueId, loggedInUser);
     }
 
     public IssueComment addComment(AddCommentDTO addCommentDTO, Integer issueId){

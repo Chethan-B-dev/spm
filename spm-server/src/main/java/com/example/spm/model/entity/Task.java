@@ -51,7 +51,7 @@ public class Task {
             referencedColumnName = "id"
     )
     private AppUser user;
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade =  CascadeType.REMOVE)
     @ToString.Exclude
     @Builder.Default
     private List<Todo> todos = new ArrayList<>();

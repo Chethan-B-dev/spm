@@ -22,6 +22,7 @@ import java.util.List;
 public class AdminService {
 
     private final AppUserRepository appUserRepository;
+    private final AppUserService appUserService;
 
     public List<AppUser> getAllUsers() {
         return appUserRepository.findByRoleNot(UserRole.ADMIN);
@@ -32,17 +33,9 @@ public class AdminService {
     }
 
     public List<AppUser> getVerifiedUsers() {
-        return appUserRepository.findAllByStatusAndRoleNot(UserStatus.VERIFIED, UserRole.ADMIN);
+        return appUserService.getVerifiedUsers();
     }
 
-    @Transactional
-    @Modifying
-    public void deleteUser (Integer userId) {
-        AppUser appUser = checkIfUserExists(userId);
-        // todo: delete all things he is part of like projects, tasks and stuff
-        // todo: research about CASCADE.REMOVE and orphanRemoval in JPA
-        appUserRepository.delete(appUser);
-    }
 
     @Transactional
     public AppUser enableUser (Integer userId) {
@@ -66,9 +59,7 @@ public class AdminService {
     }
 
     public AppUser checkIfUserExists (Integer userId) {
-        return appUserRepository
-                .findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("user with id " + userId + " not found"));
+        return appUserService.checkIfUserExists(userId);
     }
 
 }

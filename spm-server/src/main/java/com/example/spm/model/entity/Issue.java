@@ -6,6 +6,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -45,4 +47,10 @@ public class Issue {
     )
     private AppUser user;
     private LocalDate createdDate;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "issue", cascade =  CascadeType.REMOVE)
+    @ToString.Exclude
+    @Builder.Default
+    private List<IssueComment> issueComments = new ArrayList<>();
 }
