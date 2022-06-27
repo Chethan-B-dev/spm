@@ -115,7 +115,7 @@ public class EmployeeService {
         issueService.deleteComment(commentId, loggedInUser);
     }
 
-    public EmployeeSearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
+    public SearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
         // sanitizing search string
         searchKey = Jsoup.clean(searchKey.trim(), Safelist.basic());
         Integer employeeId = loggedInUser.getUser().getId();
@@ -123,7 +123,7 @@ public class EmployeeService {
         List<Task> tasks = taskService.getAllTasksWithSearchKeyAndEmployeeId(searchKey, employeeId);
         List<Todo> todos = todoService.getAllTodosWithSearchKeyAndEmployeeId(searchKey, employeeId);
         List<Issue> issues = issueService.getAllIssuesWithSearchKeyAndEmployeeId(searchKey, employeeId);
-        return EmployeeSearchResultDTO
+        return SearchResultDTO
                 .builder()
                 .projects(projects)
                 .tasks(tasks)

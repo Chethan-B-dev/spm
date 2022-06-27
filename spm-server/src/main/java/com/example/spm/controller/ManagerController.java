@@ -337,7 +337,7 @@ public class ManagerController {
     }
 
     @GetMapping("/search/{searchKey}")
-    public ResponseEntity<ManagerSearchResultDTO> getSearchResult(
+    public ResponseEntity<SearchResultDTO> getSearchResult(
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
             @PathVariable String searchKey
     ){
