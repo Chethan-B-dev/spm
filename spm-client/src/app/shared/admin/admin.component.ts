@@ -28,7 +28,7 @@ import { stopLoading } from "../utility/loading";
   styleUrls: ["./admin.component.scss"],
 })
 export class AdminComponent implements OnDestroy {
-  defaultUserCategory: string = "UNVERIFIED";
+  defaultUserCategory = "UNVERIFIED";
 
   private searchTermSubject = new BehaviorSubject<string>("");
   searchTerm$ = this.searchTermSubject.asObservable();
@@ -56,7 +56,7 @@ export class AdminComponent implements OnDestroy {
   ]).pipe(
     takeUntil(this.destroy$),
     map(([users, userSelectedCategory, searchTerm]) => {
-      if (userSelectedCategory === "ALL" && searchTerm === "") return users;
+      if (userSelectedCategory === "ALL" && !searchTerm) return users;
       return users.filter((user) => {
         if (
           userSelectedCategory === "ALL" &&
@@ -90,7 +90,7 @@ export class AdminComponent implements OnDestroy {
   }
 
   searchUser(searchTerm: string): void {
-    this.searchTermSubject.next(searchTerm);
+    this.searchTermSubject.next(searchTerm.trim().toLowerCase());
   }
 
   onUserCategoryChange(selectedUserCategory: string): void {
@@ -143,9 +143,10 @@ export class AdminComponent implements OnDestroy {
 
   private filterUserBySearchTerm(user: IAppUser, searchTerm: string): boolean {
     return (
-      user.username!.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email!.toLowerCase().includes(searchTerm.toLowerCase())
+      user.username.toLowerCase().includes(searchTerm) ||
+      user.role.toLowerCase().includes(searchTerm) ||
+      user.email.toLowerCase().includes(searchTerm) ||
+      (user.designation && user.designation.toLowerCase().includes(searchTerm))
     );
   }
 }

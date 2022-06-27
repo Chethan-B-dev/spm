@@ -7,5 +7,4 @@ import { ITodo } from "src/app/shared/interfaces/todo.interface";
 })
 export class IssueCardComponent {
   @Input() todo: ITodo;
-  constructor() {}
 }

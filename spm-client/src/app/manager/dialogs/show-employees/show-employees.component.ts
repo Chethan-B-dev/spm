@@ -16,8 +16,8 @@ export class ShowEmployeesComponent implements OnInit {
   project: IProject;
   employeeRankings: IAppUserRanking[];
   constructor(
-    private dialogRef: MatDialogRef<ShowEmployeesComponent>,
-    @Inject(MAT_DIALOG_DATA) project
+    @Inject(MAT_DIALOG_DATA) project,
+    private dialogRef: MatDialogRef<ShowEmployeesComponent>
   ) {
     this.project = project;
   }

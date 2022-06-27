@@ -1,14 +1,10 @@
-import { not } from "@angular/compiler/src/output/output_ast";
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
-import {
-  IAppUser,
-  ISignUpRequest,
-} from "src/app/shared/interfaces/user.interface";
+import { ISignUpRequest } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { AdminApiService } from "src/app/shared/services/admin-api.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
@@ -25,10 +21,10 @@ export class SignupComponent implements OnInit {
   private readonly destroy$ = new Subject<void>();
   constructor(
     private fb: FormBuilder,
+    private router: Router,
     private readonly authService: AuthService,
     private readonly snackbarService: SnackbarService,
-    private readonly notificationService: NotificationService,
-    private router: Router
+    private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {

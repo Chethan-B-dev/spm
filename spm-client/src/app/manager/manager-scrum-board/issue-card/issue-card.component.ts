@@ -9,25 +9,18 @@ import { DataType, DeleteData } from "src/app/shared/utility/common";
   templateUrl: "./issue-card.component.html",
   styleUrls: ["./issue-card.component.scss"],
 })
-export class IssueCardComponent implements OnInit {
+export class IssueCardComponent {
   @Input() todo: ITodo;
 
   constructor(public dialog: MatDialog) {}
 
-  openDeleteConfirmDialog(): void {
+  openDeleteTodoConfirmDialog(): void {
     const deleteData: DeleteData = {
       deleteType: DataType.TODO,
       id: this.todo.id,
     };
-    let dialogRef = this.dialog.open(ConfirmDeleteComponent, {
+    this.dialog.open(ConfirmDeleteComponent, {
       data: deleteData,
     });
-    dialogRef.afterClosed().subscribe((result: boolean) => {
-      console.log(result);
-      // yes returns true
-      // no returns false
-    });
   }
-
-  ngOnInit() {}
 }

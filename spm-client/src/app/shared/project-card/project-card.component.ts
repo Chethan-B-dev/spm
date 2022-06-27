@@ -24,6 +24,7 @@ import { SnackbarService } from "../services/snackbar.service";
 // interfaces
 import { SetDesignationComponent } from "src/app/manager/dialogs/set-designation/set-designation.component";
 import { IIssue } from "../interfaces/issue.interface";
+import { INotification } from "../interfaces/notification.interface";
 import { IProject } from "../interfaces/project.interface";
 import {
   getTaskStatistics,
@@ -31,10 +32,8 @@ import {
 } from "../interfaces/task.interface";
 import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
-import { DataType, PieData } from "../utility/common";
-import { INotification } from "../interfaces/notification.interface";
 import { NotificationService } from "../notification.service";
-import { not } from "@angular/compiler/src/output/output_ast";
+import { DataType, PieData } from "../utility/common";
 
 @Component({
   selector: "app-project-card",
@@ -181,7 +180,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const dialogConfig: MatDialogConfig = new MatDialogConfig();
+    const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;

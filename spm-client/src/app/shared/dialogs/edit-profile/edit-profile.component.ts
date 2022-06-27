@@ -17,7 +17,7 @@ import { SnackbarService } from "../../services/snackbar.service";
 })
 export class EditProfileComponent implements OnInit, OnDestroy {
   editProfileForm: FormGroup;
-  currentUser: IAppUser;
+  currentUser = this.authService.currentUser;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -27,7 +27,6 @@ export class EditProfileComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.currentUser = this.authService.currentUser;
     this.editProfileForm = this.fb.group({
       email: [
         { value: this.currentUser.email, disabled: true },

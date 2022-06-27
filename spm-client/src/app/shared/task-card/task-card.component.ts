@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { ITask } from "../interfaces/task.interface";
 import { ITodo } from "../interfaces/todo.interface";
 import { DataType, PieData } from "../utility/common";

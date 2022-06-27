@@ -15,7 +15,6 @@ import { ProjectCardComponent } from "./project-card/project-card.component";
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MaterialModule } from "./material/material.module";
-import { NotifcationMenuComponent } from "./notifcation-menu/notifcation-menu.component";
 import { PieChartComponent } from "./pie-chart/pie-chart.component";
 import { AdminApiService } from "./services/admin-api.service";
 import { SnackbarService } from "./services/snackbar.service";
@@ -31,7 +30,6 @@ import { TaskCardComponent } from "./task-card/task-card.component";
     LoadingSpinnerComponent,
     PieChartComponent,
     TaskCardComponent,
-    NotifcationMenuComponent,
   ],
   entryComponents: [ConfirmDeleteComponent],
   imports: [

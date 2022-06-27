@@ -16,8 +16,8 @@ export class ConfirmDeleteComponent implements OnDestroy {
   deleteData: DeleteData;
   private readonly destroy$ = new Subject<void>();
   constructor(
-    private dialogRef: MatDialogRef<ConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) deleteData,
+    private dialogRef: MatDialogRef<ConfirmDeleteComponent>,
     private managerService: ManagerService,
     private sharedService: SharedService,
     private snackbarService: SnackbarService
@@ -38,7 +38,7 @@ export class ConfirmDeleteComponent implements OnDestroy {
               return EMPTY;
             })
           )
-          .subscribe((_) => {
+          .subscribe(() => {
             this.snackbarService.showSnackBar("Todo has been deleted");
             this.close();
           });

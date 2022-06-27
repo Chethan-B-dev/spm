@@ -1,7 +1,6 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { NOTFOUND } from "dns";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
@@ -19,14 +18,14 @@ import { ManagerService } from "../../services/manager.service";
 export class CreateTaskComponent implements OnInit, OnDestroy {
   createTaskForm: FormGroup;
   project: IProject;
-  readonly destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
   constructor(
+    @Inject(MAT_DIALOG_DATA) project,
     private fb: FormBuilder,
+    private dialogRef: MatDialogRef<CreateTaskComponent>,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
-    private readonly notificationService: NotificationService,
-    private dialogRef: MatDialogRef<CreateTaskComponent>,
-    @Inject(MAT_DIALOG_DATA) project
+    private readonly notificationService: NotificationService
   ) {
     this.project = project;
   }
@@ -82,7 +81,7 @@ export class CreateTaskComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe((_) => {
+      .subscribe(() => {
         const notification: INotification = {
           userId: taskRequestDTO.userId,
           notification: `A new Task: '${

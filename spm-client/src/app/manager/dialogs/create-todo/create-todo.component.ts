@@ -17,9 +17,9 @@ export class CreateTodoComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) taskId,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CreateTodoComponent>,
-    @Inject(MAT_DIALOG_DATA) taskId,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService
   ) {
@@ -48,7 +48,7 @@ export class CreateTodoComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe((_) => {
+      .subscribe(() => {
         this.snackbarService.showSnackBar("Todo has been created");
         this.close();
       });
