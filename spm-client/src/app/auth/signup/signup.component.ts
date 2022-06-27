@@ -1,13 +1,18 @@
+import { not } from "@angular/compiler/src/output/output_ast";
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
+import { INotification } from "src/app/shared/interfaces/notification.interface";
 import {
   IAppUser,
   ISignUpRequest,
 } from "src/app/shared/interfaces/user.interface";
+import { NotificationService } from "src/app/shared/notification.service";
+import { AdminApiService } from "src/app/shared/services/admin-api.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { myTitleCase } from "src/app/shared/utility/common";
 import { AuthService } from "../auth.service";
 
 @Component({
@@ -22,6 +27,7 @@ export class SignupComponent implements OnInit {
     private fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly snackbarService: SnackbarService,
+    private readonly notificationService: NotificationService,
     private router: Router
   ) {}
 
@@ -45,7 +51,16 @@ export class SignupComponent implements OnInit {
           return EMPTY;
         })
       )
-      .subscribe((user: IAppUser) => {
+      .subscribe((user) => {
+        // todo: take care of hardcoded admin id for demo
+        const notification: INotification = {
+          userId: AdminApiService.adminId,
+          notification: `A new ${myTitleCase(user.role)} with name ${
+            user.username
+          } has registered on ${new Date().toLocaleString()}`,
+          time: Date.now(),
+        };
+        this.notificationService.addNotification(notification);
         this.snackbarService.showSnackBar(
           "Your account has been created, Please wait for the Admin to approve your request",
           5000

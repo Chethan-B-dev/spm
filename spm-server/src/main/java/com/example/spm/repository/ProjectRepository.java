@@ -17,6 +17,8 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
     List<Project> findAllByUsers(AppUser employee);
 
+    Page<Project> findAllByUsers(AppUser employee, Pageable pageable);
+
     @Query(
             value = "SELECT * FROM project p WHERE p.manager_id = :managerId and LOWER(p.name) LIKE %:searchKey%",
             nativeQuery = true)

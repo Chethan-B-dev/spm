@@ -32,6 +32,9 @@ import {
 import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
 import { DataType, PieData } from "../utility/common";
+import { INotification } from "../interfaces/notification.interface";
+import { NotificationService } from "../notification.service";
+import { not } from "@angular/compiler/src/output/output_ast";
 
 @Component({
   selector: "app-project-card",
@@ -55,7 +58,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private readonly managerService: ManagerService,
-    private readonly snackbarService: SnackbarService
+    private readonly snackbarService: SnackbarService,
+    private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -115,6 +119,18 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
               })
             )
             .subscribe(() => {
+              this.employees.forEach((employee) => {
+                const notification: INotification = {
+                  userId: employee.id,
+                  notification: `You have been assigned to the project '${
+                    this.project.name
+                  }' by Manager: ${
+                    this.project.manager.username
+                  } on ${new Date().toLocaleString()}`,
+                  time: Date.now(),
+                };
+                this.notificationService.addNotification(notification);
+              });
               this.snackbarService.showSnackBar("Employees have been added");
               this.employees = [];
             });
@@ -150,7 +166,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = employees;
+    dialogConfig.data = { employees, manager: this.project.manager };
 
     const dialogRef = this.dialog.open(SetDesignationComponent, dialogConfig);
 

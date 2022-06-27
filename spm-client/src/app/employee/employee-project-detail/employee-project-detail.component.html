@@ -95,15 +95,16 @@
             (click)="toggleShowIssues()"
           >
             Issues</button
-          ><mat-chip>Solved 4/10</mat-chip>
+          ><mat-chip>Resolved {{ getIssueStats(project.issues) }}</mat-chip>
+          <mat-progress-bar
+            class="container col-7"
+            mode="determinate"
+            [value]="issueProgress"
+            [matTooltip]="'Resolved: ' + issueProgress + ' %'"
+            [matTooltipPosition]="'right'"
+          ></mat-progress-bar>
+          <mat-chip>{{ issueProgress + "%" }}</mat-chip>
         </div>
-        <mat-progress-bar
-          class="container col-7"
-          mode="determinate"
-          [value]="issueProgress"
-          [matTooltip]="'Resolved: ' + issueProgress + ' %'"
-          [matTooltipPosition]="'right'"
-        ></mat-progress-bar>
       </mat-card>
       <mat-divider></mat-divider>
     </div>

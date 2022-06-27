@@ -2,7 +2,9 @@ import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { EMPTY, forkJoin, Subject } from "rxjs";
 import { catchError } from "rxjs/operators";
+import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
 
@@ -13,15 +15,18 @@ import { ManagerService } from "../../services/manager.service";
 })
 export class SetDesignationComponent implements OnInit, OnDestroy {
   employees: IAppUser[];
+  manager: IAppUser;
   designations: string[];
   private readonly destroy$ = new Subject<void>();
   constructor(
     private dialogRef: MatDialogRef<SetDesignationComponent>,
-    @Inject(MAT_DIALOG_DATA) employees,
+    @Inject(MAT_DIALOG_DATA) data,
     private readonly managerService: ManagerService,
-    private readonly snackbarService: SnackbarService
+    private readonly snackbarService: SnackbarService,
+    private readonly notificationService: NotificationService
   ) {
-    this.employees = employees;
+    this.employees = data.employees;
+    this.manager = data.manager;
   }
 
   ngOnInit(): void {
@@ -57,9 +62,21 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
           return EMPTY;
         })
       )
-      .subscribe(() =>
-        this.snackbarService.showSnackBar("User Designations have been set")
-      );
+      .subscribe(() => {
+        this.employees.forEach((employee, index) => {
+          const notification: INotification = {
+            userId: employee.id,
+            notification: `Manager: ${
+              this.manager.username
+            } has set your designation to ${this.designations[
+              index
+            ].toLowerCase()}`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+        });
+        this.snackbarService.showSnackBar("User Designations have been set");
+      });
   }
 
   allDesignationsAreSet(): boolean {

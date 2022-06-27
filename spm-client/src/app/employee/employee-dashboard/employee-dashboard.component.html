@@ -15,6 +15,17 @@
       *ngFor="let project of projects"
       [project]="project"
     ></app-project-card>
+    <div class="center my-3">
+      <button
+        *ngIf="loadMoreProjects$ | async"
+        mat-button
+        color="accent"
+        class="content-center"
+        (click)="loadMoreProjects()"
+      >
+        Load More <mat-icon>arrow_downward</mat-icon>
+      </button>
+    </div>
     <mat-card *ngIf="projects?.length === 0"
       >You have not been assigned to any projects yet</mat-card
     >

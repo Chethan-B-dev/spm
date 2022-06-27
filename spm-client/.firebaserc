@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "spm-mce": {
+      "hosting": {
+        "spm-client": [
+          "spm-mce"
+        ]
+      }
+    }
+  }
+}

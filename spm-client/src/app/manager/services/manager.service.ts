@@ -17,10 +17,8 @@ import {
   map,
   pluck,
   scan,
-  share,
   shareReplay,
   switchMap,
-  takeUntil,
   takeWhile,
   tap,
 } from "rxjs/operators";
@@ -28,6 +26,7 @@ import {
   IIssue,
   IUpdateIssueDTO,
 } from "src/app/shared/interfaces/issue.interface";
+import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
@@ -37,12 +36,12 @@ import {
 } from "src/app/shared/interfaces/task.interface";
 import { ITodo } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { NotificationService } from "src/app/shared/notification.service";
 import { SharedService } from "src/app/shared/shared.service";
 import {
-  DataType,
-  ISearchData,
   ISearchGroup,
   ISearchResult,
+  mapSearchResults,
 } from "src/app/shared/utility/common";
 // utility
 import { handleError } from "src/app/shared/utility/error";
@@ -105,10 +104,22 @@ export class ManagerService {
       return isNotOver;
     }),
     pluck("data"),
-    scan(
-      (acc: IProject[], value: IProject[]) => [...acc, ...value],
-      [] as IProject[]
+    tap((projects) =>
+      projects.forEach((project) => {
+        const currentDate = new Date();
+        const diffTime = Math.abs(+currentDate - +new Date(project.toDate));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays <= 3) {
+          const notification: INotification = {
+            userId: project.manager.id,
+            notification: `Project: ${project.name} is approaching deadline, ${diffDays} days left`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+        }
+      })
     ),
+    scan((acc, value) => [...acc, ...value], [] as IProject[]),
     catchError(handleError)
   );
 
@@ -125,10 +136,7 @@ export class ManagerService {
       return isNotOver;
     }),
     pluck("data"),
-    scan(
-      (acc: IAppUser[], value: IAppUser[]) => [...acc, ...value],
-      [] as IAppUser[]
-    ),
+    scan((acc, value) => [...acc, ...value], [] as IAppUser[]),
     catchError(handleError)
   );
 
@@ -174,7 +182,11 @@ export class ManagerService {
     catchError(handleError)
   );
 
-  constructor(private http: HttpClient, private sharedService: SharedService) {}
+  constructor(
+    private http: HttpClient,
+    private sharedService: SharedService,
+    private notificationService: NotificationService
+  ) {}
 
   refresh(): void {
     this.refreshSubject.next();
@@ -368,58 +380,8 @@ export class ManagerService {
     return this.http
       .get<ISearchResult>(`${this.managerUrl}/search/${searchKey}`)
       .pipe(
-        map((searchResults) => this.mapSearchResults(searchResults)),
+        map((searchResults) => mapSearchResults(searchResults)),
         catchError(handleError)
       );
-  }
-
-  private mapSearchResults(searchResults: ISearchResult): ISearchGroup[] {
-    const searchGroups = [] as ISearchGroup[];
-    for (const [key, values] of Object.entries(searchResults)) {
-      if (!values.length) continue;
-      switch (key) {
-        case "projects":
-          searchGroups.push({
-            type: DataType.PROJECT,
-            data: values.map((project: IProject): ISearchData => {
-              return { name: project.name, id: project.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-        case "users":
-          searchGroups.push({
-            type: DataType.USER,
-            data: values.map((user: IAppUser): ISearchData => {
-              return { name: user.username, id: user.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-        case "tasks":
-          searchGroups.push({
-            type: DataType.TASK,
-            data: values.map((task: ITask): ISearchData => {
-              return { name: task.name, id: task.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-        case "todos":
-          searchGroups.push({
-            type: DataType.TODO,
-            data: values.map((todo: ITodo): ISearchData => {
-              return { name: todo.name, id: todo.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-        case "issues":
-          searchGroups.push({
-            type: DataType.ISSUE,
-            data: values.map((issue: IIssue): ISearchData => {
-              return { name: issue.summary, id: issue.id } as ISearchData;
-            }),
-          } as ISearchGroup);
-          break;
-      }
-    }
-    return searchGroups;
   }
 }

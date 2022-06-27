@@ -24,11 +24,14 @@ public class EmployeeService {
     private final ProjectService projectService;
     private final TaskService taskService;
     private final TodoService todoService;
-
     private final IssueService issueService;
 
     public List<Project> getAllProjectsByEmployee(AppUser employee) {
         return  projectService.getAllProjectsByEmployeeId(employee);
+    }
+
+    public PagedData<Project> getAllPagedProjectsByEmployee(int pageNumber, int pageSize, AppUser employee) {
+        return  projectService.getPagedProjectsByEmployee(pageNumber, pageSize, employee);
     }
     public Project getProjectById(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);
@@ -57,6 +60,7 @@ public class EmployeeService {
     }
 
     @Transactional
+    @Modifying
     public Task updateTask(Integer taskId, UpdateTaskDTO updateTaskDTO) {
         return taskService.updateTask(taskId, updateTaskDTO);
     }
@@ -106,6 +110,7 @@ public class EmployeeService {
     }
 
     @Transactional
+    @Modifying
     public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser){
         issueService.deleteComment(commentId, loggedInUser);
     }
@@ -126,5 +131,4 @@ public class EmployeeService {
                 .issues(issues)
                 .build();
     }
-
 }

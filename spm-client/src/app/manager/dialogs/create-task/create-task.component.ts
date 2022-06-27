@@ -1,10 +1,13 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { NOTFOUND } from "dns";
 import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
+import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { ITaskRequestDTO } from "src/app/shared/interfaces/task.interface";
+import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
 
@@ -21,6 +24,7 @@ export class CreateTaskComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
+    private readonly notificationService: NotificationService,
     private dialogRef: MatDialogRef<CreateTaskComponent>,
     @Inject(MAT_DIALOG_DATA) project
   ) {
@@ -79,6 +83,14 @@ export class CreateTaskComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((_) => {
+        const notification: INotification = {
+          userId: taskRequestDTO.userId,
+          notification: `A new Task: '${
+            taskRequestDTO.name
+          }' has been assigned to you on ${new Date().toLocaleString()}`,
+          time: Date.now(),
+        };
+        this.notificationService.addNotification(notification);
         this.snackbarService.showSnackBar("Task has been created");
         this.close();
       });

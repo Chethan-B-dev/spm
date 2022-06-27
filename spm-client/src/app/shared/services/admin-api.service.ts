@@ -15,6 +15,7 @@ export class AdminApiService {
     "UNVERIFIED"
   );
   userCategorySelectedAction$ = this.userCategorySelectedSubject.asObservable();
+  static readonly adminId = 33;
 
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();

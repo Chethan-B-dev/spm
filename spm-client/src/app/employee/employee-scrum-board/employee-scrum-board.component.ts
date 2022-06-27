@@ -1,9 +1,11 @@
+import { not } from "@angular/compiler/src/output/output_ast";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil, tap } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
+import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { ITask, TaskStatus } from "src/app/shared/interfaces/task.interface";
 import {
   getTodoStatistics,
@@ -11,8 +13,10 @@ import {
   TodoStatistics,
   TodoStatus,
 } from "src/app/shared/interfaces/todo.interface";
-import { UserRole } from "src/app/shared/interfaces/user.interface";
+import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
+import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { SharedService } from "src/app/shared/shared.service";
 import { EmployeeService } from "../employee.service";
 
 @Component({
@@ -23,6 +27,7 @@ import { EmployeeService } from "../employee.service";
 export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
   taskId: number;
   task$: Observable<ITask>;
+  manager: IAppUser;
   canDrag: boolean;
   private readonly currentUser = this.authService.currentUser;
   private readonly destroy$ = new Subject<void>();
@@ -31,7 +36,9 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private readonly snackbarService: SnackbarService,
     private readonly employeeService: EmployeeService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly sharedService: SharedService,
+    private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +55,17 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
         return EMPTY;
       })
     );
+
+    this.sharedService
+      .getManagerOfTask(this.taskId)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          return EMPTY;
+        })
+      )
+      .subscribe((manager) => (this.manager = manager));
   }
 
   ngOnDestroy(): void {
@@ -68,9 +86,9 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
     );
   }
 
-  completeTask(taskId: number): void {
+  completeTask(task: ITask): void {
     this.employeeService
-      .completeTask(taskId)
+      .completeTask(task.id)
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
@@ -81,7 +99,19 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
       .subscribe((_) => {
         this.snackbarService.showSnackBar(`This task has been completed`);
         this.canDrag = false;
+        // todo: try to make this work without refreshing the page
+        window.location.reload();
       });
+
+    const notification: INotification = {
+      userId: this.manager.id,
+      notification: `Task '${task.name}' was completed by '${
+        task.user.username
+      }' on ${new Date().toLocaleString()}`,
+      time: Date.now(),
+    };
+
+    this.notificationService.addNotification(notification);
   }
 
   getTodoStats(todos: ITodo[]): {

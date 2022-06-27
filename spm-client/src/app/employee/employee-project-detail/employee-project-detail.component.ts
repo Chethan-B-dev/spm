@@ -3,8 +3,15 @@ import { MatDialog, MatDialogConfig } from "@angular/material";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
 import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
+import { AuthService } from "src/app/auth/auth.service";
 import { ShowEmployeesComponent } from "src/app/manager/dialogs/show-employees/show-employees.component";
-import { getIssueProgress } from "src/app/shared/interfaces/issue.interface";
+import {
+  getIssueProgress,
+  getIssueStatistics,
+  IIssue,
+  IssueStatus,
+} from "src/app/shared/interfaces/issue.interface";
+import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   getTaskStatistics,
@@ -13,6 +20,7 @@ import {
   TaskStatistics,
 } from "src/app/shared/interfaces/task.interface";
 import { getProjectProgress } from "src/app/shared/interfaces/todo.interface";
+import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { EmployeeService } from "../employee.service";
 import { CreateIssueComponent } from "./Dialogs/create-issue/create-issue.component";
@@ -32,12 +40,15 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
   tasks$: Observable<ITask[]>;
   private projectId: number;
   private readonly destroy$ = new Subject<void>();
+  private currentUser = this.authService.currentUser;
 
   constructor(
     private route: ActivatedRoute,
     public dialog: MatDialog,
     private readonly employeeService: EmployeeService,
-    private readonly snackbarService: SnackbarService
+    private readonly snackbarService: SnackbarService,
+    private readonly notificationService: NotificationService,
+    private readonly authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -54,6 +65,17 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
         this.issueProgress = getIssueProgress(project.issues) || 0;
         this.projectProgress = getProjectProgress(project.tasks) || 0;
         this.projectTaskStatistics = getTaskStatistics(project.tasks);
+        const currentDate = new Date();
+        const diffTime = Math.abs(+currentDate - +new Date(project.toDate));
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays <= 3) {
+          const notification: INotification = {
+            userId: this.currentUser.id,
+            notification: `Project: ${project.name} is approaching deadline, ${diffDays} days left`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+        }
       }),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
@@ -119,6 +141,21 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
     dialogConfig.data = project;
 
     this.dialog.open(CreateIssueComponent, dialogConfig);
+
+    const managerId = project.manager.id;
+    const notification: INotification = {
+      userId: managerId,
+      notification: `An Issue was raised for project '${project.name}' by '${
+        this.currentUser.username
+      }' on ${new Date().toLocaleString()}`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
+  }
+
+  getIssueStats(issues: IIssue[]): string {
+    const issueStatistics = getIssueStatistics(issues);
+    return `${issueStatistics[IssueStatus.RESOLVED]} / ${issues.length}`;
   }
 
   openShowEmployeesDialog(project: IProject): void {
