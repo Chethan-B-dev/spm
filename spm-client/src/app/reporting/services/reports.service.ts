@@ -148,6 +148,20 @@ getAllTaskStatusCount(project: IProject): any {
   return {todo, in_progress, done, max, names}
 }
 
+
+getProjectOrgChart(project: IProject): UserDesignationStatistics {
+  const userDesgStats: UserDesignationStatistics = {
+    [UserDesignation.TESTER] : [],
+    [UserDesignation.DEVELOPER] : [],
+    [UserDesignation.DEVOPS] : [],
+  }
+  project.users.forEach(({username,email,designation}) =>{
+    userDesgStats[designation].push({username,email})
+  })
+  return userDesgStats;
+
+}
+
   constructor(private http: HttpClient) { }
 
 

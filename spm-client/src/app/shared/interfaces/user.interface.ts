@@ -58,7 +58,7 @@ export enum UserDesignation {
 }
 
 export interface UserDesignationStatistics {
-  [designation: string]: number;
+  [designation: string]: {username: string , email:String}[];
 }
 
 export const UserDesignations = [...Object.keys(UserDesignation)];

@@ -40,6 +40,37 @@ export const mockProject: IProject = {
       phone: null,
       status: UserStatus.VERIFIED,
     },
+    {
+      id: 32,
+      email: "test3@test3.com",
+      username: "test3",
+      password: "lol",
+      role: UserRole.EMPLOYEE,
+      designation: UserDesignation.TESTER,
+      phone: null,
+      status: UserStatus.VERIFIED,
+    },
+    {
+      id: 33,
+      email: "test4@test4.com",
+      username: "test4",
+      password: "lol",
+      role: UserRole.EMPLOYEE,
+      designation: UserDesignation.DEVELOPER,
+      phone: null,
+      status: UserStatus.VERIFIED,
+    },
+    {
+      id: 34,
+      email: "test5@test5.com",
+      username: "test5",
+      password: "lol",
+      role: UserRole.EMPLOYEE,
+      designation: UserDesignation.DEVOPS,
+      phone: null,
+      status: UserStatus.VERIFIED,
+    },
+
     // [1, 1, 0]
   ],
   tasks: [

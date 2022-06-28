@@ -5,6 +5,8 @@ declare let Highcharts: any;
 import HighchartsSankey from "highcharts/modules/sankey";
 import HighchartsOrganization from "highcharts/modules/organization";
 import HighchartsExporting from "highcharts/modules/exporting";
+import { mockProject } from '../project.mock';
+import { ReportsService } from '../services/reports.service';
 
 HighchartsSankey(Highcharts);
 HighchartsOrganization(Highcharts);
@@ -17,9 +19,20 @@ HighchartsExporting(Highcharts);
 })
 export class OrgChartDashboardComponent implements OnInit {
 
-  constructor() { }
+  project = mockProject;
+
+
+
+  constructor(private readonly reportService: ReportsService) { }
+
+  
 
   ngOnInit() {
+
+
+    const check = this.reportService.getProjectOrgChart(this.project);
+    console.log(check);
+
     Highcharts.chart('container', {
       chart: {
           height: 600,
@@ -30,7 +43,7 @@ export class OrgChartDashboardComponent implements OnInit {
       },
 
       title: {
-          text: 'Org Chart For Project Name'
+          text: `Org Chart For ${this.project.name}`
       },
 
       accessibility: {
@@ -50,16 +63,12 @@ export class OrgChartDashboardComponent implements OnInit {
           name: 'Project Name',
           keys: ['from', 'to'],
           data: [
-              ['Shareholders', 'Board'],
-              ['Board', 'CEO'],
-              ['CEO', 'Manager'],
+              [this.project.name, 'Manager'],
               ['Manager', 'Developer'],
               ['Manager', 'Tester'],
-              ['Manager', 'QualityAnalyst'],
               ['Manager', 'Devops'],
               ['Developer', 'DeveloperUser'],
               ['Tester', 'TesterUser'],
-              ['QualityAnalyst', 'QualityAnalystUser'],
               ['Devops', 'DevopsUser'],
           ],
           levels: [{
@@ -90,29 +99,31 @@ export class OrgChartDashboardComponent implements OnInit {
           }, {
               id: 'Manager',
               title: 'Manager',
-              name: 'Grethe Hjetland',
+              name: `${this.project.manager.username}`,
               image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131126/Highsoft_03862_.jpg'
-          }, {
+          },
+
+          {
               id: 'Developer',
-              title: 'Developers',
+              title: 'Developer',
               name: 'Christer Vasseng',
               color: '#007ad0',
               image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131210/Highsoft_04045_.jpg'
           },
            {
               id: 'Tester',
-              title: 'Testers',
+              title: 'Tester',
               name: 'Christer Vasseng',
               image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131120/Highsoft_04074_.jpg'
           },
            {
               id: 'TesterUser',
-              title: 'Testers',
+              title: 'Tester',
               name: 'Christer Vasseng',
               image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131120/Highsoft_04074_.jpg'
           }, {
               id: 'Devops',
-              title: 'Devops',
+              title: 'Devop',
               name: 'Peter',
               image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131213/Highsoft_03998_.jpg'
           },
@@ -121,18 +132,7 @@ export class OrgChartDashboardComponent implements OnInit {
             title: 'Devops',
             name: 'Mathew',
             image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131213/Highsoft_03998_.jpg'
-        },
-            {
-            id: 'QualityAnalyst',
-            title: 'QualityAnalysts',
-            name: 'Rins',
-            image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131213/Highsoft_03998_.jpg'
-        }, {
-          id: 'QualityAnalystUser',
-          title: 'QualityAnalysts',
-          name: 'Jacob',
-          image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131213/Highsoft_03998_.jpg'
-      }],
+        }],
           colorByPoint: false,
           color: '#007ad0',
           dataLabels: {
