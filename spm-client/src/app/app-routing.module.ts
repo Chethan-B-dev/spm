@@ -6,6 +6,7 @@ import { LoggedInGuard } from "./auth/isloggedin.guard";
 import { LoginComponent } from "./auth/login/login.component";
 import { SignupComponent } from "./auth/signup/signup.component";
 import { EmployeeIssueDetailComponent } from "./employee/employee-issue-detail/employee-issue-detail.component";
+import { EmployeeGuard } from "./employee/employee.guard";
 import { ManagerGuard } from "./manager/manager.guard";
 import { BurnDownChartDashboardComponent } from "./reporting/burn-down-chart-dashboard/burn-down-chart-dashboard.component";
 import { EmpReportListComponent } from "./reporting/employee-reports-dashboard/emp-report-list/emp-report-list.component";
@@ -31,6 +32,7 @@ const routes: Routes = [
   {
     path: "employee",
     loadChildren: "./employee/employee.module#EmployeeModule",
+    canActivate: [EmployeeGuard],
   },
   {
     path: "issue-detail/:id",
@@ -64,6 +66,5 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [ManagerGuard, AdminGuard, AuthGuard],
 })
 export class AppRoutingModule {}

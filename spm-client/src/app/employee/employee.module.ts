@@ -5,7 +5,6 @@ import { RouterModule } from "@angular/router";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MaterialModule } from "../shared/material/material.module";
 import { EmployeeProjectDetailComponent } from "./employee-project-detail/employee-project-detail.component";
-import { EmployeeIssueDetailComponent } from "./employee-issue-detail/employee-issue-detail.component";
 import { EmployeeDashboardComponent } from "./employee-dashboard/employee-dashboard.component";
 import { CreateIssueComponent } from "./employee-project-detail/Dialogs/create-issue/create-issue.component";
 import { BoardDndComponent } from "./employee-scrum-board/board-dnd/board-dnd.component";
@@ -17,7 +16,6 @@ import { EmployeeRoutingModule } from "./employee-routing.module";
 @NgModule({
   declarations: [
     EmployeeProjectDetailComponent,
-    EmployeeIssueDetailComponent,
     EmployeeDashboardComponent,
     CreateIssueComponent,
     EmployeeScrumBoardComponent,
@@ -28,11 +26,11 @@ import { EmployeeRoutingModule } from "./employee-routing.module";
   entryComponents: [CreateIssueComponent],
   imports: [
     CommonModule,
-    SharedModule,
     RouterModule,
     ReactiveFormsModule,
-    MaterialModule,
     EmployeeRoutingModule,
+    MaterialModule,
+    SharedModule,
   ],
 })
 export class EmployeeModule {}
