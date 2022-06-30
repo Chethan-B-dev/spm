@@ -43,17 +43,17 @@ export class CreateIssueComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
-          this.close();
+          this.close(false);
           return EMPTY;
         })
       )
       .subscribe((_) => {
         this.snackbarService.showSnackBar("issue has been created");
-        this.close();
+        this.close(true);
       });
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(createdIssue: boolean): void {
+    this.dialogRef.close(createdIssue);
   }
 }

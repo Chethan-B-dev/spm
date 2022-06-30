@@ -26,15 +26,19 @@
   </div>
 
   <mat-chip-list aria-label="Fish selection">
-    <mat-chip color="primary" selected>{{
-      project.status.replace("_", " ") | titlecase
-    }}</mat-chip>
+    <mat-chip
+      color="primary"
+      selected
+      matTooltip="Project Status"
+      matTooltipPosition="right"
+      >{{ project.status.replace("_", " ") | titlecase }}</mat-chip
+    >
     <mat-chip color="warn" selected
       >Deadline - {{ project.toDate | date }}</mat-chip
     >
     <mat-chip
       matTooltip="click here to view employees"
-      [matTooltipPosition]="'right'"
+      matTooltipPosition="right"
       (click)="openShowEmployeesDialog(project)"
       >Employees - {{ project.users?.length }}</mat-chip
     >
@@ -42,7 +46,13 @@
     <mat-chip>Backlogs - {{ projectTaskStatistics["IN_PROGRESS"] }}</mat-chip>
     <mat-chip>Completed - {{ projectTaskStatistics["COMPLETED"] }}</mat-chip>
     <mat-chip>Issues - {{ project.issues?.length }}</mat-chip>
-    <mat-chip color="accent" selected>{{ project.manager?.username }}</mat-chip>
+    <mat-chip
+      color="accent"
+      selected
+      matTooltip="Manager"
+      matTooltipPosition="right"
+      >{{ project.manager?.username }}</mat-chip
+    >
   </mat-chip-list>
 
   <mat-card-subtitle class="py-2">{{

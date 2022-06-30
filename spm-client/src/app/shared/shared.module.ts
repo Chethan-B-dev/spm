@@ -25,6 +25,7 @@ import { TaskCardComponent } from "./task-card/task-card.component";
 import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { environment } from "src/environments/environment";
+import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.component";
 @NgModule({
   declarations: [
     SidenavComponent,
@@ -38,8 +39,13 @@ import { environment } from "src/environments/environment";
     TaskCardComponent,
     EmployeeIssueDetailComponent,
     ShowEmployeesComponent,
+    AddProjectComponent,
   ],
-  entryComponents: [ConfirmDeleteComponent, ShowEmployeesComponent],
+  entryComponents: [
+    ConfirmDeleteComponent,
+    ShowEmployeesComponent,
+    AddProjectComponent,
+  ],
   imports: [
     RouterModule,
     CommonModule,

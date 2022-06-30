@@ -38,8 +38,8 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(setDesignations: boolean): void {
+    this.dialogRef.close(setDesignations);
   }
 
   setDesignations(): void {
@@ -59,6 +59,7 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
       .pipe(
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
+          this.close(false);
           return EMPTY;
         })
       )
@@ -75,6 +76,7 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
           };
           this.notificationService.addNotification(notification);
         });
+        this.close(true);
         this.snackbarService.showSnackBar("User Designations have been set");
       });
   }

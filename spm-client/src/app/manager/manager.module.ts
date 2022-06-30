@@ -8,7 +8,6 @@ import { CreateTaskComponent } from "./dialogs/create-task/create-task.component
 import { ManagerProjectDetailComponent } from "./manager-project-detail/manager-project-detail.component";
 
 import { MaterialModule } from "../shared/material/material.module";
-import { AddProjectComponent } from "./dialogs/add-project/add-project.component";
 import { CreateTodoComponent } from "./dialogs/create-todo/create-todo.component";
 import { SetDesignationComponent } from "./dialogs/set-designation/set-designation.component";
 import { ManagerRoutingModule } from "./manager-routing.module";
@@ -24,7 +23,6 @@ import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-d
     ManagerProjectDetailComponent,
     CreateTaskComponent,
     ManagerTaskDetailComponent,
-    AddProjectComponent,
     ManagerScrumBoardComponent,
     BoardDndComponent,
     BoardDndListComponent,
@@ -34,7 +32,6 @@ import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-d
   ],
   entryComponents: [
     CreateTaskComponent,
-    AddProjectComponent,
     CreateTodoComponent,
     SetDesignationComponent,
   ],

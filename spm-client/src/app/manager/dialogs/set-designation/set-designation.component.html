@@ -30,16 +30,12 @@
       <button
         mat-raised-button
         color="warn"
-        mat-dialog-close
-        mat-dialog-close="true"
         [disabled]="!allDesignationsAreSet()"
         (click)="setDesignations()"
       >
         Continue
       </button>
-      <button mat-button mat-dialog-close mat-dialog-close="false">
-        Close
-      </button>
+      <button mat-button (click)="close(false)">Close</button>
     </div>
   </main>
 </article>
