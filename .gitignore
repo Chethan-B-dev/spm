@@ -28,3 +28,4 @@ spm-server\src\main\resources\application.properties
 spm-server/src/main/resources/application.properties
 spm-client/.vscode/settings.json
 spm-server/src/main/resources/application.properties
+spm-client/package-lock.json

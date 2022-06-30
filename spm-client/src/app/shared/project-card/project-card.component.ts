@@ -158,7 +158,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     this.dialog.open(CreateTaskComponent, dialogConfig);
   }
 
-  openSetDesignationDialog(employees: IAppUser[]): Observable<any> {
+  openSetDesignationDialog(employees: IAppUser[]): Observable<boolean> {
     if (!employees.length) return of(true);
 
     const dialogConfig = new MatDialogConfig();
@@ -190,8 +190,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   showAddTaskButton(): boolean {
-    const isExpired =
+    const isProjectExpired =
       new Date().getTime() > new Date(this.project.toDate).getTime();
-    return !isExpired;
+    return !isProjectExpired;
   }
 }
