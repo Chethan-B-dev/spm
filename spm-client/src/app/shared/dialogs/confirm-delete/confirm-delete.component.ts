@@ -34,13 +34,13 @@ export class ConfirmDeleteComponent implements OnDestroy {
             takeUntil(this.destroy$),
             catchError((err) => {
               this.snackbarService.showSnackBar(err);
-              this.close();
+              this.close(false);
               return EMPTY;
             })
           )
           .subscribe(() => {
             this.snackbarService.showSnackBar("Todo has been deleted");
-            this.close();
+            this.close(true);
           });
         break;
       case DataType.COMMENT:
@@ -56,10 +56,14 @@ export class ConfirmDeleteComponent implements OnDestroy {
           .subscribe((res) => {
             if (res)
               this.snackbarService.showSnackBar(`comment has been deleted`);
+            this.close(true);
           });
         break;
+      case DataType.TASK:
+        this.close(true);
+        break;
       default:
-        this.close();
+        this.close(false);
     }
   }
 
@@ -68,7 +72,7 @@ export class ConfirmDeleteComponent implements OnDestroy {
     this.destroy$.complete();
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(deleted: boolean): void {
+    this.dialogRef.close(deleted);
   }
 }

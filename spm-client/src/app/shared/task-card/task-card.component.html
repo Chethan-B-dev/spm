@@ -7,18 +7,23 @@
 
 <mat-card class="mx-3 my-3">
   <div class="card-body">
-    <div class="left">
-      <button
-        *ngIf="showBackBtn"
-        mat-icon-button
-        (click)="goBack()"
-        matTooltip="Go to Previous page"
-      >
-        <mat-icon>keyboard_backspace</mat-icon>
+    <div class="left-and-right">
+      <div class="left">
+        <button
+          *ngIf="showBackBtn"
+          mat-icon-button
+          (click)="goBack()"
+          matTooltip="Go to Previous page"
+        >
+          <mat-icon>keyboard_backspace</mat-icon>
+        </button>
+        <mat-card-title class="push-down"
+          >Task Name: {{ task.name }}</mat-card-title
+        >
+      </div>
+      <button mat-mat-icon-button (click)="deleteTask()">
+        <mat-icon>delete</mat-icon>
       </button>
-      <mat-card-title class="push-down"
-        >Task Name: {{ task.name }}</mat-card-title
-      >
     </div>
     <mat-chip-list>
       <mat-chip

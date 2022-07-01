@@ -4,14 +4,6 @@
   </p>
 </div>
 <div mat-dialog-actions>
-  <button
-    mat-raised-button
-    color="warn"
-    mat-dialog-close
-    mat-dialog-close="true"
-    (click)="onDeleteClick()"
-  >
-    Yes
-  </button>
-  <button mat-button mat-dialog-close mat-dialog-close="false">No</button>
+  <button mat-raised-button color="warn" (click)="onDeleteClick()">Yes</button>
+  <button mat-button (click)="close(false)">No</button>
 </div>

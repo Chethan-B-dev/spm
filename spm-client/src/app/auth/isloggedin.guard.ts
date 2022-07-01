@@ -19,7 +19,6 @@ export class LoggedInGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | Promise<boolean> {
-    console.log("logged in guard getting called");
     const isAuthenticated = this.authService.isLoggedIn();
     const user = this.authService.getUser();
     if (!isAuthenticated || !user) {

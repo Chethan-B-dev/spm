@@ -21,7 +21,6 @@ export class ManagerGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | Promise<boolean> {
-    console.log("manager guard getting called");
     const isAuthenticated = this.authService.isLoggedIn();
     if (!isAuthenticated) {
       this.snackbarService.showSnackBar("Not Authenticated");

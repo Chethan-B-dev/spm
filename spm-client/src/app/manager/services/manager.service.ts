@@ -367,6 +367,12 @@ export class ManagerService {
       );
   }
 
+  deleteTask(taskId: number): Observable<boolean> {
+    return this.http
+      .delete<boolean>(`${this.managerUrl}/delete-task/${taskId}`)
+      .pipe(catchError(handleError));
+  }
+
   deleteTodo(todoId: number): Observable<void> {
     return this.http
       .delete<void>(`${this.managerUrl}/delete-todo/${todoId}`)

@@ -6,5 +6,9 @@
 />
 
 <div class="container-fluid my-3" *ngIf="task$ | async as task">
-  <app-task-card [showBackBtn]="true" [task]="task"></app-task-card>
+  <app-task-card
+    [showBackBtn]="true"
+    [task]="task"
+    (deleteTaskId)="onDeleteTask($event)"
+  ></app-task-card>
 </div>

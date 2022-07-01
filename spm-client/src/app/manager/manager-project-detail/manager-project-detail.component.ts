@@ -49,8 +49,6 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log("calling again");
-
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.projectId = +params.get("id");
       this.managerService.refresh();

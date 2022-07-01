@@ -21,7 +21,6 @@ export class EmployeeGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | Promise<boolean> {
-    console.log("employee guard getting called");
     const isAuthenticated = this.authService.isLoggedIn();
     if (!isAuthenticated) {
       this.snackbarService.showSnackBar("Not Authenticated");
