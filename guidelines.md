@@ -36,5 +36,12 @@ git push -f
 
 5) after which i will see the pull request and merge it.
 
+to rebase your branch against main branch
+```bash
+git checkout main
+git pull
+git checkout -
+git rebase main
+```
 **WARNING: dont push code to main branch beacuse we will all be working at the same time and we should deal with merge conflicts
 that is why always create a new branch**
