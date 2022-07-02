@@ -292,7 +292,7 @@ public class ManagerController {
     ){
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         managerService.deleteIssue(issueId, loggedInUser);
-        return new ResponseEntity<>(true, HttpStatus.GONE);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @PostMapping("/comment/{issueId}")
