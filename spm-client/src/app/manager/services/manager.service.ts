@@ -141,13 +141,7 @@ export class ManagerService {
   );
 
   projectsWithAdd$: Observable<IProject[]> = this.stateRefresh$.pipe(
-    switchMap(() =>
-      merge(
-        // todo: change this back to projects$ later if pagination does not work
-        this.pagedProjects$,
-        this.projectInsertedAction$
-      )
-    ),
+    switchMap(() => merge(this.pagedProjects$, this.projectInsertedAction$)),
     scan(
       (acc: IProject[], value: IProject) =>
         value instanceof Array ? [...value] : [value, ...acc],
@@ -258,14 +252,6 @@ export class ManagerService {
 
   changeProjectPageNumber(projectPageNumber: number): void {
     this.projectPageNumberSubject.next(projectPageNumber);
-  }
-
-  addProject(newProject?: IProject): void {
-    this.projectInsertedSubject.next(newProject);
-  }
-
-  addTask(newTask?: ITask): void {
-    this.taskInsertedSubject.next(newTask);
   }
 
   getAllProjects(): Observable<IProject[]> {
@@ -389,5 +375,13 @@ export class ManagerService {
         map((searchResults) => mapSearchResults(searchResults)),
         catchError(handleError)
       );
+  }
+
+  private addProject(newProject: IProject): void {
+    this.projectInsertedSubject.next(newProject);
+  }
+
+  private addTask(newTask: ITask): void {
+    this.taskInsertedSubject.next(newTask);
   }
 }
