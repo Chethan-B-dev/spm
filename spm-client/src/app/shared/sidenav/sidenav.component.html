@@ -1,7 +1,8 @@
 <mat-sidenav-container class="example-container">
   <mat-sidenav mode="side" [opened]="isExpanded">
     <div class="logo">
-      <h1 class="font-bold">SPM</h1>
+      <!-- <h1 class="font-bold">SPM</h1> -->
+      <img src="../../../assets/background-images/bg.png" alt="SPM logo" width="50" height="60">
     </div>
 
     <mat-divider></mat-divider>
@@ -86,7 +87,8 @@
       >
         <mat-icon (click)="toggleSideNav()">menu</mat-icon>
       </button>
-      <span class="px-2">SPM</span>
+      <img src="../../../assets/background-images/bg.png" alt="SPM logo" width="50" height="60">
+      <!-- <span class="px-2">SPM</span> -->
       <button
         mat-button
         [routerLink]="'/' + (currentUser$ | async)?.role | lowercase"
