@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { mockProject } from '../project.mock';
+import { ReportsService } from '../services/reports.service';
 declare let Highcharts: any;
+
 @Component({
   selector: 'app-employee-reports-dashboard',
   templateUrl: './employee-reports-dashboard.component.html',
@@ -7,9 +10,37 @@ declare let Highcharts: any;
 })
 export class EmployeeReportsDashboardComponent implements OnInit {
 
-  constructor() { }
-
+  constructor(private reportService: ReportsService) { }
+  project = mockProject;
   ngOnInit() {
+
+    // Data processing start
+    const taskPriorityStatistics = this.reportService.getTasksPriorityDetails(
+      this.project.tasks
+    );
+
+    const getAllProjectsTasksCount = this.reportService.getAllTaskStatusCount(
+      this.project
+    );
+    console.log(getAllProjectsTasksCount.todo.length);
+    let todoCount = getAllProjectsTasksCount.todo.length;
+    let inProgressCount = getAllProjectsTasksCount.in_progress.length;
+    let doneCount = getAllProjectsTasksCount.done.length;
+    console.log(todoCount);
+    console.log(inProgressCount);
+    console.log(doneCount);
+
+    const getProjectsPresentIn = this.reportService.getTotalProjectWorkingInCount(this.project);
+    console.log("Present in projects",getProjectsPresentIn);
+
+
+    const getUserCountOfAllTasks = this.reportService.getProjectStatisticsPerUser(this.project.tasks);
+      console.log("Count per user",getUserCountOfAllTasks);
+    // Data processing end
+
+
+
+
     // stacked graph start
     Highcharts.chart('container', {
       title: {
@@ -59,17 +90,17 @@ export class EmployeeReportsDashboardComponent implements OnInit {
           type: 'pie',
           name: 'Total ',
           data: [{
-              name: 'Tasks',
-              y: 13,
-              color: Highcharts.getOptions().colors[0] // Jane's color
+              name: 'Low Priority Tasks',
+              y: taskPriorityStatistics.LOW,
+              color: Highcharts.getOptions().colors[0]
           }, {
-              name: 'Issues',
-              y: 23,
-              color: Highcharts.getOptions().colors[1] // John's color
+              name: 'Medium Priority Tasks',
+              y: taskPriorityStatistics.MEDIUM,
+              color: Highcharts.getOptions().colors[1]
           }, {
-              name: 'To-Do',
-              y: 19,
-              color: Highcharts.getOptions().colors[2] // Joe's color
+              name: 'High Priority Tasks',
+              y: taskPriorityStatistics.HIGH,
+              color: Highcharts.getOptions().colors[2]
           }],
           center: [100, 80],
           size: 100,
