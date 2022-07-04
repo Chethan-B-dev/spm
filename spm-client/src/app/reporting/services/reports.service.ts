@@ -1,6 +1,7 @@
 // angular
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { count } from "console";
 // rxjs
 import {
   BehaviorSubject,
@@ -96,6 +97,30 @@ export class ReportsService {
   //     });
   //     return userDesignationStats;
   // }
+
+  userNameTest = "test@test1.com";
+  projectsPresentInCount = 0;
+  getTotalProjectWorkingInCount(project: IProject) {
+    project.users.forEach((user)=>{
+      if(user.email===this.userNameTest){
+        this.projectsPresentInCount+=1;
+      }
+    });
+    return this.projectsPresentInCount;
+}
+
+getProjectStatisticsPerUser(tasks: ITask[]): TaskStatistics {
+  const taskCompletionStatus: TaskStatistics = {
+    [TaskStatus.COMPLETED]: 0,
+    [TaskStatus.IN_PROGRESS]: 0,
+  };
+  tasks.forEach((task)=>{
+    if(task.user.email===this.userNameTest){
+      taskCompletionStatus[task.status] +=1;
+    }
+  })
+  return taskCompletionStatus;
+}
 
   getTasksPriorityDetails(tasks: ITask[]) {
     const taskPriorityStatistics: TaskPriorityStatistics = {
