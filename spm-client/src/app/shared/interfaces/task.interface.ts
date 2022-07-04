@@ -36,12 +36,12 @@ export interface TaskStatistics {
 export const userTasks = [...Object.keys(TaskStatus)];
 
 export function getTaskStatistics(tasks: ITask[]): TaskStatistics {
-  const TaskStatistics: TaskStatistics = {
-    [TaskStatus.IN_PROGRESS]: 0,
-    [TaskStatus.COMPLETED]: 0,
-  };
-  tasks.forEach((task) => (TaskStatistics[task.status] += 1));
-  return TaskStatistics;
+  const taskStatistics = TaskStatusOptions.reduce((stats, status) => {
+    stats[status] = 0;
+    return stats;
+  }, {} as TaskStatistics);
+  tasks.forEach((task) => (taskStatistics[task.status] += 1));
+  return taskStatistics;
 }
 
 export const TaskStatusOptions = [...Object.keys(TaskStatus)];

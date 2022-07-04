@@ -26,7 +26,6 @@ import {
   IIssue,
   IUpdateIssueDTO,
 } from "src/app/shared/interfaces/issue.interface";
-import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
@@ -42,6 +41,7 @@ import {
   ISearchGroup,
   ISearchResult,
   mapSearchResults,
+  sendProjectApproachingDeadlineNotification,
 } from "src/app/shared/utility/common";
 // utility
 import { handleError } from "src/app/shared/utility/error";
@@ -104,21 +104,11 @@ export class ManagerService {
       return isNotOver;
     }),
     pluck("data"),
-    tap((projects) =>
+    tap((projects) => {
       projects.forEach((project) => {
-        const currentDate = new Date();
-        const diffTime = Math.abs(+currentDate - +new Date(project.toDate));
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays <= 3) {
-          const notification: INotification = {
-            userId: project.manager.id,
-            notification: `Project: ${project.name} is approaching deadline, ${diffDays} days left`,
-            time: Date.now(),
-          };
-          this.notificationService.addNotification(notification);
-        }
-      })
-    ),
+        sendProjectApproachingDeadlineNotification.call(this, project);
+      });
+    }),
     scan((acc, value) => [...acc, ...value], [] as IProject[]),
     catchError(handleError)
   );
@@ -178,8 +168,8 @@ export class ManagerService {
 
   constructor(
     private http: HttpClient,
-    private sharedService: SharedService,
-    private notificationService: NotificationService
+    private readonly sharedService: SharedService,
+    private readonly notificationService: NotificationService
   ) {}
 
   refresh(): void {

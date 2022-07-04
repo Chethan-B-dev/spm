@@ -23,17 +23,16 @@ import {
 import { environment } from "src/environments/environment";
 import { AuthService } from "../auth/auth.service";
 import { IIssue } from "../shared/interfaces/issue.interface";
-import { INotification } from "../shared/interfaces/notification.interface";
 import { IPagedData } from "../shared/interfaces/pagination.interface";
 import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
 import { ITodo, IUpdateTodoDTO } from "../shared/interfaces/todo.interface";
 import { NotificationService } from "../shared/notification.service";
-import { SidenavComponent } from "../shared/sidenav/sidenav.component";
 import {
   ISearchGroup,
   ISearchResult,
   mapSearchResults,
+  sendTaskApproachingDeadlineNotification,
 } from "../shared/utility/common";
 import { handleError } from "../shared/utility/error";
 
@@ -99,17 +98,7 @@ export class EmployeeService {
     }),
     tap((tasks) => {
       tasks.forEach((task) => {
-        const currentDate = new Date();
-        const diffTime = Math.abs(+currentDate - +new Date(task.deadLine));
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays <= 3) {
-          const notification: INotification = {
-            userId: task.user.id,
-            notification: `Task: ${task.name} is approaching deadline, ${diffDays} days left`,
-            time: Date.now(),
-          };
-          this.notificationService.addNotification(notification);
-        }
+        sendTaskApproachingDeadlineNotification.call(this, task);
       });
     }),
     catchError(handleError)
@@ -117,8 +106,8 @@ export class EmployeeService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService,
-    private notificationService: NotificationService
+    private readonly authService: AuthService,
+    private readonly notificationService: NotificationService
   ) {}
 
   refresh(): void {

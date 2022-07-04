@@ -1,25 +1,15 @@
 import { Component, OnInit } from "@angular/core";
-import {
-  IProject,
-  ProjectStatus,
-} from "src/app/shared/interfaces/project.interface";
-import {
-  TaskPriority,
-  TaskStatus,
-} from "src/app/shared/interfaces/task.interface";
-import { TodoStatus } from "src/app/shared/interfaces/todo.interface";
-import {
-  UserDesignation,
-  UserRole,
-  UserStatus,
-} from "src/app/shared/interfaces/user.interface";
 import { mockProject } from "../../project.mock";
 import { ReportsService } from "../../services/reports.service";
-
-require("highcharts/modules/exporting")(Highcharts);
-require("highcharts/modules/export-data")(Highcharts);
-require("highcharts/modules/annotations")(Highcharts);
 declare let Highcharts: any;
+try {
+  require("highcharts/modules/exporting")(Highcharts);
+  require("highcharts/modules/export-data")(Highcharts);
+  require("highcharts/modules/annotations")(Highcharts);
+} catch (err) {
+  console.error(err);
+}
+
 @Component({
   selector: "app-each-project-progress-board",
   templateUrl: "./each-project-progress-board.component.html",

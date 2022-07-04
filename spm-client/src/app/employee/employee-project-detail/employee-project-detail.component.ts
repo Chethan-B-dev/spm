@@ -22,6 +22,7 @@ import {
 import { getProjectProgress } from "src/app/shared/interfaces/todo.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { sendProjectApproachingDeadlineNotification } from "src/app/shared/utility/common";
 import { EmployeeService } from "../employee.service";
 import { CreateIssueComponent } from "./Dialogs/create-issue/create-issue.component";
 
@@ -65,17 +66,7 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
         this.issueProgress = getIssueProgress(project.issues) || 0;
         this.projectProgress = getProjectProgress(project.tasks) || 0;
         this.projectTaskStatistics = getTaskStatistics(project.tasks);
-        const currentDate = new Date();
-        const diffTime = Math.abs(+currentDate - +new Date(project.toDate));
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays <= 3) {
-          const notification: INotification = {
-            userId: this.currentUser.id,
-            notification: `Project: ${project.name} is approaching deadline, ${diffDays} days left`,
-            time: Date.now(),
-          };
-          this.notificationService.addNotification(notification);
-        }
+        sendProjectApproachingDeadlineNotification.call(this, project);
       }),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);

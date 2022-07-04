@@ -35,10 +35,10 @@ export interface IssueStatistics {
 export const IssueStatusOptions = [...Object.keys(IssueStatus)];
 
 export function getIssueStatistics(issues: IIssue[]): IssueStatistics {
-  const issueStatistics: IssueStatistics = {
-    [IssueStatus.UNRESOLVED]: 0,
-    [IssueStatus.RESOLVED]: 0,
-  };
+  const issueStatistics = IssueStatusOptions.reduce((stats, status) => {
+    stats[status] = 0;
+    return stats;
+  }, {} as IssueStatistics);
   issues.forEach((issue) => (issueStatistics[issue.status] += 1));
   return issueStatistics;
 }

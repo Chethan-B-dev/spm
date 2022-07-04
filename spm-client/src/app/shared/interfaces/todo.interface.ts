@@ -27,11 +27,10 @@ export interface TodoStatistics {
 }
 
 export function getTodoStatistics(todos: ITodo[]): TodoStatistics {
-  const todoStatistics: TodoStatistics = {
-    [TodoStatus.TO_DO]: 0,
-    [TodoStatus.IN_PROGRESS]: 0,
-    [TodoStatus.DONE]: 0,
-  };
+  const todoStatistics = TodoStatusOptions.reduce((stats, status) => {
+    stats[status] = 0;
+    return stats;
+  }, {} as TodoStatistics);
   todos.forEach((todo) => (todoStatistics[todo.status] += 1));
   return todoStatistics;
 }

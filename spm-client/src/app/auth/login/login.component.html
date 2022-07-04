@@ -1,78 +1,100 @@
-<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css">
-<link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css">
-<link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css">
-<link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap.min.css">
-<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap.min.css"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+  rel="stylesheet"
+/>
 
 <div class="bg"></div>
 <div class="bg bg2"></div>
 <div class="bg bg3"></div>
 <div class="content"></div>
 
-
 <mat-card>
-  <mat-card id="login-title" class="my-1">
+  <div id="login-title" class="my-1">
     Login
     <div class="underline-title"></div>
-  </mat-card>
+  </div>
   <mat-card-content>
     <form [formGroup]="loginForm">
-      <mat-card class="my-1">
-      <p>
-        <mat-form-field>
-          <input
-            type="email"
-            matInput
-            placeholder="Email"
-            formControlName="email"
-          />
-          <mat-hint
-            style="color: red"
-            *ngIf="
-              (this.loginForm.get('email').dirty ||
-                this.loginForm.get('email').touched) &&
-              this.loginForm.get('email').errors?.required
-            "
-          >
-            Email is required
-          </mat-hint>
-        </mat-form-field>
-      </p>
+      <div class="my-1">
+        <p>
+          <mat-form-field>
+            <input
+              type="email"
+              matInput
+              placeholder="Email"
+              formControlName="email"
+            />
+            <mat-hint
+              style="color: red"
+              *ngIf="
+                (this.loginForm.get('email').dirty ||
+                  this.loginForm.get('email').touched) &&
+                this.loginForm.get('email').errors?.required
+              "
+            >
+              Email is required
+            </mat-hint>
+          </mat-form-field>
+        </p>
 
-      <p>
-        <mat-form-field>
-          <input
-            type="password"
-            matInput
-            placeholder="Password"
-            formControlName="password"
-          />
-          <mat-hint
-            style="color: red"
-            *ngIf="
-              (this.loginForm.get('password').dirty ||
-                this.loginForm.get('password').touched) &&
-              this.loginForm.get('password').errors?.required
-            "
+        <p>
+          <mat-form-field>
+            <input
+              type="password"
+              matInput
+              placeholder="Password"
+              formControlName="password"
+            />
+            <mat-hint
+              style="color: red"
+              *ngIf="
+                (this.loginForm.get('password').dirty ||
+                  this.loginForm.get('password').touched) &&
+                this.loginForm.get('password').errors?.required
+              "
+            >
+              Password is required
+            </mat-hint>
+          </mat-form-field>
+        </p>
+        <div class="button mt-2">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="this.loginForm.invalid"
+            (click)="login()"
+            id="wid"
           >
-            Password is required
-          </mat-hint>
-        </mat-form-field>
-      </p>
-      <div class="button mt-2">
-        <button mat-raised-button color="primary"
-          type="submit"
-          mat-button
-          [disabled]="this.loginForm.invalid"
-          (click)="login()"
-          id="wid"
-        >
-          Login
-        </button>
+            Login
+          </button>
+        </div>
       </div>
-    </mat-card>
     </form>
-
   </mat-card-content>
 </mat-card>

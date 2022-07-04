@@ -1,4 +1,5 @@
 import { IIssue } from "../interfaces/issue.interface";
+import { INotification } from "../interfaces/notification.interface";
 import { IProject } from "../interfaces/project.interface";
 import { ITask } from "../interfaces/task.interface";
 import { ITodo } from "../interfaces/todo.interface";
@@ -98,4 +99,34 @@ export function mapSearchResults(searchResults: ISearchResult): ISearchGroup[] {
     }
   }
   return searchGroups;
+}
+
+export function sendProjectApproachingDeadlineNotification(
+  project: IProject
+): void {
+  const currentDate = new Date();
+  const diffTime = Math.abs(+currentDate - +new Date(project.toDate));
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays <= 3) {
+    const notification: INotification = {
+      userId: project.manager.id,
+      notification: `Project: ${project.name} is approaching deadline, ${diffDays} days left`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
+  }
+}
+
+export function sendTaskApproachingDeadlineNotification(task: ITask): void {
+  const currentDate = new Date();
+  const diffTime = Math.abs(+currentDate - +new Date(task.deadLine));
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays <= 3) {
+    const notification: INotification = {
+      userId: task.user.id,
+      notification: `Task: ${task.name} is approaching deadline, ${diffDays} days left`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
+  }
 }
