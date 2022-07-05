@@ -1,119 +1,190 @@
-import { Component, OnInit } from '@angular/core';
-import { mockProject } from '../project.mock';
-import { ReportsService } from '../services/reports.service';
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { EMPTY } from "rxjs";
+import { catchError } from "rxjs/operators";
+import { ManagerService } from "src/app/manager/services/manager.service";
+import { IProject } from "src/app/shared/interfaces/project.interface";
+import { TaskStatistics } from "src/app/shared/interfaces/task.interface";
+import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { mockProject } from "../project.mock";
+import { ReportsService } from "../services/reports.service";
 declare let Highcharts: any;
 
 @Component({
-  selector: 'app-employee-reports-dashboard',
-  templateUrl: './employee-reports-dashboard.component.html',
-  styleUrls: ['./employee-reports-dashboard.component.scss']
+  selector: "app-employee-reports-dashboard",
+  templateUrl: "./employee-reports-dashboard.component.html",
+  styleUrls: ["./employee-reports-dashboard.component.scss"],
 })
 export class EmployeeReportsDashboardComponent implements OnInit {
-
-  constructor(private reportService: ReportsService) { }
-  project = mockProject;
+  constructor(
+    private reportService: ReportsService,
+    private route: ActivatedRoute,
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService
+  ) {}
+  project: IProject;
+  user: IAppUser;
+  projectId: number;
+  userId: number;
+  userTaskStatistics: TaskStatistics;
+  totalTodosOfUser: string;
+  employeeRank: string;
   ngOnInit() {
+    this.route.paramMap.subscribe((paramMap) => {
+      this.projectId = +paramMap.get("projectId");
+      this.userId = +paramMap.get("employeeId");
+    });
 
-    // Data processing start
-    const taskPriorityStatistics = this.reportService.getTasksPriorityDetails(
-      this.project.tasks
-    );
+    this.managerService
+      .getProjectById(this.projectId)
+      .pipe(
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          return EMPTY;
+        })
+      )
+      .subscribe((project) => {
+        console.log(`user id is ${this.userId}`);
 
-    const getAllProjectsTasksCount = this.reportService.getAllTaskStatusCount(
-      this.project
-    );
-    console.log(getAllProjectsTasksCount.todo.length);
-    let todoCount = getAllProjectsTasksCount.todo.length;
-    let inProgressCount = getAllProjectsTasksCount.in_progress.length;
-    let doneCount = getAllProjectsTasksCount.done.length;
-    console.log(todoCount);
-    console.log(inProgressCount);
-    console.log(doneCount);
+        this.project = project;
+        this.user = this.project.users.find((user) => user.id === this.userId);
+        // pie chart data
+        const taskPriorityStatistics =
+          this.reportService.getTasksPriorityDetails(this.project.tasks);
 
-    const getProjectsPresentIn = this.reportService.getTotalProjectWorkingInCount(this.project);
-    console.log("Present in projects",getProjectsPresentIn);
+        this.userTaskStatistics = this.reportService.getUserTaskStatistics(
+          this.project,
+          this.user
+        );
 
+        this.totalTodosOfUser = this.reportService
+          .getTotalTodosOfUser(this.project, this.user)
+          .toString();
 
-    const getUserCountOfAllTasks = this.reportService.getProjectStatisticsPerUser(this.project.tasks);
-      console.log("Count per user",getUserCountOfAllTasks);
-    // Data processing end
+        this.employeeRank = this.reportService
+          .getEmployeeRank(this.project, this.user)
+          .toString();
 
+        const getAllProjectsTasksCount =
+          this.reportService.getAllTaskStatusCount(this.project);
+        console.log(getAllProjectsTasksCount.todo.length);
+        let todoCount = getAllProjectsTasksCount.todo.length;
+        let inProgressCount = getAllProjectsTasksCount.in_progress.length;
+        let doneCount = getAllProjectsTasksCount.done.length;
+        console.log(todoCount);
+        console.log(inProgressCount);
+        console.log(doneCount);
 
+        const getProjectsPresentIn =
+          this.reportService.getTotalProjectWorkingInCount(this.project);
+        console.log("Present in projects", getProjectsPresentIn);
 
+        const getUserCountOfAllTasks =
+          this.reportService.getProjectStatisticsPerUser(this.project.tasks);
+        console.log("Count per user", getUserCountOfAllTasks);
 
-    // stacked graph start
-    Highcharts.chart('container', {
-      title: {
-          text: 'Performance chart'
-      },
-      xAxis: {
-          categories: ['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5']
-      },
-      credits: {
-        enabled: false
-      },
-      labels: {
-          items: [{
-              html: 'Distribution',
-              style: {
-                  left: '50px',
-                  top: '18px',
-                  color: ( // theme
-                      Highcharts.defaultOptions.title.style &&
-                      Highcharts.defaultOptions.title.style.color
-                  ) || 'black'
-              }
-          }]
-      },
-      series: [{
-          type: 'column',
-          name: 'Tasks',
-          data: [3, 2, 1, 3, 4]
-      }, {
-          type: 'column',
-          name: 'Issues',
-          data: [2, 3, 5, 7, 6]
-      }, {
-          type: 'column',
-          name: 'To-Do',
-          data: [4, 3, 3, 9, 0]
-      }, {
-          type: 'spline',
-          name: 'Average',
-          data: [3, 2.67, 3, 6.33, 3.33],
-          marker: {
-              lineWidth: 2,
-              lineColor: Highcharts.getOptions().colors[3],
-              fillColor: 'white'
-          }
-      }, {
-          type: 'pie',
-          name: 'Total ',
-          data: [{
-              name: 'Low Priority Tasks',
-              y: taskPriorityStatistics.LOW,
-              color: Highcharts.getOptions().colors[0]
-          }, {
-              name: 'Medium Priority Tasks',
-              y: taskPriorityStatistics.MEDIUM,
-              color: Highcharts.getOptions().colors[1]
-          }, {
-              name: 'High Priority Tasks',
-              y: taskPriorityStatistics.HIGH,
-              color: Highcharts.getOptions().colors[2]
-          }],
-          center: [100, 80],
-          size: 100,
-          showInLegend: false,
-          dataLabels: {
-              enabled: false
-          }
-      }]
-  });
+        const barGraphData = this.reportService.getUserPerformanceChart(
+          this.project,
+          this.user
+        );
 
+        const average =
+          Object.values(barGraphData).reduce((acc, curr) => {
+            acc += curr;
+            return acc;
+          }, 0) / 5 || 0;
 
-
-
+        Highcharts.chart("container", {
+          title: {
+            text: "Performance chart",
+          },
+          xAxis: {
+            categories: [project.name],
+          },
+          credits: {
+            enabled: false,
+          },
+          labels: {
+            items: [
+              {
+                html: "Distribution",
+                style: {
+                  left: "50px",
+                  top: "18px",
+                  color:
+                    (Highcharts.defaultOptions.title.style &&
+                      Highcharts.defaultOptions.title.style.color) ||
+                    "black",
+                },
+              },
+            ],
+          },
+          series: [
+            {
+              type: "column",
+              name: "Total Tasks",
+              data: [barGraphData.total_tasks],
+            },
+            {
+              type: "column",
+              name: "Issues Raised",
+              data: [barGraphData.issues_raised],
+            },
+            {
+              type: "column",
+              name: "Completed Tasks",
+              data: [barGraphData.completed_tasks],
+            },
+            {
+              type: "column",
+              name: "Backlog Tasks",
+              data: [barGraphData.backlog_tasks],
+            },
+            {
+              type: "column",
+              name: "In Progress Tasks",
+              data: [barGraphData.in_progress_tasks],
+            },
+            {
+              type: "spline",
+              name: "Average",
+              data: [average],
+              marker: {
+                lineWidth: 2,
+                lineColor: Highcharts.getOptions().colors[3],
+                fillColor: "white",
+              },
+            },
+            {
+              type: "pie",
+              name: "Total ",
+              data: [
+                {
+                  name: "Low Priority Tasks",
+                  y: taskPriorityStatistics.LOW,
+                  color: Highcharts.getOptions().colors[0],
+                },
+                {
+                  name: "Medium Priority Tasks",
+                  y: taskPriorityStatistics.MEDIUM,
+                  color: Highcharts.getOptions().colors[1],
+                },
+                {
+                  name: "High Priority Tasks",
+                  y: taskPriorityStatistics.HIGH,
+                  color: Highcharts.getOptions().colors[2],
+                },
+              ],
+              center: [100, 80],
+              size: 100,
+              showInLegend: false,
+              dataLabels: {
+                enabled: false,
+              },
+            },
+          ],
+        });
+      });
   }
-
 }

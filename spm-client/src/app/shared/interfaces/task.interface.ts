@@ -60,3 +60,10 @@ export interface TaskPriorityStatistics {
 export const sortTasksByPriority = (a: ITask, b: ITask) =>
   TaskPriorityOptions.findIndex((priority) => priority === b.priority) -
   TaskPriorityOptions.findIndex((priority) => priority === a.priority);
+
+export function isBacklogTask(task: ITask): boolean {
+  return (
+    task.status === TaskStatus.IN_PROGRESS &&
+    new Date(task.deadLine).getTime() < new Date().getTime()
+  );
+}

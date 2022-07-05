@@ -11,6 +11,7 @@ import { OrgChartDashboardComponent } from "./org-chart-dashboard/org-chart-dash
 import { EmployeeReportsDashboardComponent } from "./employee-reports-dashboard/employee-reports-dashboard.component";
 import { EachProjectProgressBoardComponent } from "./progress-reports-dashboard/each-project-progress-board/each-project-progress-board.component";
 import { EmpReportListComponent } from "./employee-reports-dashboard/emp-report-list/emp-report-list.component";
+import { ReportingRoutingModule } from "./reporting-routing.module";
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { EmpReportListComponent } from "./employee-reports-dashboard/emp-report-
     MaterialModule,
     SharedModule,
     RouterModule,
+    ReportingRoutingModule,
     ReactiveFormsModule,
   ],
 })

@@ -6,7 +6,6 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { AuthInterceptor } from "./auth/auth.interceptor";
 import { AuthModule } from "./auth/auth.module";
-import { ReportingModule } from "./reporting/reporting.module";
 import { SharedModule } from "./shared/shared.module";
 @NgModule({
   declarations: [AppComponent],
@@ -16,7 +15,6 @@ import { SharedModule } from "./shared/shared.module";
     BrowserAnimationsModule,
     SharedModule,
     AuthModule,
-    ReportingModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

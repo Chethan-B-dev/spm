@@ -1,25 +1,49 @@
-<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css">
-<link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css">
-<link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css">
-<link rel="stylesheet" type="text/css" href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap.min.css">
-<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap.min.css"
+/>
+<link
+  href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
+  rel="stylesheet"
+/>
 <div class="col-xl-8 col-md-12 pt-1 float-left">
   <div class="card">
     <div class="card-content">
       <div class="card-body cleartfix">
-        <div class="media align-items-stretch">
+        <div class="media align-items-stretch" *ngIf="user">
           <div class="align-self-center">
             <i class="icon-user success font-large-2 float-right"></i>
           </div>
           <div class="media-body px-2">
-            <h4>Employee Name</h4>
-            <span>Employee Role</span>
-            <span class="p-2">Status: Active</span>
+            <h4>Employee Name: {{ user.username }}</h4>
+            <span>Employee Role: {{ user.designation || "NA" }}</span>
+            <span class="ml-2">|</span>
+            <span class="p-2">Status: {{ user.status | titlecase }}</span>
           </div>
           <div class="media-body">
-            <h5>Email: example@example.com</h5>
-            <h5>Phone: +91-38329299100</h5>
+            <h5>Email: {{ user.email }}</h5>
+            <h5>Phone: {{ user.phone }}</h5>
           </div>
         </div>
       </div>
@@ -35,7 +59,7 @@
             <i class="icon-graph success font-large-2 float-left"></i>
           </div>
           <div class="media-body text-right">
-            <h3>Rank 1</h3>
+            <h3 *ngIf="employeeRank">Rank {{ employeeRank }}</h3>
             <span>Employee Ranking</span>
           </div>
         </div>
@@ -43,7 +67,6 @@
     </div>
   </div>
 </div>
-
 
 <div class="col-xl-4 col-sm-6 col-12 float-left">
   <div class="card">
@@ -54,7 +77,9 @@
             <i class="icon-pencil primary font-large-2 float-left"></i>
           </div>
           <div class="media-body text-right">
-            <h3>278</h3>
+            <h3 *ngIf="userTaskStatistics">
+              {{ userTaskStatistics["COMPLETED"] }}
+            </h3>
             <span>Tasks Completed</span>
           </div>
         </div>
@@ -64,7 +89,7 @@
             <i class="icon-speech warning font-large-2 float-left"></i>
           </div>
           <div class="media-body text-right">
-            <h3>20</h3>
+            <h3 *ngIf="totalTodosOfUser">{{ totalTodosOfUser }}</h3>
             <span>Total To-Do's</span>
           </div>
         </div>
@@ -83,18 +108,17 @@
             <i class="icon-pie-chart danger font-large-2 float-right"></i>
           </div>
           <div class="media-body text-right">
-            <h3 class="danger">5</h3>
+            <h3 class="danger" *ngIf="userTaskStatistics">
+              {{ userTaskStatistics["IN_PROGRESS"] }}
+            </h3>
             <span>Total Tasks Remaining</span>
           </div>
         </div>
       </div>
     </div>
   </div>
-  </div>
-
-
-<div class="col-xl-8 col-md-sm-6 col-12 left">
-<div id="container"></div>
 </div>
 
-
+<div class="col-xl-8 col-md-sm-6 col-12 left">
+  <div id="container"></div>
+</div>

@@ -256,6 +256,12 @@ export class ManagerService {
       .pipe(catchError(handleError));
   }
 
+  getEmployeesUnderProject(projectId: number): Observable<IAppUser[]> {
+    return this.http
+      .get<IAppUser[]>(`${this.managerUrl}/project/${projectId}/employees`)
+      .pipe(catchError(handleError));
+  }
+
   addEmployees(projectId: number, employees: IAppUser[]): Observable<IProject> {
     const userIds = employees.map((employee) => employee.id);
     return this.http

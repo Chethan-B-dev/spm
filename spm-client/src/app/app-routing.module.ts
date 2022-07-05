@@ -8,13 +8,6 @@ import { SignupComponent } from "./auth/signup/signup.component";
 import { EmployeeIssueDetailComponent } from "./employee/employee-issue-detail/employee-issue-detail.component";
 import { EmployeeGuard } from "./employee/employee.guard";
 import { ManagerGuard } from "./manager/manager.guard";
-import { BurnDownChartDashboardComponent } from "./reporting/burn-down-chart-dashboard/burn-down-chart-dashboard.component";
-import { EmpReportListComponent } from "./reporting/employee-reports-dashboard/emp-report-list/emp-report-list.component";
-import { EmployeeReportsDashboardComponent } from "./reporting/employee-reports-dashboard/employee-reports-dashboard.component";
-import { OrgChartDashboardComponent } from "./reporting/org-chart-dashboard/org-chart-dashboard.component";
-import { EachProjectProgressBoardComponent } from "./reporting/progress-reports-dashboard/each-project-progress-board/each-project-progress-board.component";
-import { ProgressReportsDashboardComponent } from "./reporting/progress-reports-dashboard/progress-reports-dashboard.component";
-import { ReportsDashboardComponent } from "./reporting/reports-dashboard/reports-dashboard.component";
 import { AdminComponent } from "./shared/admin/admin.component";
 import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile.component";
 
@@ -22,6 +15,7 @@ const routes: Routes = [
   { path: "", component: LoginComponent, canActivate: [AuthGuard] },
   { path: "login", component: LoginComponent },
   { path: "signup", component: SignupComponent },
+  // todo: move admin component to a module and lazy load it
   { path: "admin", component: AdminComponent, canActivate: [AdminGuard] },
   { path: "profile", component: EditProfileComponent },
   {
@@ -35,29 +29,15 @@ const routes: Routes = [
     canActivate: [EmployeeGuard],
   },
   {
+    path: "reporting",
+    loadChildren: "./reporting/reporting.module#ReportingModule",
+    canActivate: [LoggedInGuard],
+  },
+  {
     path: "issue-detail/:id",
     component: EmployeeIssueDetailComponent,
     canActivate: [LoggedInGuard],
   },
-  { path: "reporting-dashboard", component: ReportsDashboardComponent },
-  {
-    path: "reporting-all-progress-dashboard",
-    component: ProgressReportsDashboardComponent,
-  },
-  {
-    path: "reporting-each-project-progress",
-    component: EachProjectProgressBoardComponent,
-  },
-  {
-    path: "reporting-burn-down-chart",
-    component: BurnDownChartDashboardComponent,
-  },
-  { path: "reporting-emp-report-list", component: EmpReportListComponent },
-  {
-    path: "reporting-employee-chart",
-    component: EmployeeReportsDashboardComponent,
-  },
-  { path: "reporting-org-chart", component: OrgChartDashboardComponent },
 
   // this is for 404 request
   { path: "**", redirectTo: "/", pathMatch: "full" },

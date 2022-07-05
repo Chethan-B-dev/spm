@@ -1,47 +1,3 @@
-
-
-/* CSS */
-.button-3 {
-  background: #5E5DF0;
-  border-radius: 999px;
-  box-shadow: #5E5DF0 0 10px 20px -10px;
-  box-sizing: border-box;
-  color: #FFFFFF;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-  opacity: 1;
-  outline: 0 solid transparent;
-  padding: 8px 18px;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  width: fit-content;
-  word-break: break-word;
-  border: 0;
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-}
-
-
-
-// animation start
-html {
-  height: 100%;
-   background: -moz-linear-gradient(-45deg, #de437d 0%, #5b44b9 100%); /* FF3.6-15 */
-background: -webkit-linear-gradient(-45deg, #de437d 0%,#5b44b9 100%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(135deg, #de437d 0%,#5b44b9 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#de437d', endColorstr='#5b44b9',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-}
-
-body {
-  font-family: 'open sans', sans-serif;
-  font-size: 3rem;
-  background-size: cover;
-  height: 100%;
-}
-
 svg {
   margin: 0 auto;
   text-align: center;
@@ -57,29 +13,27 @@ polyline {
   animation-direction: alternate;
 }
 
-@keyframes dash{
+@keyframes dash {
   to {
     stroke-dashoffset: 0;
   }
 }
 
-
 p {
   font-size: 2rem;
-  text-align:center;
+  text-align: center;
   color: #efefef;
 }
 .name {
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: light;
 }
 
 // animation end
 
-
 #title-bg {
   background: #5e72e4;
-  background: radial-gradient(circle, #5e72e4 0%, rgba(132,23,242,1) 88%);
+  background: radial-gradient(circle, #5e72e4 0%, rgba(132, 23, 242, 1) 88%);
   font-size: 30px;
   font-weight: 400;
   color: #fff;
@@ -87,52 +41,50 @@ p {
 // CSS for Progress Charts card
 .highcharts-figure,
 .highcharts-data-table table {
-    min-width: 360px;
-    max-width: 800px;
-    margin: 1em auto;
+  min-width: 360px;
+  max-width: 800px;
+  margin: 1em auto;
 }
 
 .highcharts-data-table table {
-    font-family: Verdana, sans-serif;
-    border-collapse: collapse;
-    border: 1px solid #ebebeb;
-    margin: 10px auto;
-    text-align: center;
-    width: 100%;
-    max-width: 500px;
+  font-family: Verdana, sans-serif;
+  border-collapse: collapse;
+  border: 1px solid #ebebeb;
+  margin: 10px auto;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
 }
 
 .highcharts-data-table caption {
-    padding: 1em 0;
-    font-size: 1.2em;
-    color: #555;
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
 }
 
 .highcharts-data-table th {
-    font-weight: 600;
-    padding: 0.5em;
+  font-weight: 600;
+  padding: 0.5em;
 }
 
 .highcharts-data-table td,
 .highcharts-data-table th,
 .highcharts-data-table caption {
-    padding: 0.5em;
+  padding: 0.5em;
 }
 
 .highcharts-data-table thead tr,
 .highcharts-data-table tr:nth-child(even) {
-    background: #f8f8f8;
+  background: #f8f8f8;
 }
 
 .highcharts-data-table tr:hover {
-    background: #f1f7ff;
+  background: #f1f7ff;
 }
 // CSS for Progress Charts card end
 
-
 // CSS for  employee reports card
 // CSS for  employee reports card
-
 
 // for created
 :root {
@@ -169,7 +121,8 @@ p {
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
   --font-family-sans-serif: Open Sans, sans-serif;
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
 *,
@@ -182,34 +135,14 @@ p {
   width: device-width;
 }
 
-figcaption,
-footer,
-header,
-main,
-nav,
-section {
-  display: block;
-}
-
-body {
-  font-family: Open Sans, sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  margin: 0;
-  text-align: left;
-  color: #525f7f;
-  background-color: #f8f9fe;
-}
-
-[tabindex='-1']:focus {
+[tabindex="-1"]:focus {
   outline: 0 !important;
 }
 
 h2,
 h5 {
   margin-top: 0;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
 p {
@@ -223,18 +156,6 @@ dfn {
 
 strong {
   font-weight: bolder;
-}
-
-a {
-  text-decoration: none;
-  color: #5e72e4;
-  background-color: transparent;
-  -webkit-text-decoration-skip: objects;
-}
-
-a:hover {
-  text-decoration: none;
-  color: #233dd2;
 }
 
 a:not([href]):not([tabindex]) {
@@ -259,84 +180,30 @@ caption {
   text-align: left;
   color: #8898aa;
 }
-
-button {
-  border-radius: 0;
-}
-
-button:focus {
-  outline: 1px dotted;
-  outline: 5px auto -webkit-focus-ring-color;
-}
-
-input,
-button {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  margin: 0;
-}
-
-button,
-input {
-  overflow: visible;
-}
-
-button {
-  text-transform: none;
-}
-
-button,
-[type='reset'],
-[type='submit'] {
-  -webkit-appearance: button;
-}
-
-button::-moz-focus-inner,
-[type='button']::-moz-focus-inner,
-[type='reset']::-moz-focus-inner,
-[type='submit']::-moz-focus-inner {
-  padding: 0;
-  border-style: none;
-}
-
-input[type='radio'],
-input[type='checkbox'] {
-  box-sizing: border-box;
-  padding: 0;
-}
-
-input[type='date'],
-input[type='time'],
-input[type='datetime-local'],
-input[type='month'] {
-  -webkit-appearance: listbox;
-}
-
 legend {
   font-size: 1.5rem;
   line-height: inherit;
   display: block;
   width: 100%;
   max-width: 100%;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   padding: 0;
   white-space: normal;
   color: inherit;
 }
 
-[type='number']::-webkit-inner-spin-button,
-[type='number']::-webkit-outer-spin-button {
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
   height: auto;
 }
 
-[type='search'] {
+[type="search"] {
   outline-offset: -2px;
   -webkit-appearance: none;
 }
 
-[type='search']::-webkit-search-cancel-button,
-[type='search']::-webkit-search-decoration {
+[type="search"]::-webkit-search-cancel-button,
+[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
@@ -356,7 +223,7 @@ h5,
   font-family: inherit;
   font-weight: 600;
   line-height: 1.5;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   color: #32325d;
 }
 
@@ -367,7 +234,7 @@ h2,
 
 h5,
 .h5 {
-  font-size: .8125rem;
+  font-size: 0.8125rem;
 }
 
 .container-fluid {
@@ -433,8 +300,8 @@ h5,
   flex-direction: column;
   min-width: 0;
   word-wrap: break-word;
-  border: 1px solid rgba(0, 0, 0, .05);
-  border-radius: .375rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0.375rem;
   background-color: #fff;
   background-clip: border-box;
 }
@@ -517,7 +384,7 @@ button.bg-default:focus {
 }
 
 .shadow {
-  box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15) !important;
+  box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15) !important;
 }
 
 .mb-0 {
@@ -525,7 +392,7 @@ button.bg-default:focus {
 }
 
 .mr-2 {
-  margin-right: .5rem !important;
+  margin-right: 0.5rem !important;
 }
 
 .mt-3 {
@@ -714,12 +581,12 @@ button.bg-yellow:focus {
   }
 }
 
-[class*='shadow'] {
-  transition: all .15s ease;
+[class*="shadow"] {
+  transition: all 0.15s ease;
 }
 
 .text-sm {
-  font-size: .875rem !important;
+  font-size: 0.875rem !important;
 }
 
 .text-white {
@@ -731,7 +598,7 @@ a.text-white:focus {
   color: #e6e6e6 !important;
 }
 
-[class*='btn-outline-'] {
+[class*="btn-outline-"] {
   border-width: 1px;
 }
 
@@ -757,7 +624,7 @@ a.text-white:focus {
 }
 
 .footer .copyright {
-  font-size: .875rem;
+  font-size: 0.875rem;
 }
 
 .header {
@@ -789,7 +656,7 @@ a.text-white:focus {
 @media (min-width: 768px) {
   @keyframes show-navbar-dropdown {
     0% {
-      transition: visibility .25s, opacity .25s, transform .25s;
+      transition: visibility 0.25s, opacity 0.25s, transform 0.25s;
       transform: translate(0, 10px) perspective(200px) rotateX(-2deg);
       opacity: 0;
     }
@@ -811,7 +678,7 @@ a.text-white:focus {
 
 @keyframes show-navbar-collapse {
   0% {
-    transform: scale(.95);
+    transform: scale(0.95);
     transform-origin: 100% 0;
     opacity: 0;
   }
@@ -828,7 +695,7 @@ a.text-white:focus {
     opacity: 1;
   }
   to {
-    transform: scale(.95);
+    transform: scale(0.95);
     opacity: 0;
   }
 }
@@ -838,5 +705,3 @@ p {
   font-weight: 300;
   line-height: 1.7;
 }
-
-
