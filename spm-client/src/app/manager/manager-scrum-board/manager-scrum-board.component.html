@@ -24,9 +24,19 @@
         <mat-card-subtitle
           >Assignee - {{ task.user?.username }}</mat-card-subtitle
         >
-        <button mat-raised-button color="warn" (click)="createTodo(task)">
-          Add Todo
-        </button>
+        <div
+          matTooltip="Cannot add any more todos because the task is completed"
+          [matTooltipDisabled]="!isTaskCompleted(task)"
+        >
+          <button
+            mat-raised-button
+            color="warn"
+            (click)="createTodo(task)"
+            [disabled]="isTaskCompleted(task)"
+          >
+            Add Todo
+          </button>
+        </div>
       </div>
       <div class="col-8 p-2">
         <div class="p-2">

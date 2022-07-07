@@ -4,7 +4,7 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
-import { ITask } from "src/app/shared/interfaces/task.interface";
+import { ITask, TaskStatus } from "src/app/shared/interfaces/task.interface";
 import {
   getTodoStatistics,
   ITodo,
@@ -78,5 +78,9 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
   getCompletedPercentage(todos: ITodo[]): number {
     const todoStatistics = getTodoStatistics(todos);
     return ((todoStatistics[TodoStatus.DONE] / todos.length) * 100) | 0;
+  }
+
+  isTaskCompleted(task: ITask): boolean {
+    return task.status === TaskStatus.COMPLETED;
   }
 }
