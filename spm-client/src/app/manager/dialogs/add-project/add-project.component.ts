@@ -36,9 +36,9 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   }
 
   createProject(): void {
-    let projectName: string = this.createProjectForm.value.name;
-    let projectDescription: string = this.createProjectForm.value.description;
-    let projectDeadLine: Date = this.createProjectForm.value.toDate;
+    const projectName: string = this.createProjectForm.value.name;
+    const projectDescription: string = this.createProjectForm.value.description;
+    const projectDeadLine: Date = this.createProjectForm.value.toDate;
 
     if (new Date().getTime() > projectDeadLine.getTime()) {
       this.snackbarService.showSnackBar(

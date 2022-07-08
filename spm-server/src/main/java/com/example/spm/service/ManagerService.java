@@ -97,6 +97,10 @@ public class ManagerService {
         return taskService.createTask(createTaskDTO, project, employee);
     }
 
+    public Project editProject(Integer projectId, CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
+        return projectService.editProject(projectId, createProjectDTO, myAppUserDetails);
+    }
+
     public Task getTaskById(Integer taskId) {
         return taskService.getTaskById(taskId);
     }

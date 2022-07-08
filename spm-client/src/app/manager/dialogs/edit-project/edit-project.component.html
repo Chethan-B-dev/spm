@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>Edit Project</h2>
+
+<mat-dialog-content [formGroup]="editProjectForm">
+  <p>
+    <mat-form-field style="width: 50%; padding: 10px">
+      <input matInput placeholder="Project Name" formControlName="name" />
+      <span
+        style="color: red"
+        *ngIf="
+          (this.editProjectForm.get('name').dirty ||
+            this.editProjectForm.get('name').touched) &&
+          this.editProjectForm.get('name').errors?.required
+        "
+      >
+        Project name is required
+      </span>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="width: 50%">
+      <mat-label>Choose a Deadline Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="toDate" />
+      <mat-hint>DD/MM/YYYY</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <span
+        style="color: red"
+        *ngIf="
+          (this.editProjectForm.get('toDate').dirty ||
+            this.editProjectForm.get('toDate').touched) &&
+          this.editProjectForm.get('toDate').errors?.required
+        "
+      >
+        Deadline is required
+      </span>
+    </mat-form-field>
+  </p>
+
+  <p>
+    <mat-form-field
+      class="example-full-width"
+      appearance="fill"
+      style="width: 100%"
+    >
+      <mat-label>Description about the project</mat-label>
+      <textarea
+        matInput
+        placeholder="Add Description"
+        formControlName="description"
+      ></textarea>
+      <span
+        style="color: red"
+        *ngIf="
+          (this.editProjectForm.get('description').dirty ||
+            this.editProjectForm.get('description').touched) &&
+          this.editProjectForm.get('description').errors?.required
+        "
+      >
+        Description is required
+      </span>
+    </mat-form-field>
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="push-right">
+  <button mat-button color="warn" (click)="close()" style="margin-right: 8px">
+    Close
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="this.editProjectForm.invalid || this.editProjectForm.pristine"
+    (click)="editProject()"
+  >
+    Save Changes
+  </button>
+</mat-dialog-actions>

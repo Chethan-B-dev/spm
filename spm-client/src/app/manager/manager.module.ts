@@ -16,6 +16,7 @@ import { BoardDndComponent } from "./manager-scrum-board/board-dnd/board-dnd.com
 import { IssueCardComponent } from "./manager-scrum-board/issue-card/issue-card.component";
 import { ManagerScrumBoardComponent } from "./manager-scrum-board/manager-scrum-board.component";
 import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-detail.component";
+import { EditProjectComponent } from "./dialogs/edit-project/edit-project.component";
 
 @NgModule({
   declarations: [
@@ -29,11 +30,13 @@ import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-d
     IssueCardComponent,
     CreateTodoComponent,
     SetDesignationComponent,
+    EditProjectComponent,
   ],
   entryComponents: [
     CreateTaskComponent,
     CreateTodoComponent,
     SetDesignationComponent,
+    EditProjectComponent,
   ],
 
   imports: [

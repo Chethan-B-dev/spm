@@ -306,6 +306,28 @@ export class ManagerService {
       );
   }
 
+  editProject(
+    projectId: number,
+    projectName: string,
+    projectDescription: string,
+    projectDeadLine: Date
+  ): Observable<IProject> {
+    const requestBody = {
+      projectName,
+      description: projectDescription,
+      toDate: new Date(projectDeadLine + "Z").toISOString().substring(0, 10),
+    };
+    return this.http
+      .put<IProject>(
+        `${this.managerUrl}/edit-project/${projectId}`,
+        requestBody
+      )
+      .pipe(
+        tap(() => this.refresh()),
+        catchError(handleError)
+      );
+  }
+
   createTask(
     taskRequestDTO: ITaskRequestDTO,
     projectId: number

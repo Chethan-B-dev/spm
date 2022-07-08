@@ -107,8 +107,6 @@ export class OrgChartDashboardComponent implements OnInit {
               id: "Manager",
               title: "Manager",
               name: `${this.project.manager.username}`,
-              image:
-                "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131126/Highsoft_03862_.jpg",
             },
 
             {
@@ -116,36 +114,26 @@ export class OrgChartDashboardComponent implements OnInit {
               title: "Developer",
               name: "Christer Vasseng",
               color: "#007ad0",
-              image:
-                "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131210/Highsoft_04045_.jpg",
             },
             {
               id: "Tester",
               title: "Tester",
               name: "Christer Vasseng",
-              image:
-                "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131120/Highsoft_04074_.jpg",
             },
             {
               id: "TesterUser",
               title: "Tester",
               name: "Christer Vasseng",
-              image:
-                "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131120/Highsoft_04074_.jpg",
             },
             {
               id: "Devops",
               title: "Devop",
               name: "Peter",
-              image:
-                "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131213/Highsoft_03998_.jpg",
             },
             {
               id: "DevopsUser",
               title: "Devops",
               name: "Mathew",
-              image:
-                "https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2020/03/17131213/Highsoft_03998_.jpg",
             },
           ],
           colorByPoint: false,

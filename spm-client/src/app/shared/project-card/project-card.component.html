@@ -9,20 +9,29 @@
       >
         <mat-icon>keyboard_backspace</mat-icon>
       </button>
-
       <mat-card-title class="mb-3 push-down">
         {{ project.name }}
       </mat-card-title>
     </div>
-    <button
-      *ngIf="showAddTask"
-      mat-button
-      color="primary"
-      [disabled]="!showAddTaskButton()"
-      (click)="openCreateTaskDialog(project)"
-    >
-      <mat-icon>add</mat-icon> Add Task
-    </button>
+    <div class="right">
+      <button
+        *ngIf="showEditProject"
+        mat-button
+        color="primary"
+        (click)="openEditProjectDialog(project)"
+      >
+        <mat-icon>edit</mat-icon> Edit Project
+      </button>
+      <button
+        *ngIf="showAddTask"
+        mat-button
+        color="primary"
+        [disabled]="!showAddTaskButton()"
+        (click)="openCreateTaskDialog(project)"
+      >
+        <mat-icon>add</mat-icon> Add Task
+      </button>
+    </div>
   </div>
 
   <mat-chip-list aria-label="Fish selection">

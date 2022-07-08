@@ -22,6 +22,7 @@ import { ManagerService } from "src/app/manager/services/manager.service";
 import { SnackbarService } from "../services/snackbar.service";
 
 // interfaces
+import { EditProjectComponent } from "src/app/manager/dialogs/edit-project/edit-project.component";
 import { SetDesignationComponent } from "src/app/manager/dialogs/set-designation/set-designation.component";
 import { IIssue } from "../interfaces/issue.interface";
 import { INotification } from "../interfaces/notification.interface";
@@ -47,6 +48,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   @Input() showAddEmps = false;
   @Input() showIssueStats = false;
   @Input() showViewDetailsButton = true;
+  @Input() showEditProject = false;
   @Output() showIssues = new EventEmitter<void>();
   users$?: Observable<IAppUser[]> | undefined;
   employees: IAppUser[] = [];
@@ -156,6 +158,16 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     dialogConfig.data = project;
 
     this.dialog.open(CreateTaskComponent, dialogConfig);
+  }
+
+  openEditProjectDialog(project: IProject): void {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = project;
+
+    this.dialog.open(EditProjectComponent, dialogConfig);
   }
 
   openSetDesignationDialog(employees: IAppUser[]): Observable<boolean> {

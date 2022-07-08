@@ -109,6 +109,22 @@ public class ManagerController {
                 HttpStatus.OK
         );
     }
+
+    @PutMapping("/edit-project/{projectId}")
+    public ResponseEntity<Project> editProject (
+            @PathVariable final Integer projectId,
+            @RequestBody @Valid final CreateProjectDTO createProjectDTO,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
+    ){
+        MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        managerService.handleValidationErrors(bindingResult);
+        return new ResponseEntity<>(
+                managerService.editProject(projectId, createProjectDTO, loggedInUser),
+                HttpStatus.OK
+        );
+    }
+
     @PutMapping("/assign-user/{projectId}")
     public ResponseEntity<Project> addUserToProject (
             @PathVariable final Integer projectId,

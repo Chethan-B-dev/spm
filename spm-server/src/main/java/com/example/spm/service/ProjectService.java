@@ -17,8 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,6 +72,17 @@ public class ProjectService {
                 .status(ProjectStatus.IN_PROGRESS)
                 .build();
 
+        return projectRepository.save(project);
+    }
+
+    @Transactional
+    @Modifying
+    public Project editProject(Integer projectId, CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
+        Project project = checkIfProjectExists(projectId);
+        checkIfProjectBelongsToManager(project, myAppUserDetails.getUser().getId());
+        project.setName(createProjectDTO.getProjectName());
+        project.setDescription(createProjectDTO.getDescription());
+        project.setToDate(createProjectDTO.getToDate());
         return projectRepository.save(project);
     }
 
