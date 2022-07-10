@@ -45,7 +45,7 @@ public class AppUserService {
                 .email(userRegisterDTO.getEmail())
                 .username(userRegisterDTO.getUsername())
                 .password(passwordEncoder.encode(userRegisterDTO.getPassword()))
-                .status(UserStatus.UNVERIFIED)
+                .status(userRegisterDTO.getUserRole() != UserRole.ADMIN ? UserStatus.UNVERIFIED : UserStatus.VERIFIED)
                 .phone(userRegisterDTO.getPhone())
                 .role(userRegisterDTO.getUserRole())
                 .build();
@@ -53,14 +53,6 @@ public class AppUserService {
         log.info("Saving new user {} to the database", user.getEmail());
 
         return appUserRepository.save(user);
-    }
-
-    public List<AppUser> getPendingUsers() {
-        return appUserRepository.findAllByStatus(UserStatus.UNVERIFIED);
-    }
-
-    public List<AppUser> getUsers() {
-        return appUserRepository.findAll();
     }
 
     public AppUser getUser(String email) {
@@ -102,12 +94,12 @@ public class AppUserService {
 
     public void checkIfEmailAlreadyExists(String email) {
         if (appUserRepository.existsByEmail(email))
-            throw new ActionNotAllowedException("User with the email " + email + " already exists");
+            throw new ActionNotAllowedException("User with the email '" + email + "' already exists");
     }
 
     public static void checkIfUserIsManager(MyAppUserDetails myAppUserDetails) {
         if (!myAppUserDetails.getUser().getRole().equals(UserRole.MANAGER))
-            throw new ActionNotAllowedException("Only Manager can perform this action");
+            throw new ActionNotAllowedException("Only a Manager can perform this action");
     }
 
     public PagedData<AppUser> getPagedVerifiedEmployees(int pageNumber, int pageSize) {

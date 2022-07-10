@@ -27,6 +27,7 @@ import { IPagedData } from "../shared/interfaces/pagination.interface";
 import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
 import { ITodo, IUpdateTodoDTO } from "../shared/interfaces/todo.interface";
+import { IAppUser, UserRole } from "../shared/interfaces/user.interface";
 import { NotificationService } from "../shared/notification.service";
 import {
   ISearchGroup,
@@ -45,7 +46,7 @@ export class EmployeeService {
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
 
-  private stateRefreshSubject = new BehaviorSubject<void>(null);
+  private stateRefreshSubject = new BehaviorSubject<IAppUser>(null);
   stateRefresh$ = this.stateRefreshSubject.asObservable();
 
   private taskCategorySelectedSubject = new BehaviorSubject<string>("ALL");
@@ -64,11 +65,13 @@ export class EmployeeService {
   loadMoreProjects$ = this.loadMoreProjectsSubject.asObservable();
 
   projects$ = this.stateRefresh$.pipe(
+    filter((user) => Boolean(user && user.role === UserRole.EMPLOYEE)),
     switchMap(() => this.getAllProjects()),
     catchError(handleError)
   );
 
   pagedProjects$ = this.stateRefresh$.pipe(
+    filter((user) => Boolean(user && user.role === UserRole.EMPLOYEE)),
     tap(() => {
       this.loadMoreProjects(true);
       this.changeProjectPageNumber(1);
@@ -122,8 +125,8 @@ export class EmployeeService {
     this.projectPageNumberSubject.next(projectPageNumber);
   }
 
-  stateRefresh(): void {
-    this.stateRefreshSubject.next();
+  stateRefresh(user: IAppUser): void {
+    this.stateRefreshSubject.next(user);
   }
 
   selectTaskCategory(selectedTaskCategory: string): void {

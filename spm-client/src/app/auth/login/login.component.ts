@@ -43,11 +43,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       .login(this.loginForm.value as ILoginRequest)
       .pipe(
         takeUntil(this.destroy$),
-        tap(() => {
-          this.managerService.stateRefresh();
-          this.employeeService.stateRefresh();
-        }),
         pluck("user"),
+        tap((user) => {
+          this.managerService.stateRefresh(user);
+          this.employeeService.stateRefresh(user);
+        }),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
           return EMPTY;

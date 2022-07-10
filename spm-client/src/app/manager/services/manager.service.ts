@@ -14,10 +14,12 @@ import {
 import {
   catchError,
   concatMap,
+  filter,
   map,
   pluck,
   scan,
   shareReplay,
+  startWith,
   switchMap,
   takeWhile,
   tap,
@@ -34,7 +36,7 @@ import {
   ITaskRequestDTO,
 } from "src/app/shared/interfaces/task.interface";
 import { ITodo } from "src/app/shared/interfaces/todo.interface";
-import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { SharedService } from "src/app/shared/shared.service";
 import {
@@ -56,7 +58,7 @@ export class ManagerService {
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
 
-  private stateRefreshSubject = new BehaviorSubject<void>(null);
+  private stateRefreshSubject = new BehaviorSubject<IAppUser>(null);
   stateRefresh$ = this.stateRefreshSubject.asObservable();
 
   private projectInsertedSubject = new Subject<IProject>();
@@ -87,11 +89,13 @@ export class ManagerService {
   loadMoreProjects$ = this.loadMoreProjectsSubject.asObservable();
 
   projects$ = this.stateRefresh$.pipe(
+    filter((user) => Boolean(user && user.role === UserRole.MANAGER)),
     switchMap(() => this.getAllProjects()),
     catchError(handleError)
   );
 
   pagedProjects$ = this.stateRefresh$.pipe(
+    filter((user) => Boolean(user && user.role === UserRole.MANAGER)),
     tap(() => {
       this.loadMoreProjects(true);
       this.changeProjectPageNumber(1);
@@ -114,6 +118,7 @@ export class ManagerService {
   );
 
   users$ = this.stateRefresh$.pipe(
+    filter((user) => Boolean(user && user.role === UserRole.MANAGER)),
     tap(() => {
       this.loadMoreUsers(true);
       this.changeUserPageNumber(1);
@@ -176,8 +181,8 @@ export class ManagerService {
     this.refreshSubject.next();
   }
 
-  stateRefresh(): void {
-    this.stateRefreshSubject.next();
+  stateRefresh(user: IAppUser): void {
+    this.stateRefreshSubject.next(user);
   }
 
   loadMoreUsers(value: boolean): void {
