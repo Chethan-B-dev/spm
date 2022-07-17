@@ -21,6 +21,12 @@ export class SharedService {
     this.refreshSubject.next();
   }
 
+  getAdmin(): Observable<IAppUser> {
+    return this.http
+      .get<IAppUser>(`${this.sharedUrl}/get-admin`)
+      .pipe(tap(console.log),catchError(handleError));
+  }
+
   getIssueById(issueId: number): Observable<IIssue> {
     return this.http
       .get<IIssue>(`${this.sharedUrl}/issue/${issueId}`)

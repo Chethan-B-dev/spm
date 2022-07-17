@@ -3,9 +3,8 @@ import {
   ActivatedRouteSnapshot,
   CanActivate,
   Router,
-  RouterStateSnapshot,
+  RouterStateSnapshot
 } from "@angular/router";
-import { UserRole } from "../shared/interfaces/user.interface";
 import { AuthService } from "./auth.service";
 
 @Injectable({
@@ -23,17 +22,7 @@ export class AuthGuard implements CanActivate {
     const isAuthenticated = this.authService.isLoggedIn();
     const user = this.authService.getUser();
     if (isAuthenticated && user) {
-      switch (user.role) {
-        case UserRole.MANAGER:
-          this.router.navigate(["/manager"]);
-          break;
-        case UserRole.EMPLOYEE:
-          this.router.navigate(["/employee"]);
-          break;
-        case UserRole.ADMIN:
-          this.router.navigate(["/admin"]);
-          break;
-      }
+      this.router.navigate([`/${user.role.toLowerCase()}`]);
     } else {
       this.router.navigate(["/login"]);
     }

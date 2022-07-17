@@ -8,6 +8,7 @@ import { ISignUpRequest } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { AdminApiService } from "src/app/shared/services/admin-api.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { SharedService } from "src/app/shared/shared.service";
 import { myTitleCase } from "src/app/shared/utility/common";
 import { AuthService } from "../auth.service";
 
@@ -23,6 +24,7 @@ export class SignupComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private readonly authService: AuthService,
+    private readonly sharedService: SharedService,
     private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService
   ) {}
@@ -48,15 +50,24 @@ export class SignupComponent implements OnInit {
         })
       )
       .subscribe((user) => {
-        // todo: take care of hardcoded admin id for demo
-        const notification: INotification = {
-          userId: AdminApiService.adminId,
-          notification: `A new ${myTitleCase(user.role)} with name ${
-            user.username
-          } has registered on ${new Date().toLocaleString()}`,
-          time: Date.now(),
-        };
-        this.notificationService.addNotification(notification);
+        // todo: this is not working try this again
+        this.sharedService.getAdmin()
+        .pipe(
+          takeUntil(this.destroy$),
+          catchError((err) => {
+            this.snackbarService.showSnackBar(err);
+            return EMPTY;
+          })
+        ).subscribe((admin) => {
+          const notification: INotification = {
+            userId: admin.id,
+            notification: `A new ${myTitleCase(user.role)} with name ${
+              user.username
+            } has registered on ${new Date().toLocaleString()}`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+        });
         this.snackbarService.showSnackBar(
           "Your account has been created, Please wait for the Admin to approve your request",
           5000

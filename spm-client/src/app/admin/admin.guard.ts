@@ -20,11 +20,10 @@ export class AdminGuard implements CanActivate {
     state: RouterStateSnapshot
   ): boolean | Promise<boolean> {
     const isAuthenticated = this.authService.isLoggedIn();
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !this.authService.isAdmin()) {
       this.router.navigate(["/login"]);
+      return false;
     }
-    const isAdmin = this.authService.isAdmin();
-    if (!isAdmin) this.router.navigate(["/"]);
-    return isAdmin;
+    return true;
   }
 }

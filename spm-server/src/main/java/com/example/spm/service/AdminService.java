@@ -24,6 +24,11 @@ public class AdminService {
     private final AppUserRepository appUserRepository;
     private final AppUserService appUserService;
 
+    public AppUser getAdmin() {
+        return appUserRepository
+                .getAdmin().orElseThrow(() -> new UserNotFoundException("Admin not found"));
+    }
+
     public List<AppUser> getAllUsers() {
         return appUserRepository.findByRoleNot(UserRole.ADMIN);
     }
@@ -38,6 +43,7 @@ public class AdminService {
 
 
     @Transactional
+    @Modifying
     public AppUser enableUser (Integer userId) {
         AppUser appUser = checkIfUserExists(userId);
         if (!appUser.getStatus().equals(UserStatus.DISABLED)) {
@@ -48,6 +54,7 @@ public class AdminService {
     }
 
     @Transactional
+    @Modifying
     public AppUser takeDecision(AdminDecisionDTO adminDecisionDTO) {
         AppUser appUser = checkIfUserExists(adminDecisionDTO.getUserId());
         if (adminDecisionDTO.getAdminDecision().equals(AdminDecision.APPROVE)) {

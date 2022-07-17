@@ -5,10 +5,7 @@ import com.example.spm.model.dto.UpdateIssueDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Issue;
 import com.example.spm.model.entity.IssueComment;
-import com.example.spm.service.AppUserService;
-import com.example.spm.service.IssueService;
-import com.example.spm.service.MyAppUserDetails;
-import com.example.spm.service.TaskService;
+import com.example.spm.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +23,7 @@ public class SharedController {
 
     private final IssueService issueService;
     private final TaskService taskService;
+    private final AdminService adminService;
 
     @GetMapping("/issue/{issueId}")
     public ResponseEntity<Issue> getIssueByIssueId(
@@ -35,6 +33,14 @@ public class SharedController {
         AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
         return new ResponseEntity<>(
                 issueService.getIssueById(issueId),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/get-admin")
+    public ResponseEntity<AppUser> getAdmin(){
+        return new ResponseEntity<>(
+                adminService.getAdmin(),
                 HttpStatus.OK
         );
     }

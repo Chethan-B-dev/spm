@@ -54,6 +54,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((user) => {
+        this.managerService.stateRefresh(user);
+        this.employeeService.stateRefresh(user);
         this.snackbarService.showSnackBar(`Welcome ${user.username}`);
         this.router.navigate([`/${user.role.toLowerCase()}`]);
       });

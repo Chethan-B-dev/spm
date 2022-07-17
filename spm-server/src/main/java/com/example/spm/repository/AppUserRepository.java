@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
     AppUser findByEmail (String email);
@@ -28,6 +29,11 @@ public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
             value = "SELECT * FROM app_user a WHERE LOWER(a.username) LIKE %:searchKey%",
             nativeQuery = true)
     List<AppUser> getAllUsersWithSearchKey(String searchKey);
+
+    @Query(
+            value = "SELECT * FROM app_user a WHERE LOWER(a.username) LIKE '%admin%' LIMIT 1",
+            nativeQuery = true)
+    Optional<AppUser> getAdmin();
 
 //    List<AppUser> findAllByUsernameContaining(String searchKey);
 }

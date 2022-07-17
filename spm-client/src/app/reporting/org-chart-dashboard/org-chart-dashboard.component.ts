@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import HighchartsExporting from "highcharts/modules/exporting";
 import HighchartsOrganization from "highcharts/modules/organization";
 import HighchartsSankey from "highcharts/modules/sankey";
+import { IProject } from "src/app/shared/interfaces/project.interface";
 import { mockProject } from "../project.mock";
 import { ReportsService } from "../services/reports.service";
 
@@ -24,9 +25,25 @@ export class OrgChartDashboardComponent implements OnInit {
 
   constructor(private readonly reportService: ReportsService) {}
 
+  prepareData(data, project: IProject) {
+    const actualData = [
+      [project.name, "Manager"],
+      // ["Manager", "Developer"],
+      // ["Manager", "Tester"],
+      // ["Manager", "Devops"],
+      // ["Developer", "DeveloperUser2"],
+      // ["Tester", "TesterUser"],
+      // ["Devops", "DevopsUser"],
+    ];
+    data.forEach(arr => actualData.push(arr))
+    console.log(actualData)
+
+  }
+
   ngOnInit() {
     const check = this.reportService.getProjectOrgChart(this.project);
-    console.log(check);
+    const data = this.reportService.getOrgChartData(this.project);
+    this.prepareData(data, this.project)
 
     Highcharts.chart("container", {
       chart: {
@@ -61,15 +78,7 @@ export class OrgChartDashboardComponent implements OnInit {
           type: "organization",
           name: "Project Name",
           keys: ["from", "to"],
-          data: [
-            [this.project.name, "Manager"],
-            ["Manager", "Developer"],
-            ["Manager", "Tester"],
-            ["Manager", "Devops"],
-            ["Developer", "DeveloperUser"],
-            ["Tester", "TesterUser"],
-            ["Devops", "DevopsUser"],
-          ],
+          data: this.prepareData(data, this.project),
           levels: [
             {
               level: 0,
@@ -98,19 +107,18 @@ export class OrgChartDashboardComponent implements OnInit {
           ],
           nodes: [
             {
-              id: "Shareholders",
-            },
-            {
-              id: "Board",
-            },
-            {
               id: "Manager",
               title: "Manager",
               name: `${this.project.manager.username}`,
             },
-
             {
               id: "Developer",
+              title: "Developer",
+              name: "Christer Vasseng",
+              color: "#007ad0",
+            },
+            {
+              id: "Developeruser3",
               title: "Developer",
               name: "Christer Vasseng",
               color: "#007ad0",
@@ -131,7 +139,17 @@ export class OrgChartDashboardComponent implements OnInit {
               name: "Peter",
             },
             {
+              id: "TesterUser2",
+              title: "Tester",
+              name: "Christer Vasseng",
+            },
+            {
               id: "DevopsUser",
+              title: "Devops",
+              name: "Mathew",
+            },
+            {
+              id: "DevopsUser2",
               title: "Devops",
               name: "Mathew",
             },

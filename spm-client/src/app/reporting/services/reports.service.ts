@@ -50,6 +50,7 @@ import {
   UserDesignation,
   UserDesignations,
   UserDesignationStatistics,
+  UserDesignationNameStatistics,
   UserDesignationStatisticsCount,
   UserRole,
   UserStatus,
@@ -257,6 +258,31 @@ export class ReportsService {
       userDesgStats[designation].push({ username, email });
     });
     return userDesgStats;
+  }
+
+  getOrgChartData(project: IProject): Array<Object[]> {
+    const result = [] as Array<Object[]>;
+    const userDesgStats: UserDesignationNameStatistics = {
+      [UserDesignation.TESTER]: [],
+      [UserDesignation.DEVELOPER]: [],
+      [UserDesignation.DEVOPS]: [],
+    };
+    project.users.forEach(({ username, designation }) => {
+      userDesgStats[designation].push(username);
+    });
+    const developers = userDesgStats[UserDesignation.DEVELOPER];
+    for (let i = 0; i < developers.length - 1; i++) {
+      result.push([developers[i], developers[i + 1]]);
+    }
+    const testers = userDesgStats[UserDesignation.TESTER];
+    for (let i = 0; i < testers.length - 1; i++) {
+      result.push([testers[i], testers[i + 1]]);
+    }
+    const devops = userDesgStats[UserDesignation.DEVOPS];
+    for (let i = 0; i < devops.length - 1; i++) {
+      result.push([devops[i], devops[i + 1]]);
+    }
+    return result;
   }
 
   getProjectUserDesignationCount(

@@ -79,7 +79,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             (HttpServletRequest request,
              HttpServletResponse response,
              AuthenticationException failed
-            ) throws IOException, ServletException {
+            ) throws IOException {
 
         BadCredentialsResponseDTO badCredentialsResponseDTO = BadCredentialsResponseDTO.builder()
                 .timeStamp(LocalDateTime.now().toString())
@@ -98,7 +98,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             HttpServletResponse response,
             FilterChain chain,
             Authentication authentication
-    ) throws IOException, ServletException {
+    ) throws IOException {
 
         MyAppUserDetails myAppUserDetails = (MyAppUserDetails) authentication.getPrincipal();
         String token = jwtTokenUtil.generateToken(myAppUserDetails);

@@ -61,6 +61,10 @@ export interface UserDesignationStatistics {
   [designation: string]: { username: string; email: String }[];
 }
 
+export interface UserDesignationNameStatistics {
+  [designation: string]: string[];
+}
+
 export interface UserDesignationStatisticsCount {
   [designation: string]: number;
 }

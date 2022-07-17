@@ -34,26 +34,21 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
 
-        if (path.equals("/api/login") || path.equals("/api/auth/user/save")){
+        if (path.equals("/api/login") || path.equals("/api/auth/user/save") || path.equals("/api/shared/get-admin")){
             chain.doFilter(request, response);
             return;
         }
 
         try {
+            System.out.println("coming inside to filter");
             final String requestTokenHeader = request.getHeader("Authorization");
 
             String email = null;
             String jwtToken = null;
-            // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
+
             if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
                 jwtToken = requestTokenHeader.substring(7);
-//                try {
-                    email = jwtTokenUtil.getUsernameFromToken(jwtToken);
-//                } catch (IllegalArgumentException e) {
-//                    System.out.println("Unable to get JWT Token");
-//                } catch (ExpiredJwtException e) {
-//                    System.out.println("JWT Token has expired");
-//                }
+                email = jwtTokenUtil.getUsernameFromToken(jwtToken);
             }
             // Once we get the token validate it.
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
