@@ -100,21 +100,21 @@ export class SidenavComponent implements OnInit, OnDestroy {
     );
 
     this.isAdmin$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.isAdmin())),
+      switchMap(() => of(this.authService.checkRole(UserRole.ADMIN))),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
       })
     );
     this.isManager$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.isManager())),
+      switchMap(() => of(this.authService.checkRole(UserRole.MANAGER))),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
       })
     );
     this.isEmployee$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.isEmployee())),
+      switchMap(() => of(this.authService.checkRole(UserRole.EMPLOYEE))),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;

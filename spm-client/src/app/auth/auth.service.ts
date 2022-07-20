@@ -58,19 +58,9 @@ export class AuthService {
     return token && !this.isTokenExpired(token) && !!this.getUser();
   }
 
-  isManager(): boolean {
+  checkRole(role: UserRole): boolean {
     const user = this.getUser();
-    return user && user.role === UserRole.MANAGER;
-  }
-
-  isEmployee(): boolean {
-    const user = this.getUser();
-    return user && user.role === UserRole.EMPLOYEE;
-  }
-
-  isAdmin(): boolean {
-    const user = this.getUser();
-    return user && user.role === UserRole.ADMIN;
+    return user && user.role === role;
   }
 
   isTokenExpired(token: string): boolean {
@@ -99,8 +89,7 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.clear();
     this.setUser(null);
     this.isLoggedInSubject.next(false);
   }
