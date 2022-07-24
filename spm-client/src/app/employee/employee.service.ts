@@ -22,7 +22,7 @@ import {
 } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { AuthService } from "../auth/auth.service";
-import { IIssue } from "../shared/interfaces/issue.interface";
+import { ICreateIssueDTO, IIssue } from "../shared/interfaces/issue.interface";
 import { IPagedData } from "../shared/interfaces/pagination.interface";
 import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
@@ -176,7 +176,7 @@ export class EmployeeService {
 
   createIssue(
     projectId: number,
-    issueRequest: { summary: string }
+    issueRequest: ICreateIssueDTO
   ): Observable<IIssue> {
     return this.http
       .post<IIssue>(

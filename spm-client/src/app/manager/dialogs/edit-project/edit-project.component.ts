@@ -3,7 +3,8 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { Subject, EMPTY } from "rxjs";
 import { takeUntil, catchError } from "rxjs/operators";
-import { IProject } from "src/app/shared/interfaces/project.interface";
+import { IProject, ProjectStatus } from "src/app/shared/interfaces/project.interface";
+import { TaskStatus } from "src/app/shared/interfaces/task.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
 import { AddProjectComponent } from "../add-project/add-project.component";
@@ -36,6 +37,14 @@ export class EditProjectComponent {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  isProjectOnHold(): boolean {
+    return this.project.status === ProjectStatus.ON_HOLD;
+  }
+
+  isProjectComplete(): boolean {
+    return this.project.tasks.every(task => task.status === TaskStatus.COMPLETED);
   }
 
   editProject(): void {

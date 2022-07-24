@@ -115,12 +115,12 @@
         class="searchForm"
       >
         <input
-          type="text"
+          type="search"
           matInput
           required
           placeholder="Search For Project/Task/User/Todo"
           [matAutocomplete]="searchGroup"
-          (keyup)="search($event.target.value)"
+          (input)="search($event.target.value)"
         />
 
         <mat-autocomplete #searchGroup="matAutocomplete">

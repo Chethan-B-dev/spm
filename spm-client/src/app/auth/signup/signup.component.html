@@ -10,7 +10,7 @@
             placeholder="Username"
             formControlName="username"
           />
-          <mat-hint
+          <mat-error
             style="color: red"
             *ngIf="
               (this.signupForm.get('username').dirty ||
@@ -19,7 +19,7 @@
             "
           >
             username is required
-          </mat-hint>
+          </mat-error>
         </mat-form-field>
       </p>
 
@@ -31,7 +31,7 @@
             placeholder="Email"
             formControlName="email"
           />
-          <mat-hint
+          <mat-error
             style="color: red"
             *ngIf="
               (this.signupForm.get('email').dirty ||
@@ -40,7 +40,7 @@
             "
           >
             email is required
-          </mat-hint>
+          </mat-error>
         </mat-form-field>
       </p>
 
@@ -52,7 +52,7 @@
             placeholder="Password"
             formControlName="password"
           />
-          <mat-hint
+          <mat-error
             style="color: red"
             *ngIf="
               (this.signupForm.get('password').dirty ||
@@ -61,7 +61,7 @@
             "
           >
             password is required
-          </mat-hint>
+          </mat-error>
         </mat-form-field>
       </p>
 
@@ -72,7 +72,7 @@
             <mat-option value="MANAGER">Manager</mat-option>
             <mat-option value="EMPLOYEE">Employee</mat-option>
           </mat-select>
-          <mat-hint
+          <mat-error
             style="color: red"
             *ngIf="
               (this.signupForm.get('userRole').dirty ||
@@ -81,7 +81,7 @@
             "
           >
             Role is required
-          </mat-hint>
+          </mat-error>
         </mat-form-field>
       </p>
 
@@ -96,7 +96,7 @@
             formControlName="phone"
           />
           <mat-hint>+91</mat-hint>
-          <mat-hint
+          <mat-error
             style="color: red"
             *ngIf="
               (this.signupForm.get('phone').dirty ||
@@ -105,7 +105,7 @@
             "
           >
             Phone number is required
-          </mat-hint>
+          </mat-error>
         </mat-form-field>
       </p>
 

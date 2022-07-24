@@ -10,6 +10,7 @@ import {
   getIssueStatistics,
   IIssue,
   IssueStatus,
+  sortIssuesByPriority
 } from "src/app/shared/interfaces/issue.interface";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
@@ -17,7 +18,7 @@ import {
   getTaskStatistics,
   ITask,
   sortTasksByPriority,
-  TaskStatistics,
+  TaskStatistics
 } from "src/app/shared/interfaces/task.interface";
 import { getProjectProgress } from "src/app/shared/interfaces/todo.interface";
 import { NotificationService } from "src/app/shared/notification.service";
@@ -93,6 +94,10 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
         return EMPTY;
       })
     );
+  }
+
+  sortIssues(issues: IIssue[]): IIssue[] {
+    return issues.sort(sortIssuesByPriority);
   }
 
   onTaskCategoryChange(selectedTaskCategory: string): void {

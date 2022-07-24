@@ -43,6 +43,7 @@ public class Task {
     private TaskStatus status;
     private LocalDate createdDate;
     private LocalDate deadLine;
+    private LocalDate completedDate;
     @Column(nullable = false)
     private TaskPriority priority;
     @ManyToOne(cascade = CascadeType.MERGE)

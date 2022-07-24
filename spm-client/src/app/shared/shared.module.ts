@@ -24,6 +24,7 @@ import { TaskCardComponent } from "./task-card/task-card.component";
 
 import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
+import { AngularFireStorageModule } from '@angular/fire/storage';
 import { environment } from "src/environments/environment";
 import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.component";
 @NgModule({
@@ -56,6 +57,7 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
+    AngularFireStorageModule
   ],
   exports: [
     SidenavComponent,

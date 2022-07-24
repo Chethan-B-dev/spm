@@ -21,3 +21,8 @@ mat-chip {
 .mat-badge-content {
   font-family: "Material Icons";
 }
+
+input[type=search]::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button !important;
+  cursor: pointer;
+}

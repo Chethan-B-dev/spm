@@ -10,6 +10,7 @@ import com.example.spm.model.enums.TodoStatus;
 import com.example.spm.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +59,7 @@ public class TodoService {
         Todo todo = checkIfTodoExists(todoId);
         todo.setName(updateTodoDTO.getTodoName());
         todo.setStatus(updateTodoDTO.getStatus());
+        todo.setCompletedOn(todo.getStatus().equals(TodoStatus.DONE) ? LocalDate.now() : null);
         todo.setTask(taskService.checkIfTaskExists(updateTodoDTO.getTaskId()));
         return todo;
     }

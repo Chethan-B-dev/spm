@@ -1,6 +1,6 @@
 import { Component, Inject, OnDestroy } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { EMPTY, Subject } from "rxjs";
+import { EMPTY, Subject, Subscription } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { SnackbarService } from "../../services/snackbar.service";
@@ -14,6 +14,7 @@ import { DataType, DeleteData } from "../../utility/common";
 })
 export class ConfirmDeleteComponent implements OnDestroy {
   deleteData: DeleteData;
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
     @Inject(MAT_DIALOG_DATA) deleteData,
@@ -28,7 +29,7 @@ export class ConfirmDeleteComponent implements OnDestroy {
   onDeleteClick(): void {
     switch (this.deleteData.deleteType) {
       case DataType.TODO:
-        this.managerService
+        this.subscriptions.push(this.managerService
           .deleteTodo(this.deleteData.id)
           .pipe(
             takeUntil(this.destroy$),
@@ -41,10 +42,10 @@ export class ConfirmDeleteComponent implements OnDestroy {
           .subscribe(() => {
             this.snackbarService.showSnackBar("Todo has been deleted");
             this.close(true);
-          });
+          }));
         break;
       case DataType.COMMENT:
-        this.sharedService
+        this.subscriptions.push(this.sharedService
           .deleteComment(this.deleteData.id)
           .pipe(
             takeUntil(this.destroy$),
@@ -57,7 +58,7 @@ export class ConfirmDeleteComponent implements OnDestroy {
             if (res)
               this.snackbarService.showSnackBar(`comment has been deleted`);
             this.close(true);
-          });
+          }));
         break;
       case DataType.TASK:
         this.close(true);
@@ -70,6 +71,7 @@ export class ConfirmDeleteComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   close(deleted: boolean): void {

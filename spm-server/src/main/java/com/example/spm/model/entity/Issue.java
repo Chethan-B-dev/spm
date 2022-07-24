@@ -1,10 +1,13 @@
 package com.example.spm.model.entity;
 
+import com.example.spm.model.enums.IssuePriority;
 import com.example.spm.model.enums.IssueStatus;
+import com.example.spm.model.enums.TaskPriority;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.security.cert.TrustAnchor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,10 @@ public class Issue {
     private String summary;
     @Column(nullable = false)
     private IssueStatus status;
+    @Column(nullable = true)
+    private IssuePriority priority;
+    @Column(nullable = true)
+    private String image;
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(
             name = "project_id",
@@ -47,6 +54,7 @@ public class Issue {
     )
     private AppUser user;
     private LocalDate createdDate;
+    private LocalDate resolvedDate;
 
     @JsonIgnore
     @OneToMany(mappedBy = "issue", cascade =  CascadeType.REMOVE)

@@ -27,7 +27,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class IssueService {
     private final IssueRepository issueRepository;
-    private final ProjectService projectService;
     private final AppUserService appUserService;
     private final AdminService adminService;
     private final IssueCommentRepository issueCommentRepository;
@@ -42,11 +41,16 @@ public class IssueService {
         Issue issue = checkIfIssueExists(issueId);
         issue.setSummary(updateIssueDTO.getSummary());
         issue.setStatus(updateIssueDTO.getStatus());
+        if (issue.getStatus().equals(IssueStatus.RESOLVED)) {
+            issue.setResolvedDate(LocalDate.now());
+        }
         return issue;
     }
 
     public Issue getIssueById(Integer issueId) {
-        return checkIfIssueExists(issueId);
+        Issue issue = checkIfIssueExists(issueId);
+        System.out.println(issue);
+        return issue;
     }
 
     public Issue createIssue(Project project, CreateIssueDTO createIssueDTO, MyAppUserDetails loggedInUser) {
@@ -56,8 +60,10 @@ public class IssueService {
                 .builder()
                 .status(IssueStatus.UNRESOLVED)
                 .summary(createIssueDTO.getSummary())
+                .priority(createIssueDTO.getPriority())
                 .createdDate(LocalDate.now())
                 .project(project)
+                .image(createIssueDTO.getImage())
                 .user(appUserService.getUser(loggedInUser.getUsername()))
                 .build();
         return issueRepository.save(issue);

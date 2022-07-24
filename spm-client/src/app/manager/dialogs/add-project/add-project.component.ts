@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef } from "@angular/material/dialog";
-import { EMPTY, Subject } from "rxjs";
+import { EMPTY, Subject, Subscription } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
@@ -13,6 +13,7 @@ import { ManagerService } from "../../services/manager.service";
 })
 export class AddProjectComponent implements OnInit, OnDestroy {
   createProjectForm: FormGroup;
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -33,6 +34,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   createProject(): void {
@@ -47,7 +49,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.managerService
+    const createProjectSubscription = this.managerService
       .createProject(projectName, projectDescription, projectDeadLine)
       .pipe(
         takeUntil(this.destroy$),
@@ -61,6 +63,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
         this.snackbarService.showSnackBar(`${projectName} has been created`);
         this.close();
       });
+    this.subscriptions.push(createProjectSubscription);
   }
 
   close(): void {

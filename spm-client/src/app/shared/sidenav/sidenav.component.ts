@@ -188,7 +188,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   }
 
   search(searchTerm: string): void {
-    this.searchTermSubject.next(searchTerm.toLowerCase());
+    this.searchTermSubject.next(searchTerm.trim().toLowerCase());
   }
 
   toggleSideNav(): void {

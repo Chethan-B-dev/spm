@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { EMPTY, Subject } from "rxjs";
+import { EMPTY, Subject, Subscription } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import {
@@ -18,6 +18,7 @@ import { SnackbarService } from "../../services/snackbar.service";
 export class EditProfileComponent implements OnInit, OnDestroy {
   editProfileForm: FormGroup;
   currentUser = this.authService.currentUser;
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -48,10 +49,11 @@ export class EditProfileComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   editProfile(): void {
-    this.authService
+    const editProfileSubscription = this.authService
       .editProfile({
         ...this.editProfileForm.value,
       } as IEditProfileRequest)
@@ -66,6 +68,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
         this.currentUser = user;
         this.snackbarService.showSnackBar(`Your profile has been updated`);
       });
+    this.subscriptions.push(editProfileSubscription);
   }
 
   private isImportant(currentUser: IAppUser): boolean {

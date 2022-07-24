@@ -11,7 +11,7 @@ import {
   IComment,
   IIssue,
   IssueStatus,
-  IUpdateIssueDTO,
+  IUpdateIssueDTO
 } from "src/app/shared/interfaces/issue.interface";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";

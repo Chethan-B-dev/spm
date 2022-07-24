@@ -37,4 +37,5 @@ public class Todo {
     private Task task;
     private TodoStatus status;
     private LocalDate createdOn;
+    private LocalDate completedOn;
 }

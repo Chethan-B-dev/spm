@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { EMPTY, Subject } from "rxjs";
+import { EMPTY, Subject, Subscription } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { ISignUpRequest } from "src/app/shared/interfaces/user.interface";
@@ -19,6 +19,7 @@ import { AuthService } from "../auth.service";
 })
 export class SignupComponent implements OnInit {
   signupForm: FormGroup;
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
     private fb: FormBuilder,
@@ -40,7 +41,7 @@ export class SignupComponent implements OnInit {
   }
 
   signup(): void {
-    this.authService
+    const registerSubscription = this.authService
       .signup(this.signupForm.value as ISignUpRequest)
       .pipe(
         takeUntil(this.destroy$),
@@ -74,10 +75,12 @@ export class SignupComponent implements OnInit {
         );
         this.router.navigate(["/login"]);
       });
+    this.subscriptions.push(registerSubscription);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 }

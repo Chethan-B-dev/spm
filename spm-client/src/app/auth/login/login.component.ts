@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { EMPTY, Subject } from "rxjs";
+import { EMPTY, Subject, Subscribable, Subscription } from "rxjs";
 import { catchError, pluck, takeUntil, tap } from "rxjs/operators";
 import { EmployeeService } from "src/app/employee/employee.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
@@ -16,6 +16,7 @@ import { AuthService } from "../auth.service";
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
     private fb: FormBuilder,
@@ -28,7 +29,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      email: ["", Validators.required],
+      email: ["", [Validators.required, Validators.email]],
       password: ["", Validators.required],
     });
   }
@@ -36,10 +37,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   login(): void {
-    this.authService
+    const loginSubscription = this.authService
       .login(this.loginForm.value as ILoginRequest)
       .pipe(
         takeUntil(this.destroy$),
@@ -59,5 +61,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.snackbarService.showSnackBar(`Welcome ${user.username}`);
         this.router.navigate([`/${user.role.toLowerCase()}`]);
       });
+    this.subscriptions.push(loginSubscription);
   }
 }

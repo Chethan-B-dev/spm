@@ -3,7 +3,7 @@ import { Component, OnDestroy } from "@angular/core";
 // material
 import { MatDialog } from "@angular/material";
 //rxjs
-import { BehaviorSubject, combineLatest, EMPTY, Subject } from "rxjs";
+import { BehaviorSubject, combineLatest, EMPTY, Subject, Subscription } from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -35,6 +35,8 @@ export class AdminComponent implements OnDestroy {
 
   private isLoadingSubject = new BehaviorSubject<boolean>(true);
   isLoading$ = this.isLoadingSubject.asObservable();
+
+  private readonly subscriptions = [] as Subscription[];
 
   private readonly destroy$ = new Subject();
 
@@ -87,6 +89,7 @@ export class AdminComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   searchUser(searchTerm: string): void {
@@ -98,7 +101,7 @@ export class AdminComponent implements OnDestroy {
   }
 
   takeDecision(userId: number, adminDecision: string): void {
-    this.adminApiService
+    const takeDecisionSubscription = this.adminApiService
       .takeDecision(userId, adminDecision)
       .pipe(
         takeUntil(this.destroy$),
@@ -113,10 +116,11 @@ export class AdminComponent implements OnDestroy {
           `user has been ${adminDecision.toLowerCase()}ed`
         );
       });
+    this.subscriptions.push(takeDecisionSubscription);
   }
 
   enableUser(userId: number): void {
-    this.adminApiService
+    const enableUserSubscription = this.adminApiService
       .enableUser(userId)
       .pipe(
         takeUntil(this.destroy$),
@@ -129,6 +133,7 @@ export class AdminComponent implements OnDestroy {
         this.adminApiService.refresh();
         this.snackbarService.showSnackBar(`user has been enabled`);
       });
+    this.subscriptions.push(enableUserSubscription);
   }
 
   openDeleteConfirmDialog(): void {

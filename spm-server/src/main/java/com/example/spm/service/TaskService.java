@@ -11,6 +11,7 @@ import com.example.spm.model.enums.*;
 import com.example.spm.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +87,7 @@ public class TaskService {
     public Task completeTask(Integer taskId) {
         Task task = checkIfTaskExists(taskId);
         task.setStatus(TaskStatus.COMPLETED);
+        task.setCompletedDate(LocalDate.now());
         return taskRepository.save(task);
     }
 

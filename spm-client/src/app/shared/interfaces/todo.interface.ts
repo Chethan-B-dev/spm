@@ -6,6 +6,7 @@ export interface ITodo {
   task?: ITask;
   status: TodoStatus;
   createdOn: Date;
+  completedOn?: Date;
 }
 
 export interface IUpdateTodoDTO {

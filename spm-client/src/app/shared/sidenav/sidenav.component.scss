@@ -7,6 +7,11 @@
   background: #eee;
 }
 
+input[type=search]::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button !important;
+  cursor: pointer;
+}
+
 .example-spacer {
   flex: 1 1 auto;
 }

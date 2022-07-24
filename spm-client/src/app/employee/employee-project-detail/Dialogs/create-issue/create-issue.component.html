@@ -1,3 +1,11 @@
+<link
+  href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+  rel="stylesheet"
+  id="bootstrap-css"
+/>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
 <h2 mat-dialog-title>
   Create Issue for <span style="color: red"> {{ project.name }} </span>
 </h2>
@@ -26,6 +34,46 @@
       Issue Summary is <strong>required</strong>
     </mat-error>
   </p>
+
+  <p>
+    <mat-form-field appearance="fill" style="width: 100%">
+      <mat-label>Priority</mat-label>
+      <mat-select formControlName="priority">
+        <mat-option value="LOW"> Low</mat-option>
+        <mat-option value="MEDIUM">Medium</mat-option>
+        <mat-option value="HIGH">High</mat-option>
+      </mat-select>
+      <mat-error
+        style="color: red"
+        *ngIf="
+          (this.createIssueForm.get('priority').dirty ||
+            this.createIssueForm.get('priority').touched) &&
+          this.createIssueForm.get('priority').errors?.required
+        "
+      >
+        Issue priority is required
+      </mat-error>
+    </mat-form-field>
+  </p>
+
+  <div class="form-group files">
+    <mat-label>Upload image</mat-label>
+    <input
+      formControlName="image"
+      type="file"
+      class="form-control"
+      (change)="onFileChange($event)"
+      accept="image/*"
+      required
+    />
+  </div>
+
+  <div *ngIf="uploadPercent | async as percent">
+    <mat-progress-bar mode="determinate" [value]="percent"></mat-progress-bar>
+    <mat-hint style="color: green"
+      >Uploading {{ math.trunc(percent) }} %</mat-hint
+    >
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions class="push-right">
@@ -38,7 +86,7 @@
   </button>
   <button
     class="mat-raised-button mat-primary"
-    [disabled]="this.createIssueForm.invalid"
+    [disabled]="this.createIssueForm.invalid || this.disableButton"
     (click)="createIssue(project.id)"
   >
     Create Issue

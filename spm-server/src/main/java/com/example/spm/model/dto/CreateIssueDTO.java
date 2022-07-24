@@ -1,5 +1,7 @@
 package com.example.spm.model.dto;
 
+import com.example.spm.model.enums.IssuePriority;
+import com.example.spm.model.enums.TaskPriority;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -13,4 +15,6 @@ import javax.validation.constraints.NotBlank;
 public class CreateIssueDTO {
     @NotBlank(message = "issue summary cannot be blank")
     private String summary;
+    private IssuePriority priority;
+    private String image;
 }

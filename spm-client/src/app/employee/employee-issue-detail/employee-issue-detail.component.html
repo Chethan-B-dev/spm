@@ -36,6 +36,9 @@
         </button>
       </div>
       <mat-card-subtitle>{{ issue.createdDate | date }}</mat-card-subtitle>
+      <div class="center mt-4">
+        <img mat-card-image [src]="issue.image" [alt]="issue.summary" />
+      </div>
       <mat-chip-list>
         <mat-chip
           color="primary"
@@ -44,6 +47,27 @@
           >{{ issue.status | titlecase }}</mat-chip
         >
         <mat-chip>Assignee - {{ issue.user?.username }}</mat-chip>
+        <mat-chip
+          *ngIf="issue.priority === 'LOW'"
+          matTooltip="Low Priority"
+          [matTooltipPosition]="'right'"
+          ><mat-icon>keyboard_arrow_down</mat-icon>
+          {{ issue.priority | titlecase }}</mat-chip
+        >
+        <mat-chip
+          *ngIf="issue.priority === 'MEDIUM'"
+          matTooltip="Medium Priority"
+          [matTooltipPosition]="'right'"
+          ><mat-icon>unfold_more</mat-icon
+          >{{ issue.priority | titlecase }}</mat-chip
+        >
+        <mat-chip
+          *ngIf="issue.priority === 'HIGH'"
+          matTooltip="High Priority"
+          [matTooltipPosition]="'right'"
+          ><mat-icon>keyboard_arrow_up</mat-icon
+          >{{ issue.priority | titlecase }}</mat-chip
+        >
       </mat-chip-list>
     </div>
   </mat-card>

@@ -4,10 +4,13 @@ import { IAppUser } from "./user.interface";
 export interface IIssue {
   id: number;
   summary: string;
+  image?: string;
   project?: IProject;
   user: IAppUser;
   createdDate: Date;
+  resolvedDate?: Date;
   status: IssueStatus;
+  priority: IssuePriority;
 }
 
 export interface IComment {
@@ -23,9 +26,21 @@ export interface IUpdateIssueDTO {
   status: IssueStatus;
 }
 
+export interface ICreateIssueDTO {
+  summary: string;
+  priority: IssuePriority;
+  image: string;
+}
+
 export enum IssueStatus {
   UNRESOLVED = "UNRESOLVED",
   RESOLVED = "RESOLVED",
+}
+
+export enum IssuePriority {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
 }
 
 export interface IssueStatistics {
@@ -33,6 +48,8 @@ export interface IssueStatistics {
 }
 
 export const IssueStatusOptions = [...Object.keys(IssueStatus)];
+
+export const IssuePriorityOptions = [...Object.keys(IssuePriority)];
 
 export function getIssueStatistics(issues: IIssue[]): IssueStatistics {
   const issueStatistics = IssueStatusOptions.reduce((stats, status) => {
@@ -49,3 +66,7 @@ export function getIssueProgress(issues: IIssue[]): number {
   ).length;
   return ((resolvedIssues / issues.length) * 100) | 0;
 }
+
+export const sortIssuesByPriority = (a: IIssue, b: IIssue) =>
+IssuePriorityOptions.findIndex((priority) => priority === b.priority) -
+IssuePriorityOptions.findIndex((priority) => priority === a.priority);

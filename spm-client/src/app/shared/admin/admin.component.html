@@ -31,9 +31,10 @@
     >
       <mat-label>Search User By username or email or role</mat-label>
       <input
-        (keyup)="searchUser($event.target.value)"
+        type="search"
         matInput
         placeholder="Search users"
+        (input)="searchUser($event.target.value)"
       />
     </mat-form-field>
   </div>
