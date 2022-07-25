@@ -1,7 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
-import { AdminComponent } from "./admin/admin.component";
 import { SidenavComponent } from "./sidenav/sidenav.component";
 
 import { AuthModule } from "../auth/auth.module";
@@ -30,7 +29,6 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
 @NgModule({
   declarations: [
     SidenavComponent,
-    AdminComponent,
     ConfirmDeleteComponent,
     EditProfileComponent,
     ProgressBarComponent,
@@ -61,7 +59,6 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
   ],
   exports: [
     SidenavComponent,
-    AdminComponent,
     ConfirmDeleteComponent,
     EditProfileComponent,
     ProgressBarComponent,
@@ -70,6 +67,5 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
     LoadingSpinnerComponent,
     PieChartComponent,
   ],
-  providers: [AdminApiService, SnackbarService],
 })
 export class SharedModule {}

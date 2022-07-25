@@ -1,5 +1,5 @@
 // angular
-import { Component, OnDestroy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 // material
 import { MatDialog } from "@angular/material";
 //rxjs
@@ -11,23 +11,19 @@ import {
   map,
   switchMap,
   takeUntil,
-  tap,
+  tap
 } from "rxjs/operators";
-// components
-import { ConfirmDeleteComponent } from "../dialogs/confirm-delete/confirm-delete.component";
-// interfaces
-import { IAppUser } from "../interfaces/user.interface";
-// services
-import { AdminApiService } from "../services/admin-api.service";
-import { SnackbarService } from "../services/snackbar.service";
-import { stopLoading } from "../utility/loading";
+import { IAppUser } from "../shared/interfaces/user.interface";
+import { AdminApiService } from "../shared/services/admin-api.service";
+import { SnackbarService } from "../shared/services/snackbar.service";
+import { stopLoading } from "../shared/utility/loading";
 
 @Component({
   selector: "app-admin",
   templateUrl: "./admin.component.html",
   styleUrls: ["./admin.component.scss"],
 })
-export class AdminComponent implements OnDestroy {
+export class AdminComponent implements OnDestroy,OnInit {
   defaultUserCategory = "UNVERIFIED";
 
   private searchTermSubject = new BehaviorSubject<string>("");
@@ -86,6 +82,10 @@ export class AdminComponent implements OnDestroy {
     private readonly snackbarService: SnackbarService
   ) {}
 
+  ngOnInit(): void {
+    this.onUserCategoryChange(this.defaultUserCategory);
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -136,16 +136,6 @@ export class AdminComponent implements OnDestroy {
     this.subscriptions.push(enableUserSubscription);
   }
 
-  openDeleteConfirmDialog(): void {
-    let dialogRef = this.dialog.open(ConfirmDeleteComponent);
-    dialogRef.afterClosed().subscribe((result: boolean) => {
-      console.log(result);
-      // todo : delete user api call from adminApiService
-      // yes returns true
-      // no returns false
-    });
-  }
-
   private filterUserBySearchTerm(user: IAppUser, searchTerm: string): boolean {
     return (
       user.username.toLowerCase().includes(searchTerm) ||
@@ -155,3 +145,4 @@ export class AdminComponent implements OnDestroy {
     );
   }
 }
+
