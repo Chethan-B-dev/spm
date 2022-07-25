@@ -1,68 +1,29 @@
 // angular
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { count } from "console";
 // rxjs
-import {
-  BehaviorSubject,
-  combineLatest,
-  merge,
-  Observable,
-  of,
-  ReplaySubject,
-  Subject,
-} from "rxjs";
-import {
-  catchError,
-  concatMap,
-  map,
-  scan,
-  shareReplay,
-  switchMap,
-  takeLast,
-  tap,
-} from "rxjs/operators";
-import { IIssue } from "src/app/shared/interfaces/issue.interface";
-import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
-import {
-  IProject,
-  ProjectStatus,
-} from "src/app/shared/interfaces/project.interface";
+import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   isBacklogTask,
   ITask,
-  ITaskRequestDTO,
   TaskPriority,
-  TaskPriorityOptions,
   TaskPriorityStatistics,
   TaskStatistics,
   TaskStatus,
-  userTasks,
 } from "src/app/shared/interfaces/task.interface";
 import {
   getTodoStatistics,
-  ITodo,
   TodoStatus,
 } from "src/app/shared/interfaces/todo.interface";
 import {
   IAppUser,
   UserDesignation,
-  UserDesignations,
-  UserDesignationStatistics,
   UserDesignationNameStatistics,
+  UserDesignationStatistics,
   UserDesignationStatisticsCount,
-  UserRole,
-  UserStatus,
 } from "src/app/shared/interfaces/user.interface";
-import {
-  DataType,
-  ISearchData,
-  ISearchGroup,
-  ISearchResult,
-} from "src/app/shared/utility/common";
 // utility
-import { handleError } from "src/app/shared/utility/error";
 
 @Injectable({
   providedIn: "root",

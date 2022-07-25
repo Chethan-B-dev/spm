@@ -11,7 +11,7 @@ import {
   IComment,
   IIssue,
   IssueStatus,
-  IUpdateIssueDTO
+  IUpdateIssueDTO,
 } from "src/app/shared/interfaces/issue.interface";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
@@ -33,7 +33,7 @@ export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
   currentUser: IAppUser = this.authService.currentUser;
   private readonly destroy$ = new Subject<void>();
   constructor(
-    public dialog: MatDialog,
+    private dialog: MatDialog,
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private readonly authService: AuthService,

@@ -7,7 +7,6 @@ import { IProject } from "src/app/shared/interfaces/project.interface";
 import { TaskStatistics } from "src/app/shared/interfaces/task.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
-import { mockProject } from "../project.mock";
 import { ReportsService } from "../services/reports.service";
 declare let Highcharts: any;
 
@@ -45,8 +44,6 @@ export class EmployeeReportsDashboardComponent implements OnInit {
         })
       )
       .subscribe((project) => {
-        console.log(`user id is ${this.userId}`);
-
         this.project = project;
         this.user = this.project.users.find((user) => user.id === this.userId);
         // pie chart data
@@ -65,24 +62,6 @@ export class EmployeeReportsDashboardComponent implements OnInit {
         this.employeeRank = this.reportService
           .getEmployeeRank(this.project, this.user)
           .toString();
-
-        const getAllProjectsTasksCount =
-          this.reportService.getAllTaskStatusCount(this.project);
-        console.log(getAllProjectsTasksCount.todo.length);
-        let todoCount = getAllProjectsTasksCount.todo.length;
-        let inProgressCount = getAllProjectsTasksCount.in_progress.length;
-        let doneCount = getAllProjectsTasksCount.done.length;
-        console.log(todoCount);
-        console.log(inProgressCount);
-        console.log(doneCount);
-
-        const getProjectsPresentIn =
-          this.reportService.getTotalProjectWorkingInCount(this.project);
-        console.log("Present in projects", getProjectsPresentIn);
-
-        const getUserCountOfAllTasks =
-          this.reportService.getProjectStatisticsPerUser(this.project.tasks);
-        console.log("Count per user", getUserCountOfAllTasks);
 
         const barGraphData = this.reportService.getUserPerformanceChart(
           this.project,

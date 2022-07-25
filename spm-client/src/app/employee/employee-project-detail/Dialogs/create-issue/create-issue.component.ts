@@ -1,11 +1,14 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
-import { AngularFireStorage } from '@angular/fire/storage';
+import { AngularFireStorage } from "@angular/fire/storage";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { EMPTY, Observable, Subject, Subscription } from "rxjs";
 import { catchError, finalize, switchMap, takeUntil } from "rxjs/operators";
 import { EmployeeService } from "src/app/employee/employee.service";
-import { ICreateIssueDTO, IIssue } from "src/app/shared/interfaces/issue.interface";
+import {
+  ICreateIssueDTO,
+  IIssue,
+} from "src/app/shared/interfaces/issue.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 @Component({
@@ -48,12 +51,12 @@ export class CreateIssueComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   createIssue(projectId: number): void {
     const fileType = this.file.type;
-    if (!fileType.startsWith('image/')) {
+    if (!fileType.startsWith("image/")) {
       this.snackbarService.showSnackBar("Only Images can be uploaded");
       return;
     }
@@ -62,45 +65,49 @@ export class CreateIssueComponent implements OnInit, OnDestroy {
     const fileRef = this.storage.ref(filePath);
     const task = this.storage.upload(filePath, this.file);
     this.uploadPercent = task.percentageChanges();
-    this.subscriptions.push(task
-      .snapshotChanges()
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          this.disableButton = false;
-          this.close(false);
-          return EMPTY;
-        }),
-        finalize(() => {
-          fileRef
-          .getDownloadURL()
-          .pipe(
-            switchMap((imageUrl) => this.addIssue(projectId, imageUrl))).subscribe(() => {
-            this.snackbarService.showSnackBar("issue has been created");
-            this.close(true);
-          });
-        })
-      )
-      .subscribe());
+    this.subscriptions.push(
+      task
+        .snapshotChanges()
+        .pipe(
+          takeUntil(this.destroy$),
+          catchError((err) => {
+            this.snackbarService.showSnackBar(err);
+            this.disableButton = false;
+            this.close(false);
+            return EMPTY;
+          }),
+          finalize(() => {
+            this.subscriptions.push(
+              fileRef
+                .getDownloadURL()
+                .pipe(
+                  switchMap((imageUrl) => this.addIssue(projectId, imageUrl))
+                )
+                .subscribe(() => {
+                  this.snackbarService.showSnackBar("issue has been created");
+                  this.close(true);
+                })
+            );
+          })
+        )
+        .subscribe()
+    );
   }
 
-  addIssue(projectId: number,image: string): Observable<IIssue> {
+  addIssue(projectId: number, image: string): Observable<IIssue> {
     const createIssueDTO: ICreateIssueDTO = {
       summary: this.createIssueForm.value.summary,
       priority: this.createIssueForm.value.priority,
-      image
-    }
-    return this.employeeService
-      .createIssue(projectId, createIssueDTO)
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          this.disableButton = false;
-          this.close(false);
-          return EMPTY;
-        })
+      image,
+    };
+    return this.employeeService.createIssue(projectId, createIssueDTO).pipe(
+      takeUntil(this.destroy$),
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        this.disableButton = false;
+        this.close(false);
+        return EMPTY;
+      })
     );
   }
 

@@ -1,9 +1,13 @@
 // angular
 import { Component, OnDestroy, OnInit } from "@angular/core";
-// material
-import { MatDialog } from "@angular/material";
 //rxjs
-import { BehaviorSubject, combineLatest, EMPTY, Subject, Subscription } from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  EMPTY,
+  Subject,
+  Subscription,
+} from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -11,7 +15,7 @@ import {
   map,
   switchMap,
   takeUntil,
-  tap
+  tap,
 } from "rxjs/operators";
 import { IAppUser } from "../shared/interfaces/user.interface";
 import { AdminApiService } from "../shared/services/admin-api.service";
@@ -23,7 +27,7 @@ import { stopLoading } from "../shared/utility/loading";
   templateUrl: "./admin.component.html",
   styleUrls: ["./admin.component.scss"],
 })
-export class AdminComponent implements OnDestroy,OnInit {
+export class AdminComponent implements OnDestroy, OnInit {
   defaultUserCategory = "UNVERIFIED";
 
   private searchTermSubject = new BehaviorSubject<string>("");
@@ -34,7 +38,7 @@ export class AdminComponent implements OnDestroy,OnInit {
 
   private readonly subscriptions = [] as Subscription[];
 
-  private readonly destroy$ = new Subject();
+  private readonly destroy$ = new Subject<void>();
 
   users$ = this.adminApiService.refresh$.pipe(
     takeUntil(this.destroy$),
@@ -77,7 +81,6 @@ export class AdminComponent implements OnDestroy,OnInit {
   );
 
   constructor(
-    public dialog: MatDialog,
     private readonly adminApiService: AdminApiService,
     private readonly snackbarService: SnackbarService
   ) {}
@@ -89,7 +92,7 @@ export class AdminComponent implements OnDestroy,OnInit {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   searchUser(searchTerm: string): void {
@@ -145,4 +148,3 @@ export class AdminComponent implements OnDestroy,OnInit {
     );
   }
 }
-

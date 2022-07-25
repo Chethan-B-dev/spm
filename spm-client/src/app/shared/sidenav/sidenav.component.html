@@ -102,6 +102,7 @@
       />
       <!-- <span class="px-2">SPM</span> -->
       <button
+        class="mx-2"
         mat-button
         [routerLink]="'/' + (currentUser$ | async)?.role | lowercase"
       >
