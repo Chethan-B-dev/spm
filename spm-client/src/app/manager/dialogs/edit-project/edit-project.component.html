@@ -36,6 +36,29 @@
   </p>
 
   <p>
+    <mat-form-field appearance="fill">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="IN_PROGRESS">In Progress</mat-option>
+        <mat-option value="ON_HOLD">On Hold</mat-option>
+        <mat-option [disabled]="!isProjectComplete()" value="COMPLETE"
+          >Completed</mat-option
+        >
+      </mat-select>
+      <mat-hint
+        style="color: red"
+        *ngIf="
+          (this.editProjectForm.get('status').dirty ||
+            this.editProjectForm.get('status').touched) &&
+          this.editProjectForm.get('status').errors?.required
+        "
+      >
+        Project Status is required
+      </mat-hint>
+    </mat-form-field>
+  </p>
+
+  <p>
     <mat-form-field
       class="example-full-width"
       appearance="fill"

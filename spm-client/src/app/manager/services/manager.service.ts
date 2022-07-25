@@ -30,7 +30,7 @@ import {
 } from "src/app/shared/interfaces/issue.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
-import { IProject } from "src/app/shared/interfaces/project.interface";
+import { IProject, ProjectStatus } from "src/app/shared/interfaces/project.interface";
 import {
   ITask,
   ITaskRequestDTO,
@@ -315,12 +315,14 @@ export class ManagerService {
     projectId: number,
     projectName: string,
     projectDescription: string,
-    projectDeadLine: Date
+    projectDeadLine: Date,
+    status: ProjectStatus
   ): Observable<IProject> {
     const requestBody = {
       projectName,
       description: projectDescription,
       toDate: new Date(projectDeadLine + "Z").toISOString().substring(0, 10),
+      status
     };
     return this.http
       .put<IProject>(

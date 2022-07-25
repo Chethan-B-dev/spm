@@ -1,5 +1,6 @@
 package com.example.spm.model.dto;
 
+import com.example.spm.model.enums.ProjectStatus;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,4 +20,5 @@ public class CreateProjectDTO {
     private LocalDate toDate;
     @NotNull
     private String description;
+    private ProjectStatus status;
 }

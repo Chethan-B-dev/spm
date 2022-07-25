@@ -23,16 +23,16 @@
         placeholder="write Issue Description"
         formControlName="summary"
       ></textarea>
+      <mat-error
+        *ngIf="
+          (this.createIssueForm.get('summary').dirty ||
+            this.createIssueForm.get('summary').touched) &&
+          this.createIssueForm.get('summary').errors?.required
+        "
+      >
+        Issue Summary is <strong>required</strong>
+      </mat-error>
     </mat-form-field>
-    <mat-error
-      *ngIf="
-        (this.createIssueForm.get('summary').dirty ||
-          this.createIssueForm.get('summary').touched) &&
-        this.createIssueForm.get('summary').errors?.required
-      "
-    >
-      Issue Summary is <strong>required</strong>
-    </mat-error>
   </p>
 
   <p>
@@ -70,7 +70,7 @@
 
   <div *ngIf="uploadPercent | async as percent">
     <mat-progress-bar mode="determinate" [value]="percent"></mat-progress-bar>
-    <mat-hint style="color: green"
+    <mat-hint class="text-muted"
       >Uploading {{ math.trunc(percent) }} %</mat-hint
     >
   </div>

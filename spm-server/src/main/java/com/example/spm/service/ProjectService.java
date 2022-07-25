@@ -83,6 +83,7 @@ public class ProjectService {
         project.setName(createProjectDTO.getProjectName());
         project.setDescription(createProjectDTO.getDescription());
         project.setToDate(createProjectDTO.getToDate());
+        project.setStatus(createProjectDTO.getStatus());
         return projectRepository.save(project);
     }
 

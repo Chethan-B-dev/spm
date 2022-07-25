@@ -26,7 +26,7 @@ import { EditProjectComponent } from "src/app/manager/dialogs/edit-project/edit-
 import { SetDesignationComponent } from "src/app/manager/dialogs/set-designation/set-designation.component";
 import { IIssue } from "../interfaces/issue.interface";
 import { INotification } from "../interfaces/notification.interface";
-import { IProject } from "../interfaces/project.interface";
+import { IProject, ProjectStatus } from "../interfaces/project.interface";
 import {
   getTaskStatistics,
   TaskStatistics,
@@ -204,6 +204,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   showAddTaskButton(): boolean {
     const isProjectExpired =
       new Date().getTime() > new Date(this.project.toDate).getTime();
-    return !isProjectExpired;
+    const isProjectCompleted = this.project.status === ProjectStatus.COMPLETE;
+    return !isProjectExpired && !isProjectCompleted;
   }
 }

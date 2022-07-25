@@ -20,3 +20,5 @@ export enum ProjectStatus {
   ON_HOLD = "ON_HOLD",
   COMPLETE = "COMPLETE",
 }
+
+export const ProjectStatusOptions = [...Object.keys(ProjectStatus)];

@@ -3,11 +3,10 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { Subject, EMPTY } from "rxjs";
 import { takeUntil, catchError } from "rxjs/operators";
-import { IProject, ProjectStatus } from "src/app/shared/interfaces/project.interface";
+import { IProject, ProjectStatus, ProjectStatusOptions } from "src/app/shared/interfaces/project.interface";
 import { TaskStatus } from "src/app/shared/interfaces/task.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
-import { AddProjectComponent } from "../add-project/add-project.component";
 
 @Component({
   selector: "app-edit-project",
@@ -17,6 +16,7 @@ import { AddProjectComponent } from "../add-project/add-project.component";
 export class EditProjectComponent {
   project: IProject;
   editProjectForm: FormGroup;
+  projectStatusOptions = ProjectStatusOptions;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -31,6 +31,7 @@ export class EditProjectComponent {
       name: [this.project.name, Validators.required],
       description: [this.project.description, Validators.required],
       toDate: [this.project.toDate, Validators.required],
+      status: [this.project.status, Validators.required]
     });
   }
 
@@ -51,6 +52,7 @@ export class EditProjectComponent {
     const projectName: string = this.editProjectForm.value.name;
     const projectDescription: string = this.editProjectForm.value.description;
     const projectDeadLine: Date = this.editProjectForm.value.toDate;
+    const projectStatus: ProjectStatus = this.editProjectForm.value.status;
 
     if (new Date().getTime() > new Date(projectDeadLine).getTime()) {
       this.snackbarService.showSnackBar(
@@ -74,7 +76,8 @@ export class EditProjectComponent {
         this.project.id,
         projectName,
         projectDescription,
-        projectDeadLine
+        projectDeadLine,
+        projectStatus
       )
       .pipe(
         takeUntil(this.destroy$),
