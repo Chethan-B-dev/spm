@@ -18,7 +18,7 @@ import {
   tap,
 } from "rxjs/operators";
 import { IAppUser } from "../shared/interfaces/user.interface";
-import { AdminApiService } from "../shared/services/admin-api.service";
+import { AdminService } from "./admin.service";
 import { SnackbarService } from "../shared/services/snackbar.service";
 import { stopLoading } from "../shared/utility/loading";
 
@@ -40,7 +40,7 @@ export class AdminComponent implements OnDestroy, OnInit {
 
   private readonly destroy$ = new Subject<void>();
 
-  users$ = this.adminApiService.refresh$.pipe(
+  users$ = this.adminService.refresh$.pipe(
     takeUntil(this.destroy$),
     switchMap(() => this.usersWithoutRefresh$),
     tap(() => stopLoading(this.isLoadingSubject)),
@@ -52,8 +52,8 @@ export class AdminComponent implements OnDestroy, OnInit {
   );
 
   usersWithoutRefresh$ = combineLatest([
-    this.adminApiService.getAllUsers(),
-    this.adminApiService.userCategorySelectedAction$,
+    this.adminService.getAllUsers(),
+    this.adminService.userCategorySelectedAction$,
     this.searchTerm$.pipe(debounceTime(500), distinctUntilChanged()),
   ]).pipe(
     takeUntil(this.destroy$),
@@ -81,7 +81,7 @@ export class AdminComponent implements OnDestroy, OnInit {
   );
 
   constructor(
-    private readonly adminApiService: AdminApiService,
+    private readonly adminService: AdminService,
     private readonly snackbarService: SnackbarService
   ) {}
 
@@ -100,11 +100,11 @@ export class AdminComponent implements OnDestroy, OnInit {
   }
 
   onUserCategoryChange(selectedUserCategory: string): void {
-    this.adminApiService.selectUserCategory(selectedUserCategory);
+    this.adminService.selectUserCategory(selectedUserCategory);
   }
 
   takeDecision(userId: number, adminDecision: string): void {
-    const takeDecisionSubscription = this.adminApiService
+    const takeDecisionSubscription = this.adminService
       .takeDecision(userId, adminDecision)
       .pipe(
         takeUntil(this.destroy$),
@@ -113,8 +113,8 @@ export class AdminComponent implements OnDestroy, OnInit {
           return EMPTY;
         })
       )
-      .subscribe((_) => {
-        this.adminApiService.refresh();
+      .subscribe(() => {
+        this.adminService.refresh();
         this.snackbarService.showSnackBar(
           `user has been ${adminDecision.toLowerCase()}ed`
         );
@@ -123,7 +123,7 @@ export class AdminComponent implements OnDestroy, OnInit {
   }
 
   enableUser(userId: number): void {
-    const enableUserSubscription = this.adminApiService
+    const enableUserSubscription = this.adminService
       .enableUser(userId)
       .pipe(
         takeUntil(this.destroy$),
@@ -132,8 +132,8 @@ export class AdminComponent implements OnDestroy, OnInit {
           return EMPTY;
         })
       )
-      .subscribe((_) => {
-        this.adminApiService.refresh();
+      .subscribe(() => {
+        this.adminService.refresh();
         this.snackbarService.showSnackBar(`user has been enabled`);
       });
     this.subscriptions.push(enableUserSubscription);

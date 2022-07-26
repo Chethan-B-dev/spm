@@ -48,9 +48,7 @@ public class IssueService {
     }
 
     public Issue getIssueById(Integer issueId) {
-        Issue issue = checkIfIssueExists(issueId);
-        System.out.println(issue);
-        return issue;
+        return checkIfIssueExists(issueId);
     }
 
     public Issue createIssue(Project project, CreateIssueDTO createIssueDTO, MyAppUserDetails loggedInUser) {

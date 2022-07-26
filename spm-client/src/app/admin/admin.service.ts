@@ -3,19 +3,18 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { catchError, shareReplay, switchMap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
-import { IAppUser } from "../interfaces/user.interface";
-import { handleError } from "../utility/error";
+import { IAppUser } from "../shared/interfaces/user.interface";
+import { handleError } from "../shared/utility/error";
 
 @Injectable({
   providedIn: "root",
 })
-export class AdminApiService {
+export class AdminService {
   private adminUrl = environment.adminUrl;
   private userCategorySelectedSubject = new BehaviorSubject<string>(
     "UNVERIFIED"
   );
   userCategorySelectedAction$ = this.userCategorySelectedSubject.asObservable();
-  static readonly adminId = 33;
 
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();

@@ -33,8 +33,6 @@ export interface TaskStatistics {
   [status: string]: number;
 }
 
-export const userTasks = [...Object.keys(TaskStatus)];
-
 export function getTaskStatistics(tasks: ITask[]): TaskStatistics {
   const taskStatistics = TaskStatusOptions.reduce((stats, status) => {
     stats[status] = 0;

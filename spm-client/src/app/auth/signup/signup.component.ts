@@ -6,7 +6,6 @@ import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { ISignUpRequest } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
-import { AdminApiService } from "src/app/shared/services/admin-api.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/shared.service";
 import { myTitleCase } from "src/app/shared/utility/common";
@@ -52,23 +51,25 @@ export class SignupComponent implements OnInit {
       )
       .subscribe((user) => {
         // todo: this is not working try this again
-        this.sharedService.getAdmin()
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            this.snackbarService.showSnackBar(err);
-            return EMPTY;
-          })
-        ).subscribe((admin) => {
-          const notification: INotification = {
-            userId: admin.id,
-            notification: `A new ${myTitleCase(user.role)} with name ${
-              user.username
-            } has registered on ${new Date().toLocaleString()}`,
-            time: Date.now(),
-          };
-          this.notificationService.addNotification(notification);
-        });
+        this.sharedService
+          .getAdmin()
+          .pipe(
+            takeUntil(this.destroy$),
+            catchError((err) => {
+              this.snackbarService.showSnackBar(err);
+              return EMPTY;
+            })
+          )
+          .subscribe((admin) => {
+            const notification: INotification = {
+              userId: admin.id,
+              notification: `A new ${myTitleCase(user.role)} with name ${
+                user.username
+              } has registered on ${new Date().toLocaleString()}`,
+              time: Date.now(),
+            };
+            this.notificationService.addNotification(notification);
+          });
         this.snackbarService.showSnackBar(
           "Your account has been created, Please wait for the Admin to approve your request",
           5000
@@ -81,6 +82,6 @@ export class SignupComponent implements OnInit {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }
