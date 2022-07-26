@@ -22,10 +22,10 @@ import { DataType, DeleteData } from "src/app/shared/utility/common";
 
 @Component({
   selector: "app-employee-issue-detail",
-  templateUrl: "./employee-issue-detail.component.html",
-  styleUrls: ["./employee-issue-detail.component.scss"],
+  templateUrl: "./issue-detail.component.html",
+  styleUrls: ["./issue-detail.component.scss"],
 })
-export class EmployeeIssueDetailComponent implements OnInit, OnDestroy {
+export class IssueDetailComponent implements OnInit, OnDestroy {
   addCommentForm: FormGroup;
   issueId: number;
   issue$: Observable<IIssue>;

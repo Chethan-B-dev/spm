@@ -13,17 +13,15 @@ import { ProjectCardComponent } from "./project-card/project-card.component";
 
 import { HttpClientModule } from "@angular/common/http";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { EmployeeIssueDetailComponent } from "../employee/employee-issue-detail/employee-issue-detail.component";
 import { ShowEmployeesComponent } from "../manager/dialogs/show-employees/show-employees.component";
+import { IssueDetailComponent } from "./issue-detail/issue-detail.component";
 import { MaterialModule } from "./material/material.module";
 import { PieChartComponent } from "./pie-chart/pie-chart.component";
-import { AdminApiService } from "./services/admin-api.service";
-import { SnackbarService } from "./services/snackbar.service";
 import { TaskCardComponent } from "./task-card/task-card.component";
 
 import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
-import { AngularFireStorageModule } from '@angular/fire/storage';
+import { AngularFireStorageModule } from "@angular/fire/storage";
 import { environment } from "src/environments/environment";
 import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.component";
 @NgModule({
@@ -36,7 +34,7 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
     LoadingSpinnerComponent,
     PieChartComponent,
     TaskCardComponent,
-    EmployeeIssueDetailComponent,
+    IssueDetailComponent,
     ShowEmployeesComponent,
     AddProjectComponent,
   ],
@@ -55,7 +53,7 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
-    AngularFireStorageModule
+    AngularFireStorageModule,
   ],
   exports: [
     SidenavComponent,

@@ -5,10 +5,10 @@ import { AuthGuard } from "./auth/auth.guard";
 import { LoggedInGuard } from "./auth/isloggedin.guard";
 import { LoginComponent } from "./auth/login/login.component";
 import { SignupComponent } from "./auth/signup/signup.component";
-import { EmployeeIssueDetailComponent } from "./employee/employee-issue-detail/employee-issue-detail.component";
 import { EmployeeGuard } from "./employee/employee.guard";
 import { ManagerGuard } from "./manager/manager.guard";
 import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile.component";
+import { IssueDetailComponent } from "./shared/issue-detail/issue-detail.component";
 
 const routes: Routes = [
   { path: "", component: LoginComponent, canActivate: [AuthGuard] },
@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: "profile", component: EditProfileComponent },
   {
     path: "issue-detail/:id",
-    component: EmployeeIssueDetailComponent,
+    component: IssueDetailComponent,
     canActivate: [LoggedInGuard],
   },
   // lazy loaded modules
