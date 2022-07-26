@@ -23,7 +23,6 @@ import {
   UserDesignationStatistics,
   UserDesignationStatisticsCount,
 } from "src/app/shared/interfaces/user.interface";
-// utility
 
 @Injectable({
   providedIn: "root",
@@ -121,6 +120,112 @@ export class ReportsService {
           no_of_Tasks += 1;
       });
       res.push({ x: loop.toDateString(), y: no_of_Tasks });
+      var newDate = loop.setDate(loop.getDate() + 1);
+      loop = new Date(newDate);
+    }
+    // console.log(res);
+    return res;
+  }
+
+  getIdealBurn(project: IProject) {
+    return this.getIdealBurnData(project);
+  }
+
+  getIdealBurnData(project: IProject) {
+    let countOfTasks = project.tasks.length;
+    const diffTime = Math.abs(+project.fromDate - +new Date(project.toDate));
+    let days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diff = countOfTasks / days;
+    let actual = countOfTasks;
+    const result = [actual];
+    for (let i = 0; i < days; i++) {
+      actual = actual - diff;
+      result.push(actual);
+    }
+    return result;
+  }
+
+  getIdealBurnDataProject(project: IProject) {
+    let totalCount = project.tasks.length + project.issues.length;
+    const diffTime = Math.abs(+project.fromDate - +new Date(project.toDate));
+    let days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diff = totalCount / days;
+    let actual = totalCount;
+    const result = [actual];
+    for (let i = 0; i < days; i++) {
+      actual = actual - diff;
+      result.push(actual);
+    }
+    return result;
+  }
+
+  getActualBurnData(project: IProject) {
+    const fromDate = project.fromDate;
+    const toDate = project.toDate;
+    let actual = project.tasks.length;
+    var loop = new Date(fromDate);
+    const res = [];
+    while (loop <= toDate) {
+      let no_of_Tasks = 0;
+      project.tasks.forEach((task) => {
+        if (
+          task.completedDate.toLocaleDateString() === loop.toLocaleDateString()
+        )
+          no_of_Tasks += 1;
+      });
+      actual = actual - no_of_Tasks;
+      res.push({ x: loop.toDateString(), y: actual });
+      var newDate = loop.setDate(loop.getDate() + 1);
+      loop = new Date(newDate);
+    }
+    return res;
+  }
+
+  getActualBurnDataProject(project: IProject) {
+    const fromDate = project.fromDate;
+    const toDate = project.toDate;
+    let actual = project.tasks.length + project.issues.length;
+    var loop = new Date(fromDate);
+    const res = [];
+    while (loop <= toDate) {
+      let no_of_Tasks = 0;
+      project.tasks.forEach((task) => {
+        if (
+          task.completedDate.toLocaleDateString() === loop.toLocaleDateString()
+        )
+          no_of_Tasks += 1;
+      });
+      project.issues.forEach((issue) => {
+        if (
+          issue.resolvedDate.toLocaleDateString() === loop.toLocaleDateString()
+        )
+          no_of_Tasks += 1;
+      });
+      actual = actual - no_of_Tasks;
+      res.push({ x: loop.toDateString(), y: actual });
+      var newDate = loop.setDate(loop.getDate() + 1);
+      loop = new Date(newDate);
+    }
+    // console.log(res);
+    return res;
+  }
+
+  getActualBurnDataIssues(project: IProject) {
+    const fromDate = project.fromDate;
+    const toDate = project.toDate;
+    let actual = project.issues.length;
+    var loop = new Date(fromDate);
+    const res = [];
+    while (loop <= toDate) {
+      let no_of_Tasks = 0;
+      project.issues.forEach((issue) => {
+        if (
+          issue.resolvedDate.toLocaleDateString() === loop.toLocaleDateString()
+        )
+          no_of_Tasks += 1;
+      });
+      actual = actual - no_of_Tasks;
+      res.push({ x: loop.toDateString(), y: actual });
       var newDate = loop.setDate(loop.getDate() + 1);
       loop = new Date(newDate);
     }

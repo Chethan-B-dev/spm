@@ -1,205 +1,327 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { EMPTY, Subject, Subscription } from "rxjs";
+import { catchError, takeUntil } from "rxjs/operators";
+import { AuthService } from "src/app/auth/auth.service";
+import { EmployeeService } from "src/app/employee/employee.service";
+import { ManagerService } from "src/app/manager/services/manager.service";
+import { IProject } from "src/app/shared/interfaces/project.interface";
+import { UserRole } from "src/app/shared/interfaces/user.interface";
+import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { ReportsService } from "../services/reports.service";
 declare let Highcharts: any;
 
 @Component({
-  selector: 'app-burn-down-chart-dashboard',
-  templateUrl: './burn-down-chart-dashboard.component.html',
-  styleUrls: ['./burn-down-chart-dashboard.component.scss']
+  selector: "app-burn-down-chart-dashboard",
+  templateUrl: "./burn-down-chart-dashboard.component.html",
+  styleUrls: ["./burn-down-chart-dashboard.component.scss"],
 })
-export class BurnDownChartDashboardComponent implements OnInit {
-
-  constructor() { }
+export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
+  project: IProject;
+  projectId: number;
+  currentUser = this.authService.currentUser;
+  private readonly subscriptions = [] as Subscription[];
+  private readonly destroy$ = new Subject<void>();
+  constructor(
+    private route: ActivatedRoute,
+    private readonly reportsService: ReportsService,
+    private readonly authService: AuthService,
+    private readonly managerService: ManagerService,
+    private readonly snackbarService: SnackbarService,
+    private readonly employeeService: EmployeeService
+  ) {}
 
   ngOnInit() {
-    // Over all progress burn down charts
-    Highcharts.chart('overall-burndown', {
-      chart: {
-        backgroundColor: 'white',
-    },
-      title: {
-        text: 'Project Burndown Chart'
-      },
-      credits: {
-        enabled: false
-    },
-      colors: ['blue', 'red'],
-      subtitle: {
-          text: 'Overall Burndown for the Project: Title'
-      },
+    this.route.paramMap.subscribe((paramMap) => {
+      this.projectId = +paramMap.get("projectId");
+    });
 
-      yAxis: {
-        title: {
-          text: 'Hours'
-        },
+    const projectObservable =
+      this.currentUser.role === UserRole.MANAGER
+        ? this.managerService.getProjectById(this.projectId)
+        : this.employeeService.getProjectById(this.projectId);
 
-      xAxis: {
-        title: {
-          text: 'Days'
-        },
-        categories: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6',
-                     'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Day 11', 'Day 12']
-      },
+    const projectSubscription = projectObservable
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          return EMPTY;
+        })
+      )
+      .subscribe((project) => {
+        this.project = project;
+        const ideal = this.reportsService.getIdealBurn(this.project);
+        const idealProject = this.reportsService.getIdealBurnDataProject(
+          this.project
+        );
+        const actual = this.reportsService.getActualBurnData(this.project);
+        const actualIssues = this.reportsService.getActualBurnDataIssues(
+          this.project
+        );
+        const actualProject = this.reportsService.getActualBurnDataProject(
+          this.project
+        );
+        console.log(actual);
 
-      plotLines: [{
-        value: 0,
-        width: 1
-      }]
-    },
-    tooltip: {
-      valueSuffix: ' hrs',
-      crosshairs: true,
-      shared: true
-    },
-    legend: {
-      layout: 'vertical',
-      align: 'right',
-      verticalAlign: 'middle',
-      borderWidth: 0
-    },
-    series: [{
-      name: 'Ideal Burn',
-      color: 'green',
-      lineWidth: 2,
-      data: [110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0]
-    }, {
-      name: 'Actual Burn',
-      color: 'orange',
-      marker: {
-        radius: 6
-      },
-      data: [100, 110, 125, 95, 64, 76, 62, 44, 35, 29, 18, 2]
-    }],
+        // Over all progress burn down charts
+        Highcharts.chart("overall-burndown", {
+          chart: {
+            backgroundColor: "white",
+          },
+          plotOptions: {
+            area: {
+              pointStart: 0,
+              marker: {
+                enabled: false,
+                symbol: "circle",
+                radius: 2,
+                states: {
+                  hover: {
+                    enabled: true,
+                  },
+                },
+              },
+            },
+          },
+          labels: {
+            formatter: function () {
+              return this.value;
+            },
+          },
+          title: {
+            text: "Project Burndown Chart",
+          },
+          credits: {
+            enabled: false,
+          },
+          colors: ["blue", "red"],
+          subtitle: {
+            text: "Overall Burndown for the Project: Title",
+          },
 
-  });
+          yAxis: {
+            title: {
+              text: "Tasks Count",
+            },
 
-    // Issues burn down charts
-    Highcharts.chart('issues-burndown', {
-      chart: {
-        backgroundColor: '#f7f7f5',
-    },
-      title: {
-        text: 'Issue Burndown Chart',
-      },
-      credits: {
-        enabled: false
-    },
-      colors: ['green', 'red'],
-      subtitle: {
-          text: 'Issues Burndown for the Project: Title'
-      },
+            xAxis: {
+              title: {
+                text: "Days",
+              },
+              type: "datetime",
+              categories: actual
+                ? [...Object.values(actual).map(({ x }) => x)]
+                : [],
+              allowDecimals: false,
+            },
 
-      yAxis: {
-        title: {
-          text: 'Hours'
-        },
+            plotLines: [
+              {
+                value: 0,
+                width: 1,
+              },
+            ],
+          },
+          tooltip: {
+            valueSuffix: " hrs",
+            crosshairs: true,
+            shared: true,
+          },
+          legend: {
+            layout: "vertical",
+            align: "right",
+            verticalAlign: "middle",
+            borderWidth: 0,
+          },
+          series: [
+            {
+              name: "Ideal Burn",
+              color: "green",
+              lineWidth: 2,
+              data: idealProject,
+            },
+            {
+              name: "Actual Burn",
+              color: "orange",
+              marker: {
+                radius: 6,
+              },
+              data: actualProject
+                ? [...Object.values(actualProject).map(({ y }) => y)]
+                : [],
+            },
+          ],
+        });
 
-      xAxis: {
-        title: {
-          text: 'Days'
-        },
-        categories: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6',
-                     'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Day 11', 'Day 12']
-      },
+        // Issues burn down charts
+        Highcharts.chart("issues-burndown", {
+          chart: {
+            backgroundColor: "#f7f7f5",
+          },
+          title: {
+            text: "Issue Burndown Chart",
+          },
+          credits: {
+            enabled: false,
+          },
+          colors: ["green", "red"],
+          subtitle: {
+            text: "Issues Burndown for the Project: Title",
+          },
 
-      plotLines: [{
-        value: 0,
-        width: 1
-      }]
-    },
-    tooltip: {
-      valueSuffix: ' hrs',
-      crosshairs: true,
-      shared: true
-    },
-    legend: {
-      layout: 'vertical',
-      align: 'right',
-      verticalAlign: 'middle',
-      borderWidth: 0
-    },
-    series: [{
-      name: 'Ideal Burn',
-      color: 'green',
-      lineWidth: 2,
-      data: [110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0]
-    }, {
-      name: 'Actual Burn',
-      color: 'red',
-      marker: {
-        radius: 6
-      },
-      data: [100, 110, 125, 95, 64, 76, 62, 44, 35, 29, 18, 2]
-    },
-    {
-      name: 'Completed Burn',
-      color: 'blue',
-      marker: {
-        radius: 6
-      },
-      data: [90, 95, 25, 50, 64, 76, 67, 43, 95, 66, 57, 20]
-    }],
+          yAxis: {
+            title: {
+              text: "Hours",
+            },
 
-  });
+            xAxis: {
+              title: {
+                text: "Days",
+              },
+              categories: [
+                "Day 1",
+                "Day 2",
+                "Day 3",
+                "Day 4",
+                "Day 5",
+                "Day 6",
+                "Day 7",
+                "Day 8",
+                "Day 9",
+                "Day 10",
+                "Day 11",
+                "Day 12",
+              ],
+            },
 
-    // Tasks burn down charts
-    Highcharts.chart('tasks-burndown', {
+            plotLines: [
+              {
+                value: 0,
+                width: 1,
+              },
+            ],
+          },
+          tooltip: {
+            valueSuffix: " hrs",
+            crosshairs: true,
+            shared: true,
+          },
+          legend: {
+            layout: "vertical",
+            align: "right",
+            verticalAlign: "middle",
+            borderWidth: 0,
+          },
+          series: [
+            {
+              name: "Ideal Burn",
+              color: "green",
+              lineWidth: 2,
+              data: ideal,
+            },
+            {
+              name: "Actual Burn",
+              color: "red",
+              marker: {
+                radius: 6,
+              },
+              data: actualIssues
+                ? [...Object.values(actualIssues).map(({ y }) => y)]
+                : [],
+            },
+            // {
+            //   name: "Completed Burn",
+            //   color: "blue",
+            //   marker: {
+            //     radius: 6,
+            //   },
+            //   data: [90, 95, 25, 50, 64, 76, 67, 43, 95, 66, 57, 20],
+            // },
+          ],
+        });
 
-      title: {
-        text: 'Tasks Burndown Chart',
-      },
-      credits: {
-        enabled: false
-    },
-      colors: ['green', 'red'],
-      subtitle: {
-          text: 'Issues Burndown for the Project: Title'
-      },
+        // Tasks burn down charts
+        Highcharts.chart("tasks-burndown", {
+          title: {
+            text: "Tasks Burndown Chart",
+          },
+          credits: {
+            enabled: false,
+          },
+          colors: ["green", "red"],
+          subtitle: {
+            text: "Issues Burndown for the Project: Title",
+          },
 
-      yAxis: {
-        title: {
-          text: 'Hours'
-        },
+          yAxis: {
+            title: {
+              text: "Hours",
+            },
 
-      xAxis: {
-        title: {
-          text: 'Days'
-        },
-        categories: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6',
-                     'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Day 11', 'Day 12']
-      },
+            xAxis: {
+              title: {
+                text: "Days",
+              },
+              categories: [
+                "Day 1",
+                "Day 2",
+                "Day 3",
+                "Day 4",
+                "Day 5",
+                "Day 6",
+                "Day 7",
+                "Day 8",
+                "Day 9",
+                "Day 10",
+                "Day 11",
+                "Day 12",
+              ],
+            },
 
-      plotLines: [{
-        value: 0,
-        width: 1
-      }]
-    },
-    tooltip: {
-      valueSuffix: ' hrs',
-      crosshairs: true,
-      shared: true
-    },
-    legend: {
-      layout: 'vertical',
-      align: 'right',
-      verticalAlign: 'middle',
-      borderWidth: 0
-    },
-    series: [{
-      name: 'Ideal Burn',
-      color: 'rgba(255,0,0,0.25)',
-      lineWidth: 2,
-      data: [110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0]
-    }, {
-      name: 'Actual Burn',
-      color: 'rgba(0,120,200,0.75)',
-      marker: {
-        radius: 6
-      },
-      data: [100, 110, 125, 95, 64, 76, 62, 44, 35, 29, 18, 2]
-    }],
+            plotLines: [
+              {
+                value: 0,
+                width: 1,
+              },
+            ],
+          },
+          tooltip: {
+            valueSuffix: " hrs",
+            crosshairs: true,
+            shared: true,
+          },
+          legend: {
+            layout: "vertical",
+            align: "right",
+            verticalAlign: "middle",
+            borderWidth: 0,
+          },
+          series: [
+            {
+              name: "Ideal Burn",
+              color: "rgba(255,0,0,0.25)",
+              lineWidth: 2,
+              data: ideal,
+            },
+            {
+              name: "Actual Burn",
+              color: "rgba(0,120,200,0.75)",
+              marker: {
+                radius: 6,
+              },
+              data: actual ? [...Object.values(actual).map(({ y }) => y)] : [],
+            },
+          ],
+        });
+      });
 
-  });
-
+    this.subscriptions.push(projectSubscription);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
 }

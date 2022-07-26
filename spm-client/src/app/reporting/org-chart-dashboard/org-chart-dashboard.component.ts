@@ -45,7 +45,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
         ? this.managerService.getProjectById(this.projectId)
         : this.employeeService.getProjectById(this.projectId);
 
-    const projectSubsciption = projectObservable
+    const projectSubscription = projectObservable
       .pipe(
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
@@ -65,7 +65,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.subscriptions.push(projectSubsciption);
+    this.subscriptions.push(projectSubscription);
   }
 
   ngOnDestroy(): void {
