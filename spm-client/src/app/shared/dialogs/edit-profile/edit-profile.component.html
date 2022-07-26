@@ -50,14 +50,41 @@
         </mat-form-field>
       </p>
 
+      <div class="form-group files">
+        <mat-label>Upload image</mat-label>
+        <input
+          (change)="onFileChange($event)"
+          type="file"
+          class="form-control"
+          accept="image/*"
+        />
+      </div>
+      <h1 *ngIf="currentUser.image" class="my-2">Preview</h1>
+
+      <div class="center mb-3">
+        <img
+          *ngIf="currentUser.image"
+          [src]="currentUser.image"
+          class="image"
+        />
+      </div>
+
+      <div *ngIf="uploadPercent | async as percent">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="percent"
+        ></mat-progress-bar>
+        <mat-hint class="text-muted"
+          >Uploading {{ math.trunc(percent) }} %</mat-hint
+        >
+      </div>
+
       <div class="button mt-5">
         <button
           type="submit"
           mat-raised-button
           color="primary"
-          [disabled]="
-            this.editProfileForm.invalid || !this.editProfileForm.dirty
-          "
+          [disabled]="this.editProfileForm.invalid || this.disableButton"
           (click)="editProfile()"
         >
           Save Changes

@@ -120,6 +120,7 @@ public class AppUserService {
         AppUser user = loggedInUser.getUser();
         user.setUsername(editProfileDTO.getUsername());
         user.setPhone(editProfileDTO.getPhone());
+        if (editProfileDTO.getImage() != null) user.setImage(editProfileDTO.getImage());
         user.setDesignation(editProfileDTO.getDesignation());
         return appUserRepository.save(user);
     }

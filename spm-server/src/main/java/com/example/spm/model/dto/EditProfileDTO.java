@@ -18,5 +18,6 @@ public class EditProfileDTO {
     @NotNull
     @Pattern(regexp = "^[789]\\d{9}$", message = "Phone number should have 10 digits and should be valid")
     private String phone;
+    private String image;
     private UserDesignation designation;
 }

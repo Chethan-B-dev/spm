@@ -3,9 +3,10 @@ export interface IAppUser {
   username: string;
   password?: string;
   email: string;
+  image?: string;
+  phone: string;
   status: UserStatus;
   role: UserRole;
-  phone: string;
   designation?: UserDesignation;
   ranking?: number;
 }
@@ -31,6 +32,7 @@ export interface ISignUpRequest {
 export interface IEditProfileRequest {
   username: string;
   phone: string;
+  image: string;
   designation: UserDesignation;
 }
 
@@ -70,3 +72,6 @@ export interface UserDesignationStatisticsCount {
 }
 
 export const UserDesignations = [...Object.keys(UserDesignation)];
+
+export const avatarImage =
+  "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000";

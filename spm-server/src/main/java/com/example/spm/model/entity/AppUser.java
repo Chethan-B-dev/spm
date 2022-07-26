@@ -38,6 +38,7 @@ public class AppUser {
     private String username;
     @JsonIgnore
     private String password;
+    private String image;
     private UserRole role;
     @Length(min = 10, max = 10)
     private String phone;

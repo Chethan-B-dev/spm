@@ -8,7 +8,10 @@ import { EmployeeService } from "src/app/employee/employee.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { TaskStatus } from "src/app/shared/interfaces/task.interface";
-import { UserRole } from "src/app/shared/interfaces/user.interface";
+import {
+  avatarImage,
+  UserRole,
+} from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { myTitleCase } from "src/app/shared/utility/common";
 import { ReportsService } from "../services/reports.service";
@@ -20,8 +23,6 @@ import { ReportsService } from "../services/reports.service";
 export class OrgChartDashboardComponent implements OnInit, OnDestroy {
   projectId: number;
   private readonly currentUser = this.authService.currentUser;
-  private readonly avatarImage =
-    "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000";
   private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
@@ -79,7 +80,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
       id: project.manager.id,
       name: project.manager.username,
       title: myTitleCase(project.manager.role),
-      img: this.avatarImage,
+      img: project.manager.image || avatarImage,
     });
     project.users.forEach((user) => {
       const taskStatistics = this.reportService.getUserTaskStatistics(
@@ -91,7 +92,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
         pid: project.manager.id,
         name: user.username,
         title: myTitleCase(user.designation),
-        img: this.avatarImage,
+        img: user.image || avatarImage,
         Tasks_Assigned: project.tasks.filter((task) => task.user.id === user.id)
           .length,
         Rank: this.reportService.getEmployeeRank(project, user),

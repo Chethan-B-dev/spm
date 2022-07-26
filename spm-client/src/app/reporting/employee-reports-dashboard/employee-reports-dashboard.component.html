@@ -33,7 +33,13 @@
       <div class="card-body cleartfix">
         <div class="media align-items-stretch" *ngIf="user">
           <div class="align-self-center">
-            <i class="icon-user success font-large-2 float-right"></i>
+            <img
+              class="image"
+              [src]="
+                user.image ||
+                'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000'
+              "
+            />
           </div>
           <div class="media-body px-2">
             <h4>Employee Name: {{ user.username }}</h4>

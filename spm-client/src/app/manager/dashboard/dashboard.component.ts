@@ -11,7 +11,10 @@ import { ManagerService } from "../services/manager.service";
 
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
-import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import {
+  avatarImage,
+  IAppUser,
+} from "src/app/shared/interfaces/user.interface";
 import { stopLoading } from "src/app/shared/utility/loading";
 
 @Component({
@@ -83,6 +86,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadMoreProjects(): void {
     this.currentProjectPageNumber += 1;
     this.managerService.changeProjectPageNumber(this.currentProjectPageNumber);
+  }
+
+  loadImage(user: IAppUser): string {
+    return user.image || avatarImage;
   }
 
   getMoreUsers(): void {

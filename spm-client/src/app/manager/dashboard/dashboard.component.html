@@ -37,21 +37,21 @@
 
   <div class="col-md-3 users">
     <div class="stats container my-3">
-      <h4 class="mb-2">Verified Employees</h4>
+      <h4 class="mb-4">Verified Employees</h4>
       <ng-container *ngIf="users$ | async as users">
-        <mat-chip-list *ngFor="let user of users">
-          <mat-chip
-            color="primary"
-            class="my-2"
-            [matTooltip]="user.designation"
-            [matTooltipPosition]="'right'"
-          >
-            <mat-chip-avatar>
-              <mat-icon>person</mat-icon>
-            </mat-chip-avatar>
-            {{ user.username }}
-          </mat-chip>
-        </mat-chip-list>
+        <mat-card *ngFor="let user of users" class="my-2">
+          <mat-card-header>
+            <div
+              mat-card-avatar
+              [ngStyle]="{
+                'background-size': 'cover',
+                'background-image': 'url(' + loadImage(user) + ')'
+              }"
+            ></div>
+            <mat-card-title>{{ user.username }}</mat-card-title>
+            <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+          </mat-card-header>
+        </mat-card>
         <mat-card *ngIf="users?.length === 0">There are no users</mat-card>
       </ng-container>
 
