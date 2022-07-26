@@ -68,10 +68,7 @@
       *ngFor="let userRanking of employeeRankings"
     >
       <img
-        [src]="
-          userRanking.user.image ||
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1024px-User-avatar.svg.png'
-        "
+        [src]="userRanking.user.image || avatarImage"
         [alt]="userRanking.user.username"
         class="leaderboard__picture"
       />

@@ -30,7 +30,10 @@ import {
 } from "src/app/shared/interfaces/issue.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
 // interfaces
-import { IProject, ProjectStatus } from "src/app/shared/interfaces/project.interface";
+import {
+  IProject,
+  ProjectStatus,
+} from "src/app/shared/interfaces/project.interface";
 import {
   ITask,
   ITaskRequestDTO,
@@ -103,6 +106,10 @@ export class ManagerService {
     switchMap(() => this.projectPageNumber$),
     concatMap((pageNumber) => this.getPagedProjects(pageNumber)),
     takeWhile((pagedData) => {
+      if (pagedData.totalPages === 0) {
+        this.loadMoreProjects(false);
+        return true;
+      }
       const isNotOver = pagedData.currentPage < pagedData.totalPages;
       if (!isNotOver) this.loadMoreProjects(false);
       return isNotOver;
@@ -126,6 +133,10 @@ export class ManagerService {
     switchMap(() => this.userPageNumber$),
     concatMap((pageNumber) => this.getMoreUsers(pageNumber)),
     takeWhile((pagedData) => {
+      if (pagedData.totalPages === 0) {
+        this.loadMoreUsers(false);
+        return true;
+      }
       const isNotOver = pagedData.currentPage < pagedData.totalPages;
       if (!isNotOver) this.loadMoreUsers(false);
       return isNotOver;
@@ -322,7 +333,7 @@ export class ManagerService {
       projectName,
       description: projectDescription,
       toDate: new Date(projectDeadLine + "Z").toISOString().substring(0, 10),
-      status
+      status,
     };
     return this.http
       .put<IProject>(

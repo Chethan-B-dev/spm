@@ -5,7 +5,10 @@ import {
   TaskStatistics,
   TaskStatus,
 } from "src/app/shared/interfaces/task.interface";
-import { IAppUserRanking } from "src/app/shared/interfaces/user.interface";
+import {
+  avatarImage,
+  IAppUserRanking,
+} from "src/app/shared/interfaces/user.interface";
 
 @Component({
   selector: "app-show-employees",
@@ -14,6 +17,7 @@ import { IAppUserRanking } from "src/app/shared/interfaces/user.interface";
 })
 export class ShowEmployeesComponent implements OnInit {
   project: IProject;
+  avatarImage = avatarImage;
   employeeRankings: IAppUserRanking[];
   constructor(
     @Inject(MAT_DIALOG_DATA) project,

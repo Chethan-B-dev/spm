@@ -79,6 +79,10 @@ export class EmployeeService {
     switchMap(() => this.projectPageNumber$),
     concatMap((pageNumber) => this.getPagedProjects(pageNumber)),
     takeWhile((pagedData) => {
+      if (pagedData.totalPages === 0) {
+        this.loadMoreProjects(false);
+        return true;
+      }
       const isNotOver = pagedData.currentPage < pagedData.totalPages;
       if (!isNotOver) this.loadMoreProjects(false);
       return isNotOver;
