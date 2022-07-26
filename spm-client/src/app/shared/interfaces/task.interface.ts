@@ -57,9 +57,15 @@ export interface TaskPriorityStatistics {
   [priority: string]: number;
 }
 
-export const sortTasksByPriority = (a: ITask, b: ITask) =>
-  TaskPriorityOptions.findIndex((priority) => priority === b.priority) -
-  TaskPriorityOptions.findIndex((priority) => priority === a.priority);
+export const sortTasksByPriority = (a: ITask, b: ITask) => {
+  const result =
+    TaskPriorityOptions.findIndex((priority) => priority === b.priority) -
+    TaskPriorityOptions.findIndex((priority) => priority === a.priority);
+  return (
+    result ||
+    new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
+  );
+};
 
 export function isBacklogTask(task: ITask): boolean {
   return (

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ConfirmDeleteComponent } from "src/app/shared/dialogs/confirm-delete/confirm-delete.component";
-import { ITodo } from "src/app/shared/interfaces/todo.interface";
+import { ITodo, TodoStatus } from "src/app/shared/interfaces/todo.interface";
 import { DataType, DeleteData } from "src/app/shared/utility/common";
 
 @Component({
@@ -22,5 +22,9 @@ export class IssueCardComponent {
     this.dialog.open(ConfirmDeleteComponent, {
       data: deleteData,
     });
+  }
+
+  canDeleteTodo(): boolean {
+    return this.todo.status !== TodoStatus.DONE;
   }
 }

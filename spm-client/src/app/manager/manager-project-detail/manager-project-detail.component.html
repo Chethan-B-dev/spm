@@ -30,12 +30,42 @@
       <h4 class="my-3">Project Issues</h4>
 
       <div class="horizontal-row">
-        <mat-card class="card mr-3" *ngFor="let issue of project.issues">
+        <mat-card
+          class="card mr-3"
+          *ngFor="let issue of sortIssues(project.issues)"
+        >
           <div class="left-and-right">
             <mat-card-title class="reduce-font text-danger">
               {{ getIssueKey(project.name, issue.id) }}</mat-card-title
             >
-            <mat-chip>{{ issue.status | titlecase }}</mat-chip>
+            <mat-chip-list>
+              <mat-chip
+                [matTooltip]="'Status: ' + issue.status"
+                [matTooltipPosition]="'right'"
+                >{{ issue.status | titlecase }}</mat-chip
+              >
+              <mat-chip
+                *ngIf="issue.priority === 'LOW'"
+                matTooltip="Low Priority"
+                [matTooltipPosition]="'right'"
+                ><mat-icon>keyboard_arrow_down</mat-icon>
+                {{ issue.priority | titlecase }}</mat-chip
+              >
+              <mat-chip
+                *ngIf="issue.priority === 'MEDIUM'"
+                matTooltip="Medium Priority"
+                [matTooltipPosition]="'right'"
+                ><mat-icon>unfold_more</mat-icon
+                >{{ issue.priority | titlecase }}</mat-chip
+              >
+              <mat-chip
+                *ngIf="issue.priority === 'HIGH'"
+                matTooltip="High Priority"
+                [matTooltipPosition]="'right'"
+                ><mat-icon>keyboard_arrow_up</mat-icon
+                >{{ issue.priority | titlecase }}</mat-chip
+              >
+            </mat-chip-list>
           </div>
           <mat-card-subtitle>{{ issue.createdDate | date }}</mat-card-subtitle>
           <mat-card-content>

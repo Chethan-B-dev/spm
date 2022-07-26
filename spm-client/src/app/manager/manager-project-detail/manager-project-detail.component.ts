@@ -1,6 +1,5 @@
 // angular
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { MatDialog } from "@angular/material";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 
 // rxjs
@@ -12,7 +11,10 @@ import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../services/manager.service";
 
 // interfaces
-import { IIssue } from "src/app/shared/interfaces/issue.interface";
+import {
+  IIssue,
+  sortIssuesByPriority,
+} from "src/app/shared/interfaces/issue.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   ITask,
@@ -26,17 +28,16 @@ import {
 })
 export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   defaultTaskCategory = "ALL";
-  private projectId: number;
+  showIssues = false;
   project$: Observable<IProject>;
   tasks$: Observable<ITask[]>;
   issues$: Observable<IIssue[]>;
+  private projectId: number;
   private readonly destroy$ = new Subject<void>();
-  showIssues = false;
 
   constructor(
     private route: ActivatedRoute,
     private readonly managerService: ManagerService,
-    public dialog: MatDialog,
     private readonly snackbarService: SnackbarService
   ) {}
 
@@ -88,6 +89,10 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
 
   getIssueKey(projectName: string, issueId: number): string {
     return projectName.substring(0, 4) + "-" + issueId;
+  }
+
+  sortIssues(issues: IIssue[]): IIssue[] {
+    return issues.sort(sortIssuesByPriority);
   }
 
   ngOnDestroy(): void {

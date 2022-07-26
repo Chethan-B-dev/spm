@@ -67,6 +67,13 @@ export function getIssueProgress(issues: IIssue[]): number {
   return ((resolvedIssues / issues.length) * 100) | 0;
 }
 
-export const sortIssuesByPriority = (a: IIssue, b: IIssue) =>
-IssuePriorityOptions.findIndex((priority) => priority === b.priority) -
-IssuePriorityOptions.findIndex((priority) => priority === a.priority);
+export const sortIssuesByPriority = (a: IIssue, b: IIssue) => {
+  // sort by priotiy and latest created issue
+  const result =
+    IssuePriorityOptions.findIndex((priority) => priority === b.priority) -
+    IssuePriorityOptions.findIndex((priority) => priority === a.priority);
+  return (
+    result ||
+    new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
+  );
+};
