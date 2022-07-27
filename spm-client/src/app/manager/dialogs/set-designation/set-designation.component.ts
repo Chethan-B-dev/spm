@@ -3,7 +3,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { EMPTY, forkJoin, Subject } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
-import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import {
+  avatarImage,
+  IAppUser,
+} from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
@@ -14,6 +17,7 @@ import { ManagerService } from "../../services/manager.service";
   styleUrls: ["./set-designation.component.scss"],
 })
 export class SetDesignationComponent implements OnInit, OnDestroy {
+  avatarImage = avatarImage;
   employees: IAppUser[];
   manager: IAppUser;
   designations: string[];
