@@ -27,11 +27,11 @@ public class EmployeeService {
     private final IssueService issueService;
 
     public List<Project> getAllProjectsByEmployee(AppUser employee) {
-        return  projectService.getAllProjectsByEmployeeId(employee);
+        return projectService.getAllProjectsByEmployeeId(employee);
     }
 
     public PagedData<Project> getAllPagedProjectsByEmployee(int pageNumber, int pageSize, AppUser employee) {
-        return  projectService.getPagedProjectsByEmployee(pageNumber, pageSize, employee);
+        return projectService.getPagedProjectsByEmployee(pageNumber, pageSize, employee);
     }
     public Project getProjectById(Integer projectId, MyAppUserDetails loggedInUser) {
         Project project = checkIfProjectExists(projectId);

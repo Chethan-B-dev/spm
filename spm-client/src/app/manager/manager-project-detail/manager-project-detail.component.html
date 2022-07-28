@@ -79,6 +79,12 @@
             >
             <mat-chip-list>
               <mat-chip
+                [ngStyle]="
+                  issue.status === 'RESOLVED' && {
+                    background: 'green',
+                    color: 'white'
+                  }
+                "
                 [matTooltip]="'Status: ' + issue.status"
                 [matTooltipPosition]="'right'"
                 >{{ issue.status | titlecase }}</mat-chip

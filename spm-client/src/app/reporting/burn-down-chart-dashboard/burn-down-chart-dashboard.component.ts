@@ -97,7 +97,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
           },
           colors: ["blue", "red"],
           subtitle: {
-            text: "Overall Burndown for the Project: Title (x-axis: No. of Days, y-axis: No. of Tasks & Issues)",
+            text: `Overall Burndown for the Project: ${project.name} (x-axis: No. of Days, y-axis: No. of Tasks & Issues)`,
           },
 
           yAxis: {

@@ -165,7 +165,15 @@
             Issue Id: {{ getIssueKey(project.name, issue.id) }}</mat-card-title
           >
           <mat-chip-list>
-            <mat-chip>{{ issue.status | titlecase }}</mat-chip>
+            <mat-chip
+              [ngStyle]="
+                issue.status === 'RESOLVED' && {
+                  background: 'green',
+                  color: 'white'
+                }
+              "
+              >{{ issue.status | titlecase }}</mat-chip
+            >
             <mat-chip
               *ngIf="issue.priority === 'LOW'"
               matTooltip="Low Priority"

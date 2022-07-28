@@ -110,13 +110,14 @@ export class ReportsService {
   getAllTasksAreaProgress(project: IProject): any[] {
     const res = [];
     const fromDate = project.fromDate;
-    const toDate = project.toDate;
+    const toDate = new Date(project.toDate);
     var loop = new Date(fromDate);
     while (loop <= toDate) {
       let no_of_Tasks = 0;
       project.tasks.forEach((task) => {
         if (
-          task.completedDate.toLocaleDateString() === loop.toLocaleDateString()
+          new Date(task.completedDate).toLocaleDateString() ===
+          loop.toLocaleDateString()
         )
           no_of_Tasks += 1;
       });
