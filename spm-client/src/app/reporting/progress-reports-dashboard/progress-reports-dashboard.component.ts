@@ -9,6 +9,7 @@ import { ITask } from "src/app/shared/interfaces/task.interface";
 import { getProjectProgress } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { goBack } from "src/app/shared/utility/common";
 
 @Component({
   selector: "app-progress-reports-dashboard",
@@ -31,6 +32,12 @@ export class ProgressReportsDashboardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((user) => (this.currentUser = user));
 
+    if (this.currentUser.role === UserRole.MANAGER) {
+      this.managerService.stateRefresh(this.currentUser);
+    } else {
+      this.employeeService.stateRefresh(this.currentUser);
+    }
+
     const userProjects$ =
       this.currentUser.role === UserRole.MANAGER
         ? this.managerService.projects$
@@ -43,6 +50,10 @@ export class ProgressReportsDashboardComponent implements OnInit, OnDestroy {
         return EMPTY;
       })
     );
+  }
+
+  goBack(): void {
+    goBack();
   }
 
   getProjectProgress(tasks: ITask[]): number {

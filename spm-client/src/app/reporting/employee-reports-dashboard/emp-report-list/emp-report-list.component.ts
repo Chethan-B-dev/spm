@@ -5,6 +5,7 @@ import { catchError, switchMap } from "rxjs/operators";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { goBack } from "src/app/shared/utility/common";
 
 @Component({
   selector: "app-emp-report-list",
@@ -20,6 +21,10 @@ export class EmpReportListComponent implements OnInit {
     private readonly snackbarService: SnackbarService,
     private route: ActivatedRoute
   ) {}
+
+  goBack(): void {
+    goBack();
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {

@@ -32,6 +32,13 @@
     <div class="card-content">
       <div class="card-body cleartfix">
         <div class="media align-items-stretch" *ngIf="user">
+          <button
+            (click)="goBack()"
+            mat-icon-button
+            matTooltip="Go to Previous page"
+          >
+            <mat-icon>keyboard_backspace</mat-icon>
+          </button>
           <div class="align-self-center">
             <img
               class="image"

@@ -12,6 +12,7 @@ import {
 } from "src/app/shared/interfaces/todo.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { goBack } from "src/app/shared/utility/common";
 import { CreateTodoComponent } from "../dialogs/create-todo/create-todo.component";
 import { ManagerService } from "../services/manager.service";
 
@@ -53,7 +54,7 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    window.history.go(-1);
+    goBack();
   }
 
   createTodo(task: ITask): void {

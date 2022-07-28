@@ -6,11 +6,10 @@
 <div>
   <svg
     class="waves"
-    style="z-index: -1; position: fixed;"
+    style="z-index: -1; position: fixed"
     viewBox="0 24 150 28"
     preserveAspectRatio="none"
     shape-rendering="auto"
-
   >
     <defs>
       <path
@@ -37,7 +36,12 @@
         y="5"
         fill="rgba(45, 35, 235,0.2)"
       />
-      <use xlink:href="#gentle-wave" x="48" y="7" fill="rgba(35, 138, 235,0.3)" />
+      <use
+        xlink:href="#gentle-wave"
+        x="48"
+        y="7"
+        fill="rgba(35, 138, 235,0.3)"
+      />
     </g>
   </svg>
 </div>
@@ -55,7 +59,9 @@
           >
             <mat-icon>keyboard_backspace</mat-icon>
           </button>
-          <div class="lead mt-1" style="font-weight: 500">Project Title - {{ project.name }}</div>
+          <div class="lead mt-1" style="font-weight: 500">
+            Project Title - {{ project.name }}
+          </div>
         </div>
         <div class="my-2">
           <mat-chip
@@ -165,15 +171,7 @@
             Issue Id: {{ getIssueKey(project.name, issue.id) }}</mat-card-title
           >
           <mat-chip-list>
-            <mat-chip
-              [ngStyle]="
-                issue.status === 'RESOLVED' && {
-                  background: 'green',
-                  color: 'white'
-                }
-              "
-              >{{ issue.status | titlecase }}</mat-chip
-            >
+            <mat-chip>{{ issue.status | titlecase }}</mat-chip>
             <mat-chip
               *ngIf="issue.priority === 'LOW'"
               matTooltip="Low Priority"

@@ -14,6 +14,7 @@ import {
   UserDesignationStatisticsCount,
   UserRole,
 } from "src/app/shared/interfaces/user.interface";
+import { goBack } from "src/app/shared/utility/common";
 import { mockProject } from "../../project.mock";
 import { ReportsService } from "../../services/reports.service";
 declare let Highcharts: any;
@@ -49,6 +50,10 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  goBack(): void {
+    goBack();
+  }
+
   ngOnInit() {
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
@@ -66,8 +71,9 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
         this.taskPriorityStatistics =
           this.reportService.getTasksPriorityDetails(this.project.tasks);
 
-        this.tasksAreaProgress =
-          this.reportService.getAllTasksAreaProgress(this.project);
+        this.tasksAreaProgress = this.reportService.getAllTasksAreaProgress(
+          this.project
+        );
 
         this.tasksStatusCount = this.reportService.getAllTaskStatusCount(
           this.project

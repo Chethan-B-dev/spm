@@ -25,7 +25,6 @@ public class SharedController {
     private final IssueService issueService;
     private final TaskService taskService;
     private final AdminService adminService;
-
     private final EmployeeService employeeService;
 
     @GetMapping("/employee-projects/{id}")

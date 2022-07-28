@@ -18,7 +18,7 @@ import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/shared.service";
-import { DataType, DeleteData } from "src/app/shared/utility/common";
+import { DataType, DeleteData, goBack } from "src/app/shared/utility/common";
 
 @Component({
   selector: "app-employee-issue-detail",
@@ -139,7 +139,7 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    window.history.go(-1);
+    goBack();
   }
 
   isResolved(issue: IIssue): boolean {

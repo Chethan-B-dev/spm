@@ -23,7 +23,10 @@ import {
 import { getProjectProgress } from "src/app/shared/interfaces/todo.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
-import { sendProjectApproachingDeadlineNotification } from "src/app/shared/utility/common";
+import {
+  goBack,
+  sendProjectApproachingDeadlineNotification,
+} from "src/app/shared/utility/common";
 import { EmployeeService } from "../employee.service";
 import { CreateIssueComponent } from "./Dialogs/create-issue/create-issue.component";
 
@@ -109,7 +112,7 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    window.history.go(-1);
+    goBack();
   }
 
   getIssueKey(projectName: string, issueId: number): string {

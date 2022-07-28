@@ -8,6 +8,7 @@ import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { UserRole } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { goBack } from "src/app/shared/utility/common";
 import { ReportsService } from "../services/reports.service";
 declare let Highcharts: any;
 
@@ -167,7 +168,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
           },
           colors: ["green", "red"],
           subtitle: {
-            text: "Issues Burndown for the Project: Title (x-axis: No. of Days, y-axis: No. of Issues)",
+            text: `Issues Burndown for the Project: ${project.name} (x-axis: No. of Days, y-axis: No. of Issues)`,
           },
 
           yAxis: {
@@ -251,7 +252,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
           },
           colors: ["green", "red"],
           subtitle: {
-            text: "Tasks Burndown for the Project: Title (x-axis: No. of Days, y-axis: No. of Tasks)",
+            text: `Tasks Burndown for the Project: ${project.name} (x-axis: No. of Days, y-axis: No. of Tasks)`,
           },
 
           yAxis: {
@@ -323,5 +324,9 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  goBack(): void {
+    goBack();
   }
 }

@@ -3,7 +3,7 @@ import { INotification } from "../interfaces/notification.interface";
 import { ITask } from "../interfaces/task.interface";
 import { ITodo } from "../interfaces/todo.interface";
 import { NotificationService } from "../notification.service";
-import { DataType, PieData } from "../utility/common";
+import { DataType, goBack, PieData } from "../utility/common";
 
 @Component({
   selector: "app-task-card",
@@ -34,6 +34,6 @@ export class TaskCardComponent {
   }
 
   goBack(): void {
-    window.history.go(-1);
+    goBack();
   }
 }

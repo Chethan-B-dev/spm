@@ -34,7 +34,7 @@ import {
 import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
 import { NotificationService } from "../notification.service";
-import { DataType, PieData } from "../utility/common";
+import { DataType, goBack, PieData } from "../utility/common";
 
 @Component({
   selector: "app-project-card",
@@ -141,7 +141,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    window.history.go(-1);
+    goBack();
   }
 
   showNoEmployeesSnackbar(): void {

@@ -8,6 +8,7 @@ import { TaskStatistics } from "src/app/shared/interfaces/task.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/shared.service";
+import { goBack } from "src/app/shared/utility/common";
 import { ReportsService } from "../services/reports.service";
 declare let Highcharts: any;
 
@@ -32,6 +33,11 @@ export class EmployeeReportsDashboardComponent implements OnInit {
   totalTodosOfUser: string;
   employeeRank: string;
   employeeProjects$: Observable<IProject[]>;
+
+  goBack(): void {
+    goBack();
+  }
+
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
       this.projectId = +paramMap.get("projectId");

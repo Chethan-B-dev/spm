@@ -13,14 +13,18 @@
 <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 
-<div class='box' style="z-index: -1;">
-  <div class='wave -one'></div>
-  <div class='wave -two'></div>
-  <div class='wave -three'></div>
+<div class="box" style="z-index: -1">
+  <div class="wave -one"></div>
+  <div class="wave -two"></div>
+  <div class="wave -three"></div>
 </div>
 
-<mat-card class="mx-5 mt-4 p-3" *ngIf="project"
-  >Progress Report for Project: {{ project.name }}</mat-card
+<mat-card class="mx-5 mt-4 p-3 font-change left" *ngIf="project">
+  <button (click)="goBack()" mat-icon-button matTooltip="Go to Previous page">
+    <mat-icon>keyboard_backspace</mat-icon>
+  </button>
+  Progress Report for
+  <span class="text-danger">{{ project.name }}</span></mat-card
 >
 
 <div>

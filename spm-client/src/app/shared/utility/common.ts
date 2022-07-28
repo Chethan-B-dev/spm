@@ -139,3 +139,7 @@ export function differenceBetweenTwoDays(fromDate: Date, toDate: Date): number {
   const diff = new Date(toDate).valueOf() - new Date(fromDate).valueOf();
   return Math.floor(diff / (24 * 60 * 60 * 1000));
 }
+
+export function goBack(): void {
+  window.history.go(-1);
+}

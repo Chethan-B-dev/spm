@@ -13,7 +13,7 @@ import {
   UserRole,
 } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
-import { myTitleCase } from "src/app/shared/utility/common";
+import { goBack, myTitleCase } from "src/app/shared/utility/common";
 import { ReportsService } from "../services/reports.service";
 @Component({
   selector: "app-org-chart-dashboard",
@@ -34,6 +34,10 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
     private readonly authService: AuthService,
     private route: ActivatedRoute
   ) {}
+
+  goBack(): void {
+    goBack();
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
