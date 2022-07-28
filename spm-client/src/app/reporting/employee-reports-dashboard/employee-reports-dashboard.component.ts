@@ -1,12 +1,13 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { EMPTY } from "rxjs";
+import { EMPTY, Observable } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { TaskStatistics } from "src/app/shared/interfaces/task.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
+import { SharedService } from "src/app/shared/shared.service";
 import { ReportsService } from "../services/reports.service";
 declare let Highcharts: any;
 
@@ -20,6 +21,7 @@ export class EmployeeReportsDashboardComponent implements OnInit {
     private reportService: ReportsService,
     private route: ActivatedRoute,
     private readonly managerService: ManagerService,
+    private readonly sharedService: SharedService,
     private readonly snackbarService: SnackbarService
   ) {}
   project: IProject;
@@ -29,11 +31,21 @@ export class EmployeeReportsDashboardComponent implements OnInit {
   userTaskStatistics: TaskStatistics;
   totalTodosOfUser: string;
   employeeRank: string;
+  employeeProjects$: Observable<IProject[]>;
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
       this.projectId = +paramMap.get("projectId");
       this.userId = +paramMap.get("employeeId");
     });
+
+    this.employeeProjects$ = this.sharedService
+      .getAllEmployeeProjects(this.userId)
+      .pipe(
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          return EMPTY;
+        })
+      );
 
     this.managerService
       .getProjectById(this.projectId)

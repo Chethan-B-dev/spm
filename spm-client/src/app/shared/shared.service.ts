@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { IComment, IIssue } from "./interfaces/issue.interface";
+import { IProject } from "./interfaces/project.interface";
 import { IAppUser } from "./interfaces/user.interface";
 import { handleError } from "./utility/error";
 
@@ -24,7 +25,13 @@ export class SharedService {
   getAdmin(): Observable<IAppUser> {
     return this.http
       .get<IAppUser>(`${this.sharedUrl}/get-admin`)
-      .pipe(tap(console.log),catchError(handleError));
+      .pipe(tap(console.log), catchError(handleError));
+  }
+
+  getAllEmployeeProjects(employeeId: number): Observable<IProject[]> {
+    return this.http
+      .get<IProject[]>(`${this.sharedUrl}/employee-projects/${employeeId}`)
+      .pipe(catchError(handleError));
   }
 
   getIssueById(issueId: number): Observable<IIssue> {

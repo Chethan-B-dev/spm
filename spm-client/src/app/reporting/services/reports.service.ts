@@ -110,7 +110,7 @@ export class ReportsService {
   getAllTasksAreaProgress(project: IProject): any[] {
     const res = [];
     const fromDate = project.fromDate;
-    const toDate = new Date(project.toDate);
+    const toDate = new Date(this.getToDate(project));
     var loop = new Date(fromDate);
     while (loop <= toDate) {
       let no_of_Tasks = 0;
@@ -127,6 +127,15 @@ export class ReportsService {
     }
     // console.log(res);
     return res;
+  }
+
+  private getToDate(project: IProject): Date {
+    let toDate = project.toDate;
+    project.tasks.forEach((task) => {
+      if (task.completedDate > toDate) toDate = task.completedDate;
+    });
+    console.log(toDate);
+    return toDate;
   }
 
   getIdealBurn(project: IProject) {
@@ -161,7 +170,7 @@ export class ReportsService {
 
   getActualBurnData(project: IProject) {
     const fromDate = project.fromDate;
-    const toDate = new Date(project.toDate);
+    const toDate = new Date(this.getToDate(project));
     let actual = project.tasks.length;
     var loop = new Date(fromDate);
     const res = [];
@@ -185,7 +194,7 @@ export class ReportsService {
 
   getActualBurnDataProject(project: IProject) {
     const fromDate = project.fromDate;
-    const toDate = new Date(project.toDate);
+    const toDate = new Date(this.getToDate(project));
     let actual = project.tasks.length + project.issues.length;
     var loop = new Date(fromDate);
     const res = [];
@@ -216,7 +225,7 @@ export class ReportsService {
 
   getActualBurnDataIssues(project: IProject) {
     const fromDate = project.fromDate;
-    const toDate = new Date(project.toDate);
+    const toDate = new Date(this.getToDate(project));
     let actual = project.issues.length;
     var loop = new Date(fromDate);
     const res = [];

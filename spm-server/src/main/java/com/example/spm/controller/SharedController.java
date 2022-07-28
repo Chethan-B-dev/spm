@@ -5,6 +5,7 @@ import com.example.spm.model.dto.UpdateIssueDTO;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.entity.Issue;
 import com.example.spm.model.entity.IssueComment;
+import com.example.spm.model.entity.Project;
 import com.example.spm.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,20 @@ public class SharedController {
     private final IssueService issueService;
     private final TaskService taskService;
     private final AdminService adminService;
+
+    private final EmployeeService employeeService;
+
+    @GetMapping("/employee-projects/{id}")
+    public ResponseEntity<List<Project>> getAllProjectsByEmployee (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable final Integer id
+    ) {
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        AppUser user = adminService.checkIfUserExists(id);
+        return new ResponseEntity<>(
+                employeeService.getAllProjectsByEmployee(user), HttpStatus.OK
+        );
+    }
 
     @GetMapping("/issue/{issueId}")
     public ResponseEntity<Issue> getIssueByIssueId(

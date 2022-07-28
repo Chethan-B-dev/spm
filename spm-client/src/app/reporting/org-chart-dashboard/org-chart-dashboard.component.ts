@@ -56,6 +56,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
         const tree = document.getElementById("tree");
         if (tree) {
           const chart = new OrgChart(tree, {
+            template: "olivia",
             nodeBinding: {
               field_0: "name",
               img_0: "img",

@@ -105,7 +105,9 @@
             <i class="icon-rocket danger font-large-2 float-right"></i>
           </div>
           <div class="media-body text-right">
-            <h3 class="danger">8</h3>
+            <h3 class="danger" *ngIf="employeeProjects$ | async as projects">
+              {{ projects.length }}
+            </h3>
             <span>Total Projects Working In</span>
           </div>
         </div>
