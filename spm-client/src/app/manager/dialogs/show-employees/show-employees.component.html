@@ -66,6 +66,7 @@
     <article
       class="leaderboard__profile"
       *ngFor="let userRanking of employeeRankings"
+      (click)="routeToUserDetailPage(userRanking.user)"
     >
       <img
         [src]="userRanking.user.image || avatarImage"

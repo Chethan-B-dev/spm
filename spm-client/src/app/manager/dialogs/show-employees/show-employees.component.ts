@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
+import { Router } from "@angular/router";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   TaskStatistics,
@@ -7,6 +8,7 @@ import {
 } from "src/app/shared/interfaces/task.interface";
 import {
   avatarImage,
+  IAppUser,
   IAppUserRanking,
 } from "src/app/shared/interfaces/user.interface";
 
@@ -21,6 +23,7 @@ export class ShowEmployeesComponent implements OnInit {
   employeeRankings: IAppUserRanking[];
   constructor(
     @Inject(MAT_DIALOG_DATA) project,
+    private router: Router,
     private dialogRef: MatDialogRef<ShowEmployeesComponent>
   ) {
     this.project = project;
@@ -48,6 +51,13 @@ export class ShowEmployeesComponent implements OnInit {
         } as IAppUserRanking;
       })
       .sort((a, b) => b.ranking - a.ranking);
+  }
+
+  routeToUserDetailPage(user: IAppUser): void {
+    this.close();
+    this.router.navigate([
+      `/reporting/employee-progress/${user.id}/${this.project.id}`,
+    ]);
   }
 
   close(): void {
