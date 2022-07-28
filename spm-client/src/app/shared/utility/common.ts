@@ -130,3 +130,12 @@ export function sendTaskApproachingDeadlineNotification(task: ITask): void {
     this.notificationService.addNotification(notification);
   }
 }
+/**
+ * this function returns the difference between two daytes in days
+ * @param fromDate
+ * @param toDate
+ */
+export function differenceBetweenTwoDays(fromDate: Date, toDate: Date): number {
+  const diff = new Date(toDate).valueOf() - new Date(fromDate).valueOf();
+  return Math.floor(diff / (24 * 60 * 60 * 1000));
+}

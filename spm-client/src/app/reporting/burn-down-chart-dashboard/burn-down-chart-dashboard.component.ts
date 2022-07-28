@@ -50,6 +50,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((project) => {
+        // !if burn-down chart does not work change this below line to -> this.project = mockProject
         this.project = project;
         const ideal = this.reportsService.getIdealBurn(this.project);
         const idealProject = this.reportsService.getIdealBurnDataProject(
@@ -62,7 +63,6 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
         const actualProject = this.reportsService.getActualBurnDataProject(
           this.project
         );
-        console.log(actual);
 
         // Over all progress burn down charts
         Highcharts.chart("overall-burndown", {
