@@ -2,7 +2,6 @@
   rel="stylesheet"
   href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 />
-
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/series-label.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -14,25 +13,31 @@
 <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 
+<div class='box' style="z-index: -1;">
+  <div class='wave -one'></div>
+  <div class='wave -two'></div>
+  <div class='wave -three'></div>
+</div>
+
 <mat-card class="mx-5 mt-4 p-3" *ngIf="project"
   >{{ project.name }} Report</mat-card
 >
 
-<div class="mx-2 mt-4">
-  <mat-grid-list cols="4" rowHeight="400px">
-    <mat-grid-tile colspan="2" class="mb-2">
+<div>
+  <mat-grid-list cols="6" rowHeight="1:1.7">
+    <mat-grid-tile colspan="3">
       <div id="container-donut-chart"></div>
     </mat-grid-tile>
 
-    <mat-grid-tile colspan="2" class="mb-2">
+    <mat-grid-tile colspan="3">
       <div id="container-area-chart"></div>
     </mat-grid-tile>
 
-    <mat-grid-tile colspan="2">
+    <mat-grid-tile colspan="3">
       <div id="container-pie-chart"></div>
     </mat-grid-tile>
 
-    <mat-grid-tile colspan="2">
+    <mat-grid-tile colspan="3">
       <div id="container-bar-chart"></div>
     </mat-grid-tile>
   </mat-grid-list>
