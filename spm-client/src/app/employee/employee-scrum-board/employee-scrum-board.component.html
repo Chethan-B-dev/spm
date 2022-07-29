@@ -52,7 +52,7 @@
         <mat-card-title> {{ task.name }} Scrum Board</mat-card-title>
         <mat-card-subtitle
           [matTooltip]="'Created Date: ' + (task.createdDate | date)"
-          >{{ task.createdDate | date }}</mat-card-subtitle
+          >Created On {{ task.createdDate | date }}</mat-card-subtitle
         >
         <mat-chip-list aria-label="Task Details" class="pb-2">
           <mat-chip color="primary" selected

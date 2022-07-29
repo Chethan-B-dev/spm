@@ -67,7 +67,7 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
           this.reportService.getTasksPriorityDetails(this.project.tasks);
 
         this.tasksAreaProgress =
-          this.reportService.getAllTasksAreaProgress(mockProject);
+          this.reportService.getAllTasksAreaProgress(this.project);
 
         this.tasksStatusCount = this.reportService.getAllTaskStatusCount(
           this.project
@@ -151,11 +151,6 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
                     connectorWidth: 0,
                   },
                 },
-              },
-              title: {
-                verticalAlign: "middle",
-                floating: true,
-                text: "Donut Chart",
               },
               legend: {
                 enabled: true,

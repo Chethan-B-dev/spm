@@ -59,6 +59,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
             nodeBinding: {
               field_0: "name",
               img_0: "img",
+              title_0: "title",
             },
           });
           chart.load(this.prepareData(project));

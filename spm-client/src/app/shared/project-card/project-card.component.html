@@ -36,6 +36,13 @@
 
   <mat-chip-list aria-label="Fish selection">
     <mat-chip
+      color="accent"
+      selected
+      matTooltip="Manager"
+      matTooltipPosition="right"
+      >Manager - {{ project.manager?.username }}</mat-chip
+    >
+    <mat-chip
       color="primary"
       selected
       matTooltip="Project Status"
@@ -55,16 +62,9 @@
     <mat-chip>Backlogs - {{ projectTaskStatistics["IN_PROGRESS"] }}</mat-chip>
     <mat-chip>Completed - {{ projectTaskStatistics["COMPLETED"] }}</mat-chip>
     <mat-chip>Issues - {{ project.issues?.length }}</mat-chip>
-    <mat-chip
-      color="accent"
-      selected
-      matTooltip="Manager"
-      matTooltipPosition="right"
-      >{{ project.manager?.username }}</mat-chip
-    >
   </mat-chip-list>
 
-  <mat-card-subtitle class="py-2">{{
+  <mat-card-subtitle class="py-2">Created on {{
     project.fromDate | date
   }}</mat-card-subtitle>
 

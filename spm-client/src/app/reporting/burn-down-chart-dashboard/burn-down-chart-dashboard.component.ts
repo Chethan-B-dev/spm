@@ -97,7 +97,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
           },
           colors: ["blue", "red"],
           subtitle: {
-            text: "Overall Burndown for the Project: Title",
+            text: "Overall Burndown for the Project: Title (x-axis: No. of Days, y-axis: No. of Tasks & Issues)",
           },
 
           yAxis: {
@@ -124,7 +124,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
             ],
           },
           tooltip: {
-            valueSuffix: " hrs",
+            valueSuffix: "No. of Tasks",
             crosshairs: true,
             shared: true,
           },
@@ -167,12 +167,12 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
           },
           colors: ["green", "red"],
           subtitle: {
-            text: "Issues Burndown for the Project: Title",
+            text: "Issues Burndown for the Project: Title (x-axis: No. of Days, y-axis: No. of Issues)",
           },
 
           yAxis: {
             title: {
-              text: "Hours",
+              text: "No. of Tasks",
             },
 
             xAxis: {
@@ -203,7 +203,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
             ],
           },
           tooltip: {
-            valueSuffix: " hrs",
+            valueSuffix: "No. of Tasks",
             crosshairs: true,
             shared: true,
           },
@@ -251,12 +251,12 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
           },
           colors: ["green", "red"],
           subtitle: {
-            text: "Issues Burndown for the Project: Title",
+            text: "Tasks Burndown for the Project: Title (x-axis: No. of Days, y-axis: No. of Tasks)",
           },
 
           yAxis: {
             title: {
-              text: "Hours",
+              text: "No. of Tasks",
             },
 
             xAxis: {
@@ -287,7 +287,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
             ],
           },
           tooltip: {
-            valueSuffix: " hrs",
+            valueSuffix: "No. of Tasks",
             crosshairs: true,
             shared: true,
           },

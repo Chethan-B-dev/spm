@@ -64,7 +64,7 @@
       <mat-label>Assign Employee</mat-label>
       <mat-select formControlName="userId">
         <mat-option [value]="user.id" *ngFor="let user of project.users">{{
-          user.username + " : " + user.email
+          user.username + " : " + user.designation
         }}</mat-option>
       </mat-select>
       <mat-hint

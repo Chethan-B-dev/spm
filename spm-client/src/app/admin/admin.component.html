@@ -76,13 +76,20 @@
             mat-raised-button
             color="warn"
             [disabled]="
-              user.status === 'UNVERIFIED' || user.status === 'DISABLED'
+              user.status === 'VERIFIED' || user.status === 'DISABLED'
             "
             (click)="takeDecision(user.id, 'REJECT')"
           >
             Reject
           </button>
-
+          <button
+            mat-raised-button
+            color="warn"
+            *ngIf="user.status === 'VERIFIED'"
+            (click)="takeDecision(user.id, 'REJECT')"
+          >
+            Disable
+          </button>
           <button
             mat-raised-button
             color="accent"

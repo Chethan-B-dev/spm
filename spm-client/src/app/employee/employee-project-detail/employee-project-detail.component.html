@@ -55,14 +55,14 @@
           >
             <mat-icon>keyboard_backspace</mat-icon>
           </button>
-          <p class="lead mt-3" style="font-weight: 500">{{ project.name }}</p>
+          <div class="lead mt-1" style="font-weight: 500">Project Title - {{ project.name }}</div>
         </div>
         <div class="my-2">
           <mat-chip
             color="primary"
             matTooltip="Manager"
             matTooltipPosition="right"
-            >{{ project.manager?.username }}</mat-chip
+            >Manager: {{ project.manager?.username }}</mat-chip
           >
           <mat-chip
             class="mx-2"
@@ -83,6 +83,9 @@
             >
               <mat-chip selected>
                 Status: {{ project.status.replace("_", " ") | titlecase }}
+              </mat-chip>
+              <mat-chip color="primary">
+                Created On: {{ project.fromDate | date }}
               </mat-chip>
               <mat-chip color="primary">
                 Deadline: {{ project.toDate | date }}
@@ -159,7 +162,7 @@
       >
         <div class="left-and-right">
           <mat-card-title class="reduce-font text-danger">
-            {{ getIssueKey(project.name, issue.id) }}</mat-card-title
+            Issue Id: {{ getIssueKey(project.name, issue.id) }}</mat-card-title
           >
           <mat-chip-list>
             <mat-chip>{{ issue.status | titlecase }}</mat-chip>
@@ -209,7 +212,7 @@
   <!-- tasks -->
   <div class="col-md-3 tasks">
     <div class="stats container my-3">
-      <mat-card-title class="mb-3"> Tasks </mat-card-title>
+      <mat-card-title class="mb-3"> My Tasks </mat-card-title>
 
       <mat-form-field appearance="fill">
         <mat-label>Task Progress</mat-label>
