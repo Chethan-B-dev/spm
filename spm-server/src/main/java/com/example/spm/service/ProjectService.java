@@ -33,10 +33,12 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final AppUserService appUserService;
 
+    @Transactional
     public List<Project> getAllProjectsByManagerId(Integer managerId) {
         return projectRepository.findByManagerIdOrderByFromDateDesc(managerId);
     }
 
+    @Transactional
     public PagedData<Project> getPagedProjectsByManagerId(int pageNumber, int pageSize, Integer managerId) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
         Page<Project> pagedProjects = projectRepository.findByManagerIdOrderByFromDateDesc(managerId, pageable);
@@ -47,10 +49,13 @@ public class ProjectService {
                 .currentPage(pageNumber)
                 .build();
     }
+
+    @Transactional
     public List<Project> getAllProjectsByEmployeeId(AppUser employee) {
         return projectRepository.findAllByUsers(employee);
     }
 
+    @Transactional
     public PagedData<Project> getPagedProjectsByEmployee(int pageNumber, int pageSize, AppUser employee) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").descending());
         Page<Project> pagedProjects = projectRepository.findAllByUsers(employee, pageable);
@@ -63,13 +68,15 @@ public class ProjectService {
     }
 
     public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
-        Project project = Project.builder()
+        Project project = Project
+                .builder()
                 .description(createProjectDTO.getDescription())
-                .name(createProjectDTO.getProjectName())
+                .name(createProjectDTO.getName())
                 .manager(appUserService.getUser(myAppUserDetails.getUsername()))
                 .fromDate(LocalDate.now())
                 .toDate(createProjectDTO.getToDate())
                 .status(ProjectStatus.IN_PROGRESS)
+                .files(createProjectDTO.getFiles() != null ? createProjectDTO.getFiles() : "[]")
                 .build();
 
         return projectRepository.save(project);
@@ -80,17 +87,20 @@ public class ProjectService {
     public Project editProject(Integer projectId, CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
         Project project = checkIfProjectExists(projectId);
         checkIfProjectBelongsToManager(project, myAppUserDetails.getUser().getId());
-        project.setName(createProjectDTO.getProjectName());
+        project.setName(createProjectDTO.getName());
         project.setDescription(createProjectDTO.getDescription());
         project.setToDate(createProjectDTO.getToDate());
         project.setStatus(createProjectDTO.getStatus());
+        if (createProjectDTO.getFiles() != null) project.setFiles(createProjectDTO.getFiles());
         return projectRepository.save(project);
     }
 
     public List<AppUser> getAllVerifiedEmployees(Project project) {
-        return appUserService.getVerifiedUsers().stream().filter(
-                appUser -> (appUser.getRole().equals(UserRole.EMPLOYEE) && !project.getUsers().contains(appUser))
-        ).collect(Collectors.toList());
+        return appUserService
+                .getVerifiedUsers()
+                .stream()
+                .filter(appUser -> (appUser.getRole().equals(UserRole.EMPLOYEE) && !project.getUsers().contains(appUser)))
+                .collect(Collectors.toList());
     }
 
     public Project addUsersToProject(Project project, List<Integer> userIds) {
@@ -109,18 +119,19 @@ public class ProjectService {
         return project.getUsers();
     }
 
+    @Transactional
     public Project getProjectById(Integer projectId) {
         return checkIfProjectExists(projectId);
     }
 
-
+    @Transactional
     public Project checkIfProjectExists(Integer projectId) {
         return projectRepository
                 .findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project with the id '" + projectId + "' not found"));
     }
 
-    public boolean projectExistsByName (String projectName) {
+    public boolean projectExistsByName(String projectName) {
         return projectRepository.existsByName(projectName);
     }
 
@@ -129,10 +140,12 @@ public class ProjectService {
             throw new ActionNotAllowedException("Cannot Access this project resource");
     }
 
+    @Transactional
     public List<Project> getAllProjectsWithSearchKeyAndManagerId(String searchKey, Integer managerId) {
         return projectRepository.getAllProjectsWithSearchKeyAndManagerId(managerId, searchKey);
     }
 
+    @Transactional
     public List<Project> getAllProjectsWithSearchKeyAndEmployeeId(String searchKey, Integer employeeId) {
         return projectRepository.getAllProjectsWithSearchKeyAndEmployeeId(employeeId, searchKey);
     }

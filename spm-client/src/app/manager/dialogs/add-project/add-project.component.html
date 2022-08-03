@@ -1,75 +1,111 @@
 <h2 mat-dialog-title>Add Project</h2>
 
 <mat-dialog-content [formGroup]="createProjectForm">
-  <p>
-    <mat-form-field style="width: 50%; padding: 10px">
-      <input matInput placeholder="Project Name" formControlName="name" />
-      <span
-        style="color: red"
-        *ngIf="
-          (this.createProjectForm.get('name').dirty ||
-            this.createProjectForm.get('name').touched) &&
-          this.createProjectForm.get('name').errors?.required
-        "
-      >
-        Project name is required
-      </span>
-    </mat-form-field>
+  <ng-container *ngIf="!disableButton">
+    <p>
+      <mat-form-field style="width: 50%; padding: 10px">
+        <input matInput placeholder="Project Name" formControlName="name" />
+        <mat-error
+          style="color: red"
+          *ngIf="
+            (this.createProjectForm.get('name').dirty ||
+              this.createProjectForm.get('name').touched) &&
+            this.createProjectForm.get('name').errors?.required
+          "
+        >
+          Project name is required
+        </mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="fill" style="width: 50%">
-      <mat-label>Choose a Deadline Date</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="toDate" />
-      <mat-hint>DD/MM/YYYY</mat-hint>
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      <span
-        style="color: red"
-        *ngIf="
-          (this.createProjectForm.get('toDate').dirty ||
-            this.createProjectForm.get('toDate').touched) &&
-          this.createProjectForm.get('toDate').errors?.required
-        "
-      >
-        Deadline is required
-      </span>
-    </mat-form-field>
-  </p>
+      <mat-form-field appearance="fill" style="width: 50%">
+        <mat-label>Choose a Deadline Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="toDate" />
+        <mat-hint>DD/MM/YYYY</mat-hint>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error
+          style="color: red"
+          *ngIf="
+            (this.createProjectForm.get('toDate').dirty ||
+              this.createProjectForm.get('toDate').touched) &&
+            this.createProjectForm.get('toDate').errors?.required
+          "
+        >
+          Deadline is required
+        </mat-error>
+      </mat-form-field>
+    </p>
 
-  <p>
-    <mat-form-field
-      class="example-full-width"
-      appearance="fill"
-      style="width: 100%"
-    >
-      <mat-label>Description about the project</mat-label>
-      <textarea
-        matInput
-        placeholder="Add Description"
-        formControlName="description"
-      ></textarea>
-      <span
-        style="color: red"
-        *ngIf="
-          (this.createProjectForm.get('description').dirty ||
-            this.createProjectForm.get('description').touched) &&
-          this.createProjectForm.get('description').errors?.required
-        "
+    <p>
+      <mat-form-field
+        class="example-full-width"
+        appearance="fill"
+        style="width: 100%"
       >
-        Description is required
-      </span>
-    </mat-form-field>
-  </p>
+        <mat-label>Description about the project</mat-label>
+        <textarea
+          matInput
+          placeholder="Add Description"
+          formControlName="description"
+        ></textarea>
+        <mat-error
+          style="color: red"
+          *ngIf="
+            (this.createProjectForm.get('description').dirty ||
+              this.createProjectForm.get('description').touched) &&
+            this.createProjectForm.get('description').errors?.required
+          "
+        >
+          Description is required
+        </mat-error>
+      </mat-form-field>
+    </p>
+  </ng-container>
+  <div class="form-group files">
+    <mat-label>Upload Files</mat-label>
+    <input
+      #fileInput
+      formControlName="images"
+      type="file"
+      class="form-control"
+      multiple
+      accept="image/*"
+    />
+  </div>
+
+  <app-upload
+    [file]="file"
+    [project]="project"
+    (projectEvent)="onProjectChange($event)"
+    (errorEvent)="handleError($event)"
+    *ngFor="let file of files"
+  ></app-upload>
 </mat-dialog-content>
 
 <mat-dialog-actions class="push-right">
-  <button mat-button color="warn" (click)="close()" style="margin-right: 8px">
+  <button
+    *ngIf="done"
+    mat-button
+    color="primary"
+    (click)="close()"
+    style="margin-right: 8px"
+  >
+    Done
+  </button>
+  <button
+    *ngIf="!done"
+    mat-button
+    color="warn"
+    (click)="close()"
+    style="margin-right: 8px"
+  >
     Close
   </button>
   <button
     mat-raised-button
     color="primary"
-    [disabled]="this.createProjectForm.invalid"
-    (click)="createProject()"
+    [disabled]="this.createProjectForm.invalid || this.disableButton"
+    (click)="createProject(fileInput.files)"
   >
     Create
   </button>

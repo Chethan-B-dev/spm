@@ -35,6 +35,7 @@ import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
 import { NotificationService } from "../notification.service";
 import { DataType, goBack, PieData } from "../utility/common";
+import { ImageSliderComponent } from "../dialogs/image-slider/image-slider.component";
 
 @Component({
   selector: "app-project-card",
@@ -49,6 +50,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   @Input() showIssueStats = false;
   @Input() showViewDetailsButton = true;
   @Input() showEditProject = false;
+  @Input() showProjectFiles = false;
   @Output() showIssues = new EventEmitter<void>();
   users$?: Observable<IAppUser[]> | undefined;
   employees: IAppUser[] = [];
@@ -168,6 +170,16 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     dialogConfig.data = project;
 
     this.dialog.open(EditProjectComponent, dialogConfig);
+  }
+
+  openProjectFilesDialog(project: IProject): void {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = project;
+
+    this.dialog.open(ImageSliderComponent, dialogConfig);
   }
 
   openSetDesignationDialog(employees: IAppUser[]): Observable<boolean> {

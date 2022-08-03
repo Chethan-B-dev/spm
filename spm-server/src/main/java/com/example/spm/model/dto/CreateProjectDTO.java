@@ -15,10 +15,11 @@ import java.time.LocalDate;
 @Builder
 public class CreateProjectDTO {
     @NotNull
-    private String projectName;
+    private String name;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate toDate;
     @NotNull
     private String description;
     private ProjectStatus status;
+    private String files;
 }

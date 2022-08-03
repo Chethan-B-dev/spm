@@ -15,6 +15,14 @@
     </div>
     <div class="right">
       <button
+        *ngIf="showProjectFiles"
+        mat-button
+        color="primary"
+        (click)="openProjectFilesDialog(project)"
+      >
+        <mat-icon>add</mat-icon> Project Files
+      </button>
+      <button
         *ngIf="showEditProject"
         mat-button
         color="primary"
@@ -64,9 +72,9 @@
     <mat-chip>Issues - {{ project.issues?.length }}</mat-chip>
   </mat-chip-list>
 
-  <mat-card-subtitle class="py-2">Created on {{
-    project.fromDate | date
-  }}</mat-card-subtitle>
+  <mat-card-subtitle class="py-2"
+    >Created on {{ project.fromDate | date }}</mat-card-subtitle
+  >
 
   <mat-card-content>
     <p>{{ project.description }}</p>

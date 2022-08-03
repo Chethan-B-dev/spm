@@ -27,53 +27,57 @@
   href="https://fonts.googleapis.com/css?family=Montserrat&display=swap"
   rel="stylesheet"
 />
-<div class="col-xl-8 col-md-12 pt-1 float-left">
-  <div class="card">
-    <div class="card-content">
-      <div class="card-body cleartfix">
-        <div class="media align-items-stretch" *ngIf="user">
-          <button
-            (click)="goBack()"
-            mat-icon-button
-            matTooltip="Go to Previous page"
-          >
-            <mat-icon>keyboard_backspace</mat-icon>
-          </button>
-          <div class="align-self-center">
-            <img
-              class="image"
-              [src]="
-                user.image ||
-                'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000'
-              "
-            />
-          </div>
-          <div class="media-body px-2">
-            <h4>Employee Name: {{ user.username }}</h4>
-            <span>Employee Role: {{ user.designation || "NA" }}</span>
-            <span class="ml-2">|</span>
-            <span class="p-2">Status: {{ user.status | titlecase }}</span>
-          </div>
-          <div class="media-body">
-            <h5>Email: {{ user.email }}</h5>
-            <h5>Phone: {{ user.phone }}</h5>
-          </div>
+
+<div class="row">
+  <div class="col-xl-8 col-md-12 pt-1 float-left">
+    <div class="card">
+      <div class="card-content">
+        <div class="card-body cleartfix">
+          <mat-card class="media align-items-stretch left" *ngIf="user">
+            <button
+              (click)="goBack()"
+              mat-icon-button
+              matTooltip="Go to Previous page"
+            >
+              <mat-icon>keyboard_backspace</mat-icon>
+            </button>
+            <div class="align-self-center">
+              <img
+                mat-card-avatar
+                [src]="
+                  user.image ||
+                  'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000'
+                "
+              />
+            </div>
+            <div class="media-body px-2">
+              <h4>Employee Name: {{ user.username }}</h4>
+              <span>Employee Role: {{ user.designation || "NA" }}</span>
+              <span class="ml-2">|</span>
+              <span class="p-2">Status: {{ user.status | titlecase }}</span>
+            </div>
+            <div class="media-body">
+              <h5>Email: {{ user.email }}</h5>
+              <h5>Phone: {{ user.phone }}</h5>
+            </div>
+          </mat-card>
         </div>
       </div>
     </div>
   </div>
-</div>
-<div class="col-xl-4 col-sm-6 col-12 pt-1 float-right">
-  <div class="card">
-    <div class="card-content">
-      <div class="card-body">
-        <div class="media d-flex">
-          <div class="align-self-center">
-            <i class="icon-graph success font-large-2 float-left"></i>
-          </div>
-          <div class="media-body text-right">
-            <h3 *ngIf="employeeRank">Rank {{ employeeRank }}</h3>
-            <span>Employee Ranking</span>
+
+  <div class="col-xl-4 col-sm-6 col-12 pt-1 float-right">
+    <div class="card">
+      <div class="card-content">
+        <div class="card-body">
+          <div class="media d-flex">
+            <div class="align-self-center">
+              <i class="icon-graph success font-large-2 float-left"></i>
+            </div>
+            <div class="media-body text-right">
+              <h3 *ngIf="employeeRank">Rank {{ employeeRank }}</h3>
+              <span>Employee Ranking</span>
+            </div>
           </div>
         </div>
       </div>

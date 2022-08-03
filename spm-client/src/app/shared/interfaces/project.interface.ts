@@ -13,6 +13,7 @@ export interface IProject {
   users: IAppUser[];
   tasks: ITask[];
   issues: IIssue[];
+  files?: string;
 }
 
 export enum ProjectStatus {

@@ -1,0 +1,16 @@
+<mat-card class="my-2">
+  <ng-container *ngIf="uploadPercent$ | async as percent">
+    <mat-progress-bar mode="determinate" [value]="percent"></mat-progress-bar>
+    <mat-hint class="text-muted">Uploading {{ percent | number }} %</mat-hint>
+  </ng-container>
+  <ng-container *ngIf="snapshot$ | async as snap">
+    <div class="left-and-right">
+      <img *ngIf="downloadURL as url" mat-card-avatar [src]="url" />
+      <mat-hint
+        >{{ bytesToMegaBytes(snap.bytesTransferred) | number }} of
+        {{ bytesToMegaBytes(snap.totalBytes) | number }} MB
+        transferred</mat-hint
+      >
+    </div>
+  </ng-container>
+</mat-card>

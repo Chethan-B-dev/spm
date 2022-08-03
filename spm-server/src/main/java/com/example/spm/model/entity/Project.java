@@ -59,4 +59,7 @@ public class Project {
     @ToString.Exclude
     @Builder.Default
     private List<Issue> issues = new ArrayList<>();
+
+    @Lob
+    private String files;
 }
