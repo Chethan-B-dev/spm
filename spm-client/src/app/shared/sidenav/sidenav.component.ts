@@ -148,35 +148,35 @@ export class SidenavComponent implements OnInit, OnDestroy {
       })
     );
     // todo: uncomment this after development to allow notifications
-    const notificationSubscription = this.currentUser$
-      .pipe(
-        pluck("id"),
-        switchMap((currentUserId) =>
-          this.notificationService.getAllNotifications().pipe(
-            map((snapshots) =>
-              snapshots.map(
-                (snapshot) =>
-                  ({
-                    id: snapshot.payload.doc.id,
-                    ...snapshot.payload.doc.data(),
-                  } as INotification)
-              )
-            ),
-            map((notifications: INotification[]) =>
-              notifications.filter(
-                (notification) => notification.userId === currentUserId
-              )
-            ),
-            map((notifications) =>
-              notifications.sort((a, b) => b.time - a.time)
-            )
-          )
-        )
-      )
-      .subscribe(
-        (notifications) => (this.notificationMessages = notifications)
-      );
-    this.subscriptions.push(notificationSubscription);
+    // const notificationSubscription = this.currentUser$
+    //   .pipe(
+    //     pluck("id"),
+    //     switchMap((currentUserId) =>
+    //       this.notificationService.getAllNotifications().pipe(
+    //         map((snapshots) =>
+    //           snapshots.map(
+    //             (snapshot) =>
+    //               ({
+    //                 id: snapshot.payload.doc.id,
+    //                 ...snapshot.payload.doc.data(),
+    //               } as INotification)
+    //           )
+    //         ),
+    //         map((notifications: INotification[]) =>
+    //           notifications.filter(
+    //             (notification) => notification.userId === currentUserId
+    //           )
+    //         ),
+    //         map((notifications) =>
+    //           notifications.sort((a, b) => b.time - a.time)
+    //         )
+    //       )
+    //     )
+    //   )
+    //   .subscribe(
+    //     (notifications) => (this.notificationMessages = notifications)
+    //   );
+    // this.subscriptions.push(notificationSubscription);
   }
 
   deleteNotification(notificationId: string): void {

@@ -1,4 +1,6 @@
-<h2 mat-dialog-title>Edit Project</h2>
+<h2 mat-dialog-title>
+  Edit <span class="red">{{ project.name }}</span>
+</h2>
 
 <mat-dialog-content [formGroup]="editProjectForm">
   <p>

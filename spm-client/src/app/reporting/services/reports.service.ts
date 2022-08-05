@@ -29,63 +29,7 @@ import { differenceBetweenTwoDays } from "src/app/shared/utility/common";
   providedIn: "root",
 })
 export class ReportsService {
-  // project: IProject = {"id":13,"manager":{"id":32,"email":"test@test2.com","username":"test2","role":UserRole.MANAGER,"phone":null,"status":UserStatus.VERIFIED},"name":"new p2","fromDate":new Date(),"toDate":new Date(),"status":ProjectStatus.IN_PROGRESS,"description":"test project 2","users":[{"id":30,"email":"test@test1.com","username":"test1","role":UserRole.EMPLOYEE,"phone":null,"status":UserStatus.VERIFIED}],"tasks":[{"id":1,"name":"testt1","description":"dsafdfsfsdfsdff","status":TaskStatus.IN_PROGRESS,"createdDate":new Date(),"deadLine":new Date(),"priority":TaskPriority.MEDIUM,"user":{"id":30,"email":"test@test1.com","username":"test1","role":UserRole.EMPLOYEE,"phone":null,"status":UserStatus.VERIFIED},"todos":[{"id":3,"name":"dsfsddsfs","status":TodoStatus.IN_PROGRESS,"createdOn":new Date()}]}],"issues":[]}
-
-  // Reporting Each Project Progress
-
-  // Data for Donut Chart
-  // All users count
-  // Developers,testers,QA and Devops count
-
-  // Data for Area Chart
-  // Total days assigned for project: No of days between start date and end date
-  // Time stamps of all tasks and todo's (Start date and deadline) and calculate the total completion % on each day for all the days within the deadline
-
-  // Data for Pie chart
-  // Name employee details
-  // each employee contribution % based on tasks, todo's
-
-  // Data for bar graph
-  // All tasks names
-  // Each task progress(ToDo, In progress and Done) count.
-
-  //   getUserDesignationStatistics(project: IProject) {
-  //     const userDesignationStats: UserDesignationStatistics = {
-  //       [UserDesignation.DEVELOPER]: 0,
-  //       [UserDesignation.TESTER]: 0,
-  //       [UserDesignation.DEVELOPER]: 0,
-  //     };
-  //     UserDesignations.forEach((designation) => {
-  //       userDesignationStats[designation] = project.users.filter(
-  //         (user) => user.designation === designation
-  //       ).length;
-  //     });
-  //     return userDesignationStats;
-  // }
-
-  userNameTest = "test@test1.com";
-  projectsPresentInCount = 0;
-  getTotalProjectWorkingInCount(project: IProject) {
-    project.users.forEach((user) => {
-      if (user.email === this.userNameTest) {
-        this.projectsPresentInCount += 1;
-      }
-    });
-    return this.projectsPresentInCount;
-  }
-
-  getProjectStatisticsPerUser(tasks: ITask[]): TaskStatistics {
-    const taskCompletionStatus: TaskStatistics = {
-      [TaskStatus.COMPLETED]: 0,
-      [TaskStatus.IN_PROGRESS]: 0,
-    };
-    tasks.forEach((task) => {
-      if (task.user.email === this.userNameTest) {
-        taskCompletionStatus[task.status] += 1;
-      }
-    });
-    return taskCompletionStatus;
-  }
+  constructor(private http: HttpClient) {}
 
   getTasksPriorityDetails(tasks: ITask[]) {
     const taskPriorityStatistics: TaskPriorityStatistics = {
@@ -125,7 +69,6 @@ export class ReportsService {
       var newDate = loop.setDate(loop.getDate() + 1);
       loop = new Date(newDate);
     }
-    // console.log(res);
     return res;
   }
 
@@ -134,7 +77,6 @@ export class ReportsService {
     project.tasks.forEach((task) => {
       if (task.completedDate > toDate) toDate = task.completedDate;
     });
-    console.log(toDate);
     return toDate;
   }
 
@@ -219,7 +161,6 @@ export class ReportsService {
       var newDate = loop.setDate(loop.getDate() + 1);
       loop = new Date(newDate);
     }
-    // console.log(res);
     return res;
   }
 
@@ -243,7 +184,6 @@ export class ReportsService {
       var newDate = loop.setDate(loop.getDate() + 1);
       loop = new Date(newDate);
     }
-    // console.log(res);
     return res;
   }
 
@@ -256,8 +196,6 @@ export class ReportsService {
     let max = 0;
     project.tasks.forEach((task) => {
       const stats = getTodoStatistics(task.todos);
-      // console.log(stats);
-      // result.push(y: task.name, y: todoStats)
       todo.push(stats[TodoStatus.TO_DO]);
       in_progress.push(stats[TodoStatus.IN_PROGRESS]);
       done.push(stats[TodoStatus.DONE]);
@@ -298,6 +236,19 @@ export class ReportsService {
         (task) =>
           task.user.id === userB.id && task.status === TaskStatus.COMPLETED
       ).length;
+
+      if (tasksCompletedA === tasksCompletedB) {
+        // rank them based on the total todos he was assigned
+        const totalTodosA = project.tasks
+          .filter((task) => task.user.id === userA.id)
+          .reduce((total, task) => total + task.todos.length, 0);
+
+        const totalTodosB = project.tasks
+          .filter((task) => task.user.id === userB.id)
+          .reduce((total, task) => total + task.todos.length, 0);
+
+        return totalTodosB - totalTodosA;
+      }
 
       return tasksCompletedB - tasksCompletedA;
     });
@@ -378,6 +329,4 @@ export class ReportsService {
     );
     return userDesignationCount;
   }
-
-  constructor(private http: HttpClient) {}
 }

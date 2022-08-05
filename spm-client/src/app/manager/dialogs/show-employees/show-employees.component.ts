@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { Router } from "@angular/router";
+import { AuthService } from "src/app/auth/auth.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   TaskStatistics,
@@ -22,10 +23,12 @@ export class ShowEmployeesComponent implements OnInit {
   project: IProject;
   avatarImage = avatarImage;
   employeeRankings: IAppUserRanking[];
+  private currentUser = this.authService.currentUser;
   constructor(
     @Inject(MAT_DIALOG_DATA) project,
     private router: Router,
-    private dialogRef: MatDialogRef<ShowEmployeesComponent>
+    private dialogRef: MatDialogRef<ShowEmployeesComponent>,
+    private readonly authService: AuthService
   ) {
     this.project = project;
   }
@@ -55,7 +58,7 @@ export class ShowEmployeesComponent implements OnInit {
   }
 
   routeToUserDetailPage(user: IAppUser): void {
-    if (user.role !== UserRole.MANAGER) {
+    if (this.currentUser.role !== UserRole.MANAGER) {
       return;
     }
     this.close();

@@ -18,10 +18,24 @@
   orientation="ltr"
 >
   <mat-carousel-slide
+    class="right"
     #matCarouselSlide
     *ngFor="let file of parseFiles(project.files); let i = index"
     [image]="file"
     overlayColor="#00000040"
     [hideOverlay]="false"
-  ></mat-carousel-slide>
+  >
+    <a
+      mat-icon-button
+      matTooltip="Download this file"
+      matTooltipPosition="right"
+      class="bg-light"
+      style="margin: 5px"
+      aria-label="Download this file"
+      target="_blank"
+      [href]="file"
+    >
+      <mat-icon>cloud_download</mat-icon>
+    </a>
+  </mat-carousel-slide>
 </mat-carousel>

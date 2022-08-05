@@ -17,10 +17,10 @@
       <button
         *ngIf="showProjectFiles"
         mat-button
-        color="primary"
+        color="accent"
         (click)="openProjectFilesDialog()"
       >
-        <mat-icon>add</mat-icon> Project Files
+        <mat-icon> attach_file</mat-icon> Project Files
       </button>
       <button
         *ngIf="showEditProject"
@@ -33,7 +33,7 @@
       <button
         *ngIf="showAddTask"
         mat-button
-        color="primary"
+        color="success"
         [disabled]="!showAddTaskButton()"
         (click)="openCreateTaskDialog()"
       >

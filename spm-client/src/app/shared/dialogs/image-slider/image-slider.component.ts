@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { Subject } from "rxjs";
 import { EditProjectComponent } from "src/app/manager/dialogs/edit-project/edit-project.component";
@@ -9,7 +9,7 @@ import { IProject } from "../../interfaces/project.interface";
   templateUrl: "./image-slider.component.html",
   styleUrls: ["./image-slider.component.scss"],
 })
-export class ImageSliderComponent implements OnInit, OnDestroy {
+export class ImageSliderComponent implements OnDestroy {
   project: IProject;
   private readonly destroy$ = new Subject<void>();
 
@@ -23,8 +23,6 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
   parseFiles(files: string): string[] {
     return JSON.parse(files);
   }
-
-  ngOnInit() {}
 
   ngOnDestroy(): void {
     this.destroy$.next();

@@ -66,7 +66,6 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
           ? this.managerService.getProjectById(projectId)
           : this.employeeService.getProjectById(projectId);
       userProjects$.pipe(takeUntil(this.destroy$)).subscribe((project) => {
-        console.log(project);
         this.project = project || mockProject;
         this.taskPriorityStatistics =
           this.reportService.getTasksPriorityDetails(this.project.tasks);

@@ -8,7 +8,6 @@ export interface IAppUser {
   status: UserStatus;
   role: UserRole;
   designation?: UserDesignation;
-  ranking?: number;
 }
 
 export interface IAppUserRanking {

@@ -22,10 +22,11 @@ export class SharedService {
     this.refreshSubject.next();
   }
 
+  // todo: check if this is working
   getAdmin(): Observable<IAppUser> {
     return this.http
       .get<IAppUser>(`${this.sharedUrl}/get-admin`)
-      .pipe(tap(console.log), catchError(handleError));
+      .pipe(catchError(handleError));
   }
 
   getAllEmployeeProjects(employeeId: number): Observable<IProject[]> {
