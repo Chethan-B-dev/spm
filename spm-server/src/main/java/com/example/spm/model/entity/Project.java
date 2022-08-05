@@ -61,5 +61,6 @@ public class Project {
     private List<Issue> issues = new ArrayList<>();
 
     @Lob
-    private String files;
+    @Builder.Default
+    private String files = "[]";
 }

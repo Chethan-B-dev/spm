@@ -18,7 +18,7 @@
         *ngIf="showProjectFiles"
         mat-button
         color="primary"
-        (click)="openProjectFilesDialog(project)"
+        (click)="openProjectFilesDialog()"
       >
         <mat-icon>add</mat-icon> Project Files
       </button>
@@ -26,7 +26,7 @@
         *ngIf="showEditProject"
         mat-button
         color="primary"
-        (click)="openEditProjectDialog(project)"
+        (click)="openEditProjectDialog()"
       >
         <mat-icon>edit</mat-icon> Edit Project
       </button>
@@ -35,7 +35,7 @@
         mat-button
         color="primary"
         [disabled]="!showAddTaskButton()"
-        (click)="openCreateTaskDialog(project)"
+        (click)="openCreateTaskDialog()"
       >
         <mat-icon>add</mat-icon> Add Task
       </button>
@@ -63,7 +63,7 @@
     <mat-chip
       matTooltip="click here to view employees"
       matTooltipPosition="right"
-      (click)="openShowEmployeesDialog(project)"
+      (click)="openShowEmployeesDialog()"
       >Employees - {{ project.users?.length }}</mat-chip
     >
     <mat-chip>Tasks - {{ project.tasks?.length }}</mat-chip>

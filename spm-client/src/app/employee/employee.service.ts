@@ -214,9 +214,6 @@ export class EmployeeService {
   globalSearch(searchKey: string): Observable<ISearchGroup[]> {
     return this.http
       .get<ISearchResult>(`${this.employeeUrl}/search/${searchKey}`)
-      .pipe(
-        map((searchResults) => mapSearchResults(searchResults)),
-        catchError(handleError)
-      );
+      .pipe(map(mapSearchResults), catchError(handleError));
   }
 }

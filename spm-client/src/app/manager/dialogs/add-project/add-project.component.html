@@ -6,7 +6,6 @@
       <mat-form-field style="width: 50%; padding: 10px">
         <input matInput placeholder="Project Name" formControlName="name" />
         <mat-error
-          style="color: red"
           *ngIf="
             (this.createProjectForm.get('name').dirty ||
               this.createProjectForm.get('name').touched) &&
@@ -24,7 +23,6 @@
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
         <mat-error
-          style="color: red"
           *ngIf="
             (this.createProjectForm.get('toDate').dirty ||
               this.createProjectForm.get('toDate').touched) &&
@@ -49,7 +47,6 @@
           formControlName="description"
         ></textarea>
         <mat-error
-          style="color: red"
           *ngIf="
             (this.createProjectForm.get('description').dirty ||
               this.createProjectForm.get('description').touched) &&
@@ -86,7 +83,7 @@
   <button
     *ngIf="done"
     mat-button
-    color="primary"
+    color="success"
     (click)="close()"
     style="margin-right: 8px"
   >
@@ -103,7 +100,7 @@
   </button>
   <button
     mat-raised-button
-    color="primary"
+    color="success"
     [disabled]="this.createProjectForm.invalid || this.disableButton"
     (click)="createProject(fileInput.files)"
   >

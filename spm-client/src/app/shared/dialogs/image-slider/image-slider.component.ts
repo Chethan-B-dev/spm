@@ -20,6 +20,10 @@ export class ImageSliderComponent implements OnInit, OnDestroy {
     this.project = project;
   }
 
+  parseFiles(files: string): string[] {
+    return JSON.parse(files);
+  }
+
   ngOnInit() {}
 
   ngOnDestroy(): void {

@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve -o",
+    "start:prod": "ng serve -o --prod",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -25,6 +26,7 @@
     "@auth0/angular-jwt": "^5.0.2",
     "@balkangraph/orgchart.js": "^8.4.3",
     "@ng-bootstrap/ng-bootstrap": "^12.1.1",
+    "@ngmodule/material-carousel": "^0.6.0",
     "angular-highcharts": "^13.0.1",
     "chart.js": "^2.9.4",
     "firebase": ">= 5.5.7 <8",

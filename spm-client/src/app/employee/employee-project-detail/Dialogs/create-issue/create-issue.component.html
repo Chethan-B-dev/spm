@@ -7,7 +7,7 @@
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
 <h2 mat-dialog-title>
-  Create Issue for <span style="color: red"> {{ project.name }} </span>
+  Create Issue for <span class="red"> {{ project.name }} </span>
 </h2>
 
 <mat-dialog-content [formGroup]="createIssueForm">
@@ -44,7 +44,6 @@
         <mat-option value="HIGH">High</mat-option>
       </mat-select>
       <mat-error
-        style="color: red"
         *ngIf="
           (this.createIssueForm.get('priority').dirty ||
             this.createIssueForm.get('priority').touched) &&
@@ -70,9 +69,7 @@
 
   <div *ngIf="uploadPercent | async as percent">
     <mat-progress-bar mode="determinate" [value]="percent"></mat-progress-bar>
-    <mat-hint class="text-muted"
-      >Uploading {{ math.trunc(percent) }} %</mat-hint
-    >
+    <mat-hint class="text-muted">Uploading {{ percent | number }} %</mat-hint>
   </div>
 </mat-dialog-content>
 

@@ -1,13 +1,12 @@
 <h2 mat-dialog-title>
-  Create Task for <span style="color: red">{{ project.name }}</span>
+  Create Task for <span class="red">{{ project.name }}</span>
 </h2>
 
 <mat-dialog-content [formGroup]="createTaskForm">
   <p>
     <mat-form-field style="width: 50%; padding: 10px">
       <input matInput placeholder="Task Name" formControlName="name" />
-      <mat-hint
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.createTaskForm.get('name').dirty ||
             this.createTaskForm.get('name').touched) &&
@@ -15,14 +14,13 @@
         "
       >
         Task name is required
-      </mat-hint>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill" style="width: 50%">
       <mat-label>Choose a date</mat-label>
       <input matInput [matDatepicker]="picker" formControlName="deadLine" />
-      <mat-hint
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.createTaskForm.get('deadLine').dirty ||
             this.createTaskForm.get('deadLine').touched) &&
@@ -30,7 +28,7 @@
         "
       >
         Task deadline is required
-      </mat-hint>
+      </mat-error>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
@@ -44,8 +42,7 @@
         <mat-option value="MEDIUM">Medium</mat-option>
         <mat-option value="HIGH">High</mat-option>
       </mat-select>
-      <mat-hint
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.createTaskForm.get('priority').dirty ||
             this.createTaskForm.get('priority').touched) &&
@@ -53,7 +50,7 @@
         "
       >
         Task priority is required
-      </mat-hint>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field
@@ -67,8 +64,7 @@
           user.username + " : " + user.designation
         }}</mat-option>
       </mat-select>
-      <mat-hint
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.createTaskForm.get('userId').dirty ||
             this.createTaskForm.get('userId').touched) &&
@@ -76,7 +72,7 @@
         "
       >
         Employee for this task is required
-      </mat-hint>
+      </mat-error>
     </mat-form-field>
   </p>
 
@@ -94,15 +90,14 @@
         placeholder="Add Description"
         formControlName="description"
       ></textarea>
-      <mat-hint
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.createTaskForm.get('description').dirty ||
             this.createTaskForm.get('description').touched) &&
           this.createTaskForm.get('description').errors?.required
         "
         >Task Description is required
-      </mat-hint>
+      </mat-error>
     </mat-form-field>
   </p>
 </mat-dialog-content>

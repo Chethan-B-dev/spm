@@ -51,17 +51,27 @@
   <div class="col-md-8" *ngIf="project$ | async as project">
     <div class="container my-3">
       <mat-card>
-        <div class="left">
-          <button
-            (click)="goBack()"
-            mat-icon-button
-            matTooltip="Go to Previous page"
-          >
-            <mat-icon>keyboard_backspace</mat-icon>
-          </button>
-          <div class="lead mt-1" style="font-weight: 500">
-            Project Title - {{ project.name }}
+        <div class="left-and-right">
+          <div>
+            <button
+              class="d-inline"
+              (click)="goBack()"
+              mat-icon-button
+              matTooltip="Go to Previous page"
+            >
+              <mat-icon>keyboard_backspace</mat-icon>
+            </button>
+            <div class="lead mt-1 d-inline" style="font-weight: 500">
+              Project Title - {{ project.name }}
+            </div>
           </div>
+          <button
+            mat-button
+            color="primary"
+            (click)="openProjectFilesDialog(project)"
+          >
+            <mat-icon>add</mat-icon> Project Files
+          </button>
         </div>
         <div class="my-2">
           <mat-chip
@@ -80,7 +90,8 @@
           >
         </div>
 
-        <mat-divider></mat-divider>
+        <mat-divider class="mb-3"></mat-divider>
+
         <div class="row my-3">
           <div class="col">
             <mat-chip-list

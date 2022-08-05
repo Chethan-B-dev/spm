@@ -19,7 +19,6 @@
               formControlName="email"
             />
             <mat-error
-              style="color: red"
               *ngIf="
                 (this.loginForm.get('email').dirty ||
                   this.loginForm.get('email').touched) &&
@@ -29,7 +28,6 @@
               Email is required
             </mat-error>
             <mat-error
-              style="color: red"
               *ngIf="
                 (this.loginForm.get('email').dirty ||
                   this.loginForm.get('email').touched) &&
@@ -50,7 +48,6 @@
               formControlName="password"
             />
             <mat-error
-              style="color: red"
               *ngIf="
                 (this.loginForm.get('password').dirty ||
                   this.loginForm.get('password').touched) &&

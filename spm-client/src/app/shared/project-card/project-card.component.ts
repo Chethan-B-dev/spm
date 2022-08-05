@@ -152,32 +152,40 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     );
   }
 
-  openCreateTaskDialog(project: IProject): void {
+  openCreateTaskDialog(): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = project;
+    dialogConfig.data = this.project;
 
     this.dialog.open(CreateTaskComponent, dialogConfig);
   }
 
-  openEditProjectDialog(project: IProject): void {
+  openEditProjectDialog(): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = project;
+    dialogConfig.data = this.project;
 
     this.dialog.open(EditProjectComponent, dialogConfig);
   }
 
-  openProjectFilesDialog(project: IProject): void {
+  openProjectFilesDialog(): void {
+    const files = JSON.parse(this.project.files) as string[];
+    if (!files || !files.length) {
+      this.snackbarService.showSnackBar("There are no files for this project");
+      return;
+    }
+
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = project;
+    dialogConfig.width = "80vw";
+    dialogConfig.height = "40vw";
+    dialogConfig.data = this.project;
 
     this.dialog.open(ImageSliderComponent, dialogConfig);
   }
@@ -196,8 +204,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     return dialogRef.afterClosed();
   }
 
-  openShowEmployeesDialog(project: IProject): void {
-    if (!project.users.length) {
+  openShowEmployeesDialog(): void {
+    if (!this.project.users.length) {
       this.snackbarService.showSnackBar(
         "Please Add Employees to the project first"
       );
@@ -208,7 +216,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = project;
+    dialogConfig.data = this.project;
 
     this.dialog.open(ShowEmployeesComponent, dialogConfig);
   }

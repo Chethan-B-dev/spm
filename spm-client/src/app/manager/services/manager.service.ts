@@ -409,10 +409,7 @@ export class ManagerService {
   globalSearch(searchKey: string): Observable<ISearchGroup[]> {
     return this.http
       .get<ISearchResult>(`${this.managerUrl}/search/${searchKey}`)
-      .pipe(
-        map((searchResults) => mapSearchResults(searchResults)),
-        catchError(handleError)
-      );
+      .pipe(map(mapSearchResults), catchError(handleError));
   }
 
   private addProject(newProject: IProject): void {

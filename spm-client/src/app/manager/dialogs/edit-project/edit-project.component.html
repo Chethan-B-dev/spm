@@ -4,8 +4,7 @@
   <p>
     <mat-form-field style="width: 50%; padding: 10px">
       <input matInput placeholder="Project Name" formControlName="name" />
-      <span
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.editProjectForm.get('name').dirty ||
             this.editProjectForm.get('name').touched) &&
@@ -13,7 +12,7 @@
         "
       >
         Project name is required
-      </span>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill" style="width: 50%">
@@ -22,8 +21,7 @@
       <mat-hint>DD/MM/YYYY</mat-hint>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
-      <span
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.editProjectForm.get('toDate').dirty ||
             this.editProjectForm.get('toDate').touched) &&
@@ -31,7 +29,7 @@
         "
       >
         Deadline is required
-      </span>
+      </mat-error>
     </mat-form-field>
   </p>
 
@@ -45,8 +43,7 @@
           >Completed</mat-option
         >
       </mat-select>
-      <mat-hint
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.editProjectForm.get('status').dirty ||
             this.editProjectForm.get('status').touched) &&
@@ -54,7 +51,7 @@
         "
       >
         Project Status is required
-      </mat-hint>
+      </mat-error>
     </mat-form-field>
   </p>
 
@@ -70,8 +67,7 @@
         placeholder="Add Description"
         formControlName="description"
       ></textarea>
-      <span
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.editProjectForm.get('description').dirty ||
             this.editProjectForm.get('description').touched) &&
@@ -79,7 +75,7 @@
         "
       >
         Description is required
-      </span>
+      </mat-error>
     </mat-form-field>
   </p>
 </mat-dialog-content>

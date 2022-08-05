@@ -15,7 +15,6 @@
             formControlName="username"
           />
           <mat-error
-            style="color: red"
             *ngIf="
               (this.signupForm.get('username').dirty ||
                 this.signupForm.get('username').touched) &&
@@ -36,7 +35,6 @@
             formControlName="email"
           />
           <mat-error
-            style="color: red"
             *ngIf="
               (this.signupForm.get('email').dirty ||
                 this.signupForm.get('email').touched) &&
@@ -57,7 +55,6 @@
             formControlName="password"
           />
           <mat-error
-            style="color: red"
             *ngIf="
               (this.signupForm.get('password').dirty ||
                 this.signupForm.get('password').touched) &&
@@ -77,7 +74,6 @@
             <mat-option value="EMPLOYEE">Employee</mat-option>
           </mat-select>
           <mat-error
-            style="color: red"
             *ngIf="
               (this.signupForm.get('userRole').dirty ||
                 this.signupForm.get('userRole').touched) &&
@@ -101,7 +97,6 @@
           />
           <mat-hint>+91</mat-hint>
           <mat-error
-            style="color: red"
             *ngIf="
               (this.signupForm.get('phone').dirty ||
                 this.signupForm.get('phone').touched) &&

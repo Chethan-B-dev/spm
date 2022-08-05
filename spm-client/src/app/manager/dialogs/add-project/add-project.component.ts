@@ -19,7 +19,6 @@ import { ManagerService } from "../../services/manager.service";
   styleUrls: ["./add-project.component.scss"],
 })
 export class AddProjectComponent implements OnInit, OnDestroy {
-  math = Math;
   files: File[] = [];
   project: IProject;
   uploadPercentsSubject = new BehaviorSubject<Observable<number>[]>([]);
