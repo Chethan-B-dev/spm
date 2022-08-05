@@ -305,13 +305,13 @@ export class ManagerService {
   }
 
   createProject(
-    projectName: string,
-    projectDescription: string,
+    name: string,
+    description: string,
     projectDeadLine: Date
   ): Observable<IProject> {
     const requestBody = {
-      projectName,
-      description: projectDescription,
+      name,
+      description,
       toDate: new Date(projectDeadLine + "Z").toISOString().substring(0, 10),
     };
     return this.http
@@ -324,16 +324,18 @@ export class ManagerService {
 
   editProject(
     projectId: number,
-    projectName: string,
-    projectDescription: string,
+    name: string,
+    description: string,
     projectDeadLine: Date,
-    status: ProjectStatus
+    status: ProjectStatus,
+    files?: string
   ): Observable<IProject> {
     const requestBody = {
-      projectName,
-      description: projectDescription,
+      name,
+      description,
       toDate: new Date(projectDeadLine + "Z").toISOString().substring(0, 10),
       status,
+      files: files || null,
     };
     return this.http
       .put<IProject>(
@@ -407,10 +409,7 @@ export class ManagerService {
   globalSearch(searchKey: string): Observable<ISearchGroup[]> {
     return this.http
       .get<ISearchResult>(`${this.managerUrl}/search/${searchKey}`)
-      .pipe(
-        map((searchResults) => mapSearchResults(searchResults)),
-        catchError(handleError)
-      );
+      .pipe(map(mapSearchResults), catchError(handleError));
   }
 
   private addProject(newProject: IProject): void {

@@ -9,6 +9,7 @@ import { ManagerProjectDetailComponent } from "./manager-project-detail/manager-
 
 import { MaterialModule } from "../shared/material/material.module";
 import { CreateTodoComponent } from "./dialogs/create-todo/create-todo.component";
+import { EditProjectComponent } from "./dialogs/edit-project/edit-project.component";
 import { SetDesignationComponent } from "./dialogs/set-designation/set-designation.component";
 import { ManagerRoutingModule } from "./manager-routing.module";
 import { BoardDndListComponent } from "./manager-scrum-board/board-dnd-list/board-dnd-list.component";
@@ -16,7 +17,6 @@ import { BoardDndComponent } from "./manager-scrum-board/board-dnd/board-dnd.com
 import { IssueCardComponent } from "./manager-scrum-board/issue-card/issue-card.component";
 import { ManagerScrumBoardComponent } from "./manager-scrum-board/manager-scrum-board.component";
 import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-detail.component";
-import { EditProjectComponent } from "./dialogs/edit-project/edit-project.component";
 
 @NgModule({
   declarations: [

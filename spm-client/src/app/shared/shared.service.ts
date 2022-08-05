@@ -16,7 +16,7 @@ export class SharedService {
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   refresh(): void {
     this.refreshSubject.next();

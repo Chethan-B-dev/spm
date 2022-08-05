@@ -5,6 +5,7 @@ import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
 import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { ShowEmployeesComponent } from "src/app/manager/dialogs/show-employees/show-employees.component";
+import { ImageSliderComponent } from "src/app/shared/dialogs/image-slider/image-slider.component";
 import {
   getIssueProgress,
   getIssueStatistics,
@@ -153,6 +154,24 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
   getIssueStats(issues: IIssue[]): string {
     const issueStatistics = getIssueStatistics(issues);
     return `${issueStatistics[IssueStatus.RESOLVED]} / ${issues.length}`;
+  }
+
+  openProjectFilesDialog(project: IProject): void {
+    const files = JSON.parse(project.files) as string[];
+    if (!files || !files.length) {
+      this.snackbarService.showSnackBar("There are no files for this project");
+      return;
+    }
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "80vw";
+    dialogConfig.height = "40vw";
+    dialogConfig.data = project;
+
+    this.dialog.open(ImageSliderComponent, dialogConfig);
   }
 
   openShowEmployeesDialog(project: IProject): void {

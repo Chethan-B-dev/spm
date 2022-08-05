@@ -24,6 +24,10 @@ import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { AngularFireStorageModule } from "@angular/fire/storage";
 import { environment } from "src/environments/environment";
 import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.component";
+import { UploadComponent } from "./upload/upload.component";
+import { ImageSliderComponent } from "./dialogs/image-slider/image-slider.component";
+import { MatCarouselModule } from "@ngmodule/material-carousel";
+
 @NgModule({
   declarations: [
     SidenavComponent,
@@ -37,11 +41,14 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
     IssueDetailComponent,
     ShowEmployeesComponent,
     AddProjectComponent,
+    UploadComponent,
+    ImageSliderComponent,
   ],
   entryComponents: [
     ConfirmDeleteComponent,
     ShowEmployeesComponent,
     AddProjectComponent,
+    ImageSliderComponent,
   ],
   imports: [
     RouterModule,
@@ -54,6 +61,7 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
     AngularFireStorageModule,
+    MatCarouselModule.forRoot(),
   ],
   exports: [
     SidenavComponent,
@@ -64,6 +72,8 @@ import { AddProjectComponent } from "../manager/dialogs/add-project/add-project.
     TaskCardComponent,
     LoadingSpinnerComponent,
     PieChartComponent,
+    UploadComponent,
+    ImageSliderComponent,
   ],
 })
 export class SharedModule {}

@@ -1,0 +1,27 @@
+<mat-icon mat-dialog-close style="cursor: pointer" class="float-right"
+  >close</mat-icon
+>
+<mat-carousel
+  timings="250ms ease-in"
+  [autoplay]="true"
+  interval="6000"
+  color="accent"
+  maxWidth="auto"
+  proportion="50"
+  [slides]="this.project.files?.length"
+  [loop]="true"
+  [hideArrows]="false"
+  [hideIndicators]="false"
+  [useKeyboard]="true"
+  [useMouseWheel]="false"
+  [maintainAspectRatio]="true"
+  orientation="ltr"
+>
+  <mat-carousel-slide
+    #matCarouselSlide
+    *ngFor="let file of parseFiles(project.files); let i = index"
+    [image]="file"
+    overlayColor="#00000040"
+    [hideOverlay]="false"
+  ></mat-carousel-slide>
+</mat-carousel>

@@ -13,8 +13,7 @@
         placeholder="Add Description"
         formControlName="todo"
       ></textarea>
-      <mat-hint
-        style="color: red"
+      <mat-error
         *ngIf="
           (this.createTodoForm.get('todo').dirty ||
             this.createTodoForm.get('todo').touched) &&
@@ -22,7 +21,7 @@
         "
       >
         Todo description is required
-      </mat-hint>
+      </mat-error>
     </mat-form-field>
   </p>
 </mat-dialog-content>

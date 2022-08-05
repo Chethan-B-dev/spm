@@ -39,9 +39,9 @@ public class ManagerService {
     }
 
     public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
-        if (projectService.projectExistsByName(createProjectDTO.getProjectName())) {
+        if (projectService.projectExistsByName(createProjectDTO.getName())) {
             throw new ProjectAlreadyExistsException(
-                    "Project with the name '" + createProjectDTO.getProjectName() + "' already exists");
+                    "Project with the name '" + createProjectDTO.getName() + "' already exists");
         }
         return projectService.createProject(createProjectDTO, myAppUserDetails);
     }

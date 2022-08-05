@@ -35,6 +35,7 @@ import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
 import { NotificationService } from "../notification.service";
 import { DataType, goBack, PieData } from "../utility/common";
+import { ImageSliderComponent } from "../dialogs/image-slider/image-slider.component";
 
 @Component({
   selector: "app-project-card",
@@ -49,6 +50,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   @Input() showIssueStats = false;
   @Input() showViewDetailsButton = true;
   @Input() showEditProject = false;
+  @Input() showProjectFiles = false;
   @Output() showIssues = new EventEmitter<void>();
   users$?: Observable<IAppUser[]> | undefined;
   employees: IAppUser[] = [];
@@ -150,24 +152,42 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     );
   }
 
-  openCreateTaskDialog(project: IProject): void {
+  openCreateTaskDialog(): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = project;
+    dialogConfig.data = this.project;
 
     this.dialog.open(CreateTaskComponent, dialogConfig);
   }
 
-  openEditProjectDialog(project: IProject): void {
+  openEditProjectDialog(): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = project;
+    dialogConfig.data = this.project;
 
     this.dialog.open(EditProjectComponent, dialogConfig);
+  }
+
+  openProjectFilesDialog(): void {
+    const files = JSON.parse(this.project.files) as string[];
+    if (!files || !files.length) {
+      this.snackbarService.showSnackBar("There are no files for this project");
+      return;
+    }
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = "80vw";
+    dialogConfig.height = "40vw";
+    dialogConfig.data = this.project;
+
+    this.dialog.open(ImageSliderComponent, dialogConfig);
   }
 
   openSetDesignationDialog(employees: IAppUser[]): Observable<boolean> {
@@ -184,8 +204,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     return dialogRef.afterClosed();
   }
 
-  openShowEmployeesDialog(project: IProject): void {
-    if (!project.users.length) {
+  openShowEmployeesDialog(): void {
+    if (!this.project.users.length) {
       this.snackbarService.showSnackBar(
         "Please Add Employees to the project first"
       );
@@ -196,7 +216,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = project;
+    dialogConfig.data = this.project;
 
     this.dialog.open(ShowEmployeesComponent, dialogConfig);
   }

@@ -18,7 +18,6 @@ import { SnackbarService } from "../../services/snackbar.service";
   styleUrls: ["./edit-profile.component.scss"],
 })
 export class EditProfileComponent implements OnInit, OnDestroy {
-  math = Math;
   editProfileForm: FormGroup;
   currentUser = this.authService.currentUser;
   file: File;

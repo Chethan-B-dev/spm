@@ -10,6 +10,7 @@ import {
   avatarImage,
   IAppUser,
   IAppUserRanking,
+  UserRole,
 } from "src/app/shared/interfaces/user.interface";
 
 @Component({
@@ -54,6 +55,9 @@ export class ShowEmployeesComponent implements OnInit {
   }
 
   routeToUserDetailPage(user: IAppUser): void {
+    if (user.role !== UserRole.MANAGER) {
+      return;
+    }
     this.close();
     this.router.navigate([
       `/reporting/employee-progress/${user.id}/${this.project.id}`,

@@ -17,7 +17,6 @@ import { SnackbarService } from "src/app/shared/services/snackbar.service";
   styleUrls: ["./create-issue.component.scss"],
 })
 export class CreateIssueComponent implements OnInit, OnDestroy {
-  math = Math;
   createIssueForm: FormGroup;
   project: IProject;
   file: File;
