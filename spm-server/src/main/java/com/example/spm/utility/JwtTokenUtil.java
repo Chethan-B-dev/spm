@@ -17,8 +17,10 @@ import java.util.function.Function;
 public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -2550185165626007488L;
-    //todo: i have changed jwt token expiry to 300 hours for testing, later change it
-    public static final long JWT_TOKEN_VALIDITY = 300 * 60 * 60;
+    /**
+     * JWT Expiry time is set to 3 hours
+     */
+    public static final long JWT_TOKEN_VALIDITY = 3 * 60 * 60;
 
     @Value("${jwt.secret}")
     private String secret;

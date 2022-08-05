@@ -7,7 +7,6 @@ import {
 } from "@angular/router";
 import { AuthService } from "../auth/auth.service";
 import { UserRole } from "../shared/interfaces/user.interface";
-import { SnackbarService } from "../shared/services/snackbar.service";
 import { ManagerService } from "./services/manager.service";
 
 @Injectable({
@@ -17,8 +16,7 @@ export class ManagerGuard implements CanActivate {
   constructor(
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
-    private router: Router,
-    private readonly snackbarService: SnackbarService
+    private router: Router
   ) {}
   canActivate(
     route: ActivatedRouteSnapshot,

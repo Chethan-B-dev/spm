@@ -7,7 +7,6 @@ import {
 } from "@angular/router";
 import { AuthService } from "../auth/auth.service";
 import { UserRole } from "../shared/interfaces/user.interface";
-import { SnackbarService } from "../shared/services/snackbar.service";
 import { EmployeeService } from "./employee.service";
 
 @Injectable({
@@ -17,8 +16,7 @@ export class EmployeeGuard implements CanActivate {
   constructor(
     private readonly authService: AuthService,
     private readonly employeeService: EmployeeService,
-    private router: Router,
-    private readonly snackbarService: SnackbarService
+    private router: Router
   ) {}
   canActivate(
     route: ActivatedRouteSnapshot,

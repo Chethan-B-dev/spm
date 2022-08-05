@@ -22,6 +22,7 @@ import {
   tap,
 } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
+import { ConnectionService } from "src/app/connection.service";
 import { EmployeeService } from "src/app/employee/employee.service";
 import { AddProjectComponent } from "src/app/manager/dialogs/add-project/add-project.component";
 import { ManagerService } from "src/app/manager/services/manager.service";
@@ -54,6 +55,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
     }
   }
   isExpanded = false;
+  isOnline = true;
   isManager$: Observable<boolean>;
   isEmployee$: Observable<boolean>;
   isAdmin$: Observable<boolean>;
@@ -63,9 +65,9 @@ export class SidenavComponent implements OnInit, OnDestroy {
   currentUserRole: UserRole;
   currentUserId: number;
   notificationMessages: INotification[] = [];
-  notificationSubscription: Subscription;
   private searchTermSubject = new Subject<string>();
   searchTerm$ = this.searchTermSubject.asObservable();
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -75,11 +77,19 @@ export class SidenavComponent implements OnInit, OnDestroy {
     private readonly snackbarService: SnackbarService,
     private readonly employeeService: EmployeeService,
     private readonly notificationService: NotificationService,
+    private readonly connectionService: ConnectionService,
     private router: Router,
     private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
+    const connectionSubscription = this.connectionService
+      .monitor()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((online) => (this.isOnline = online));
+
+    this.subscriptions.push(connectionSubscription);
+
     this.isLoggedIn$ = this.authService.isLoggedIn$.pipe(
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
@@ -138,34 +148,35 @@ export class SidenavComponent implements OnInit, OnDestroy {
       })
     );
     // todo: uncomment this after development to allow notifications
-    // this.notificationSubscription = this.currentUser$
-    //   .pipe(
-    //     pluck("id"),
-    //     switchMap((currentUserId) =>
-    //       this.notificationService.getAllNotifications().pipe(
-    //         map((snapshots) =>
-    //           snapshots.map(
-    //             (snapshot) =>
-    //               ({
-    //                 id: snapshot.payload.doc.id,
-    //                 ...snapshot.payload.doc.data(),
-    //               } as INotification)
-    //           )
-    //         ),
-    //         map((notifications: INotification[]) =>
-    //           notifications.filter(
-    //             (notification) => notification.userId === currentUserId
-    //           )
-    //         ),
-    //         map((notifications) =>
-    //           notifications.sort((a, b) => b.time - a.time)
-    //         )
-    //       )
-    //     )
-    //   )
-    //   .subscribe(
-    //     (notifications) => (this.notificationMessages = notifications)
-    //   );
+    const notificationSubscription = this.currentUser$
+      .pipe(
+        pluck("id"),
+        switchMap((currentUserId) =>
+          this.notificationService.getAllNotifications().pipe(
+            map((snapshots) =>
+              snapshots.map(
+                (snapshot) =>
+                  ({
+                    id: snapshot.payload.doc.id,
+                    ...snapshot.payload.doc.data(),
+                  } as INotification)
+              )
+            ),
+            map((notifications: INotification[]) =>
+              notifications.filter(
+                (notification) => notification.userId === currentUserId
+              )
+            ),
+            map((notifications) =>
+              notifications.sort((a, b) => b.time - a.time)
+            )
+          )
+        )
+      )
+      .subscribe(
+        (notifications) => (this.notificationMessages = notifications)
+      );
+    this.subscriptions.push(notificationSubscription);
   }
 
   deleteNotification(notificationId: string): void {
@@ -182,9 +193,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    if (this.notificationSubscription) {
-      this.notificationSubscription.unsubscribe();
-    }
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   search(searchTerm: string): void {

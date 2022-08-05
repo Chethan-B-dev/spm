@@ -198,6 +198,10 @@
         </button>
       </ng-container>
     </mat-toolbar>
+    <mat-card *ngIf="!isOnline" class="bg-danger text-white text-center"
+      >No Network Connection, Please Connect to the internet to use all the
+      features of SPM.</mat-card
+    >
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
