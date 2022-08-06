@@ -1,4 +1,9 @@
-import { Component, Inject, OnDestroy } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  OnDestroy,
+} from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { Subject } from "rxjs";
 import { EditProjectComponent } from "src/app/manager/dialogs/edit-project/edit-project.component";
@@ -8,6 +13,7 @@ import { IProject } from "../../interfaces/project.interface";
   selector: "app-image-slider",
   templateUrl: "./image-slider.component.html",
   styleUrls: ["./image-slider.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageSliderComponent implements OnDestroy {
   project: IProject;

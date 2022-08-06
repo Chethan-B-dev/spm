@@ -1,9 +1,17 @@
-import { Component, Inject, OnInit } from "@angular/core";
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  OnDestroy,
+} from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { Subject, EMPTY } from "rxjs";
-import { takeUntil, catchError } from "rxjs/operators";
-import { IProject, ProjectStatus, ProjectStatusOptions } from "src/app/shared/interfaces/project.interface";
+import { EMPTY, Subject, Subscription } from "rxjs";
+import { catchError, takeUntil } from "rxjs/operators";
+import {
+  IProject,
+  ProjectStatus,
+} from "src/app/shared/interfaces/project.interface";
 import { TaskStatus } from "src/app/shared/interfaces/task.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
@@ -12,11 +20,12 @@ import { ManagerService } from "../../services/manager.service";
   selector: "app-edit-project",
   templateUrl: "./edit-project.component.html",
   styleUrls: ["./edit-project.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditProjectComponent {
+export class EditProjectComponent implements OnDestroy {
   project: IProject;
   editProjectForm: FormGroup;
-  projectStatusOptions = ProjectStatusOptions;
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -31,13 +40,14 @@ export class EditProjectComponent {
       name: [this.project.name, Validators.required],
       description: [this.project.description, Validators.required],
       toDate: [this.project.toDate, Validators.required],
-      status: [this.project.status, Validators.required]
+      status: [this.project.status, Validators.required],
     });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   isProjectOnHold(): boolean {
@@ -45,7 +55,11 @@ export class EditProjectComponent {
   }
 
   isProjectComplete(): boolean {
-    return this.project.tasks.every(task => task.status === TaskStatus.COMPLETED);
+    return !this.project.tasks.length
+      ? false
+      : this.project.tasks.every(
+          (task) => task.status === TaskStatus.COMPLETED
+        );
   }
 
   editProject(): void {
@@ -71,7 +85,7 @@ export class EditProjectComponent {
       return;
     }
 
-    this.managerService
+    const editProjectSubscription = this.managerService
       .editProject(
         this.project.id,
         projectName,
@@ -87,12 +101,14 @@ export class EditProjectComponent {
           return EMPTY;
         })
       )
-      .subscribe((_) => {
+      .subscribe(() => {
         this.snackbarService.showSnackBar(
           `${this.project.name} has been edited`
         );
         this.close();
       });
+
+    this.subscriptions.push(editProjectSubscription);
   }
 
   close(): void {

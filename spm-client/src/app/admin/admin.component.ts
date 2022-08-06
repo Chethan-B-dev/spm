@@ -1,5 +1,10 @@
 // angular
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 //rxjs
 import {
   BehaviorSubject,
@@ -26,6 +31,7 @@ import { stopLoading } from "../shared/utility/loading";
   selector: "app-admin",
   templateUrl: "./admin.component.html",
   styleUrls: ["./admin.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminComponent implements OnDestroy, OnInit {
   defaultUserCategory = "UNVERIFIED";

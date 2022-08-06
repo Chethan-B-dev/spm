@@ -1,7 +1,13 @@
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { EMPTY, Subject } from "rxjs";
+import { EMPTY, Subject, Subscription } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
@@ -10,10 +16,12 @@ import { ManagerService } from "../../services/manager.service";
   selector: "app-create-todo",
   templateUrl: "./create-todo.component.html",
   styleUrls: ["./create-todo.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateTodoComponent implements OnInit, OnDestroy {
   createTodoForm: FormGroup;
   taskId: number;
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -35,10 +43,11 @@ export class CreateTodoComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   createTodo(): void {
-    this.managerService
+    const createTodoSubscription = this.managerService
       .createTodo(this.createTodoForm.value, this.taskId)
       .pipe(
         takeUntil(this.destroy$),
@@ -52,6 +61,8 @@ export class CreateTodoComponent implements OnInit, OnDestroy {
         this.snackbarService.showSnackBar("Todo has been created");
         this.close();
       });
+
+    this.subscriptions.push(createTodoSubscription);
   }
 
   close(): void {

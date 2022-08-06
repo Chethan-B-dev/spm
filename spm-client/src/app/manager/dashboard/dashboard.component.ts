@@ -12,7 +12,7 @@ import { ManagerService } from "../services/manager.service";
 // interfaces
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
-  avatarImage,
+  AvatarImage,
   IAppUser,
 } from "src/app/shared/interfaces/user.interface";
 import { stopLoading } from "src/app/shared/utility/loading";
@@ -89,7 +89,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   loadImage(user: IAppUser): string {
-    return user.image || avatarImage;
+    return user.image || AvatarImage;
   }
 
   getMoreUsers(): void {

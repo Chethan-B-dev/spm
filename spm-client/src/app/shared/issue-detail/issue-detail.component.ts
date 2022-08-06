@@ -1,8 +1,13 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute } from "@angular/router";
-import { EMPTY, Observable, Subject } from "rxjs";
+import { EMPTY, Observable, Subject, Subscription } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
@@ -14,7 +19,7 @@ import {
   IUpdateIssueDTO,
 } from "src/app/shared/interfaces/issue.interface";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
-import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
+import { UserRole } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/shared.service";
@@ -24,13 +29,15 @@ import { DataType, DeleteData, goBack } from "src/app/shared/utility/common";
   selector: "app-employee-issue-detail",
   templateUrl: "./issue-detail.component.html",
   styleUrls: ["./issue-detail.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IssueDetailComponent implements OnInit, OnDestroy {
   addCommentForm: FormGroup;
   issueId: number;
   issue$: Observable<IIssue>;
   comments$: Observable<IComment[]>;
-  currentUser: IAppUser = this.authService.currentUser;
+  currentUser = this.authService.currentUser;
+  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
     private dialog: MatDialog,
@@ -72,26 +79,29 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   addComment(issueId: number): void {
-    this.sharedService
-      .addComment(
-        this.addCommentForm.value.comment,
-        this.currentUser.id,
-        issueId
-      )
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
+    this.subscriptions.push(
+      this.sharedService
+        .addComment(
+          this.addCommentForm.value.comment,
+          this.currentUser.id,
+          issueId
+        )
+        .pipe(
+          takeUntil(this.destroy$),
+          catchError((err) => {
+            this.snackbarService.showSnackBar(err);
+            return EMPTY;
+          })
+        )
+        .subscribe(() => {
+          this.snackbarService.showSnackBar(`comment added`);
+          this.addCommentForm.reset();
         })
-      )
-      .subscribe(() => {
-        this.snackbarService.showSnackBar(`comment added`);
-        this.addCommentForm.reset();
-      });
+    );
   }
 
   deleteComment(commentId: number): void {
@@ -109,26 +119,28 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
       summary: issue.summary,
       status: IssueStatus.RESOLVED,
     };
-    this.managerService
-      .updateIssue(updateIssueDTO, issue.id)
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
+    this.subscriptions.push(
+      this.managerService
+        .updateIssue(updateIssueDTO, issue.id)
+        .pipe(
+          takeUntil(this.destroy$),
+          catchError((err) => {
+            this.snackbarService.showSnackBar(err);
+            return EMPTY;
+          })
+        )
+        .subscribe(() => {
+          const notification: INotification = {
+            userId: issue.user.id,
+            notification: `issue: '${
+              issue.summary
+            }' has been resolved on ${new Date().toLocaleString()}`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+          this.snackbarService.showSnackBar(`issue has been resolved`);
         })
-      )
-      .subscribe(() => {
-        const notification: INotification = {
-          userId: issue.user.id,
-          notification: `issue: '${
-            issue.summary
-          }' has been resolved on ${new Date().toLocaleString()}`,
-          time: Date.now(),
-        };
-        this.notificationService.addNotification(notification);
-        this.snackbarService.showSnackBar(`issue has been resolved`);
-      });
+    );
   }
 
   canResolve(issue: IIssue): boolean {

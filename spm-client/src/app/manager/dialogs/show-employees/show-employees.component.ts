@@ -1,4 +1,9 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  OnInit,
+} from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/auth/auth.service";
@@ -8,7 +13,7 @@ import {
   TaskStatus,
 } from "src/app/shared/interfaces/task.interface";
 import {
-  avatarImage,
+  AvatarImage,
   IAppUser,
   IAppUserRanking,
   UserRole,
@@ -18,10 +23,11 @@ import {
   selector: "app-show-employees",
   templateUrl: "./show-employees.component.html",
   styleUrls: ["./show-employees.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowEmployeesComponent implements OnInit {
   project: IProject;
-  avatarImage = avatarImage;
+  avatarImage = AvatarImage;
   employeeRankings: IAppUserRanking[];
   private currentUser = this.authService.currentUser;
   constructor(

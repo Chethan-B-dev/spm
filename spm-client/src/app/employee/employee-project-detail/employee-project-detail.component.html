@@ -67,10 +67,10 @@
           </div>
           <button
             mat-button
-            color="primary"
+            color="accent"
             (click)="openProjectFilesDialog(project)"
           >
-            <mat-icon>add</mat-icon> Project Files
+            <mat-icon color="warn"> attach_file</mat-icon> Project Files
           </button>
         </div>
         <div class="my-2">
@@ -208,7 +208,7 @@
         </div>
         <mat-card-subtitle>{{ issue.createdDate | date }}</mat-card-subtitle>
         <mat-card-content>
-          <p>{{ issue.summary }}</p>
+          {{ issue.summary }}
         </mat-card-content>
         <mat-card-actions>
           <button mat-button [routerLink]="['/issue-detail', issue.id]">

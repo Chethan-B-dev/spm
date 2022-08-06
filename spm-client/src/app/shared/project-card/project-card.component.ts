@@ -224,7 +224,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   showAddTaskButton(): boolean {
     const isProjectExpired =
       new Date().getTime() > new Date(this.project.toDate).getTime();
-    const isProjectCompleted = this.project.status === ProjectStatus.COMPLETE;
-    return !isProjectExpired && !isProjectCompleted;
+    const isProjectInProgress =
+      this.project.status === ProjectStatus.IN_PROGRESS;
+    return !isProjectExpired && isProjectInProgress;
   }
 }

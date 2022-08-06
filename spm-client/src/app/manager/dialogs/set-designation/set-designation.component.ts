@@ -1,10 +1,16 @@
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
 import { EMPTY, forkJoin, Subject } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import {
-  avatarImage,
+  AvatarImage,
   IAppUser,
 } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
@@ -15,9 +21,10 @@ import { ManagerService } from "../../services/manager.service";
   selector: "app-set-designation",
   templateUrl: "./set-designation.component.html",
   styleUrls: ["./set-designation.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetDesignationComponent implements OnInit, OnDestroy {
-  avatarImage = avatarImage;
+  avatarImage = AvatarImage;
   employees: IAppUser[];
   manager: IAppUser;
   designations: string[];
@@ -61,6 +68,7 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
 
     forkJoin(requests)
       .pipe(
+        takeUntil(this.destroy$),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
           this.close(false);

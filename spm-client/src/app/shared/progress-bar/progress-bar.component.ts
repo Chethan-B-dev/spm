@@ -1,9 +1,9 @@
 import {
-  Component,
-  Input,
-  OnInit,
-  ElementRef,
   AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
   Renderer2,
 } from "@angular/core";
 
@@ -11,13 +11,11 @@ import {
   selector: "app-progress-bar",
   templateUrl: "./progress-bar.component.html",
   styleUrls: ["./progress-bar.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProgressBarComponent implements OnInit, AfterViewInit {
+export class ProgressBarComponent implements AfterViewInit {
   @Input() value: string;
-  @Input() text: string;
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
-
-  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     const degree = +this.value ? (+this.value / 100) * 180 : 0;

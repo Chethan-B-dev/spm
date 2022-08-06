@@ -10,8 +10,6 @@ import { TaskPriority } from "src/app/shared/interfaces/task.interface";
 import {
   IAppUser,
   UserDesignation,
-  UserDesignations,
-  UserDesignationStatisticsCount,
   UserRole,
 } from "src/app/shared/interfaces/user.interface";
 import { goBack } from "src/app/shared/utility/common";
@@ -32,6 +30,13 @@ try {
   styleUrls: ["./each-project-progress-board.component.scss"],
 })
 export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
+  project: IProject;
+  currentUser: IAppUser;
+  taskPriorityStatistics;
+  tasksAreaProgress;
+  tasksStatusCount;
+  private readonly destroy$ = new Subject<void>();
+
   constructor(
     private readonly reportService: ReportsService,
     private readonly managerService: ManagerService,
@@ -39,12 +44,7 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private readonly authService: AuthService
   ) {}
-  project: IProject;
-  currentUser: IAppUser;
-  taskPriorityStatistics;
-  tasksAreaProgress;
-  tasksStatusCount;
-  private readonly destroy$ = new Subject<void>();
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -160,31 +160,6 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
               legend: {
                 enabled: true,
               },
-              // series: [
-              //   {
-              //     type: "pie",
-              //     data: [
-              //       {
-              //         name: "Developers",
-              //         y: 1,
-              //         color: "#eeeeee",
-              //       },
-              //       {
-              //         name: "Testers",
-              //         y: 2,
-              //         color: "#393e46",
-              //       },
-              //       // { name: "Manager", y: 1, color: "#00adb5" },
-              //       {
-              //         name: "Devops",
-              //         y: 3,
-              //         color: "#eeeeee",
-              //       },
-              //       // { name: "Quality Analysts", y: 1, color: "#506ef9" },
-              //       // change the value of y in order to change the data
-              //     ],
-              //   },
-              // ],
               exporting: {
                 buttons: {
                   contextButton: {
@@ -200,10 +175,6 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
             },
           },
         });
-
-        // donut chart end
-
-        // area chart start
 
         Highcharts.chart("container-area-chart", {
           chart: {
@@ -223,14 +194,6 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
               ? [...Object.values(this.tasksAreaProgress).map(({ x }) => x)]
               : [],
             allowDecimals: false,
-            // title: {
-            //   text: "Project Timeline",
-            // },
-            //   labels: {
-            //     formatter: function () {
-            //         return Object.values(Object.keys(dates));
-            //     }
-            // }
           },
           yAxis: {
             title: {
@@ -266,11 +229,6 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
           ],
         });
 
-        // area chart end
-
-        // area chart end
-
-        // Pie chart start
         Highcharts.chart("container-pie-chart", {
           chart: {
             plotBackgroundColor: null,
@@ -324,11 +282,8 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
               ],
             },
           ],
-          // change the value of y to change the data
         });
-        // Pie chart end
 
-        // bar chart start
         Highcharts.chart("container-bar-chart", {
           chart: {
             type: "bar",
@@ -374,7 +329,6 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
             },
           ],
         });
-        // bar chart end
       });
     });
   }

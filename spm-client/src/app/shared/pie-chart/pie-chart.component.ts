@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from "@angular/core";
 import * as CanvasJS from "../../../assets/canvasjs.min.js";
 import {
   getIssueStatistics,
@@ -16,6 +21,7 @@ import { DataType, myTitleCase, PieData } from "../utility/common.js";
   selector: "app-pie-chart",
   templateUrl: "./pie-chart.component.html",
   styleUrls: ["./pie-chart.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PieChartComponent implements OnInit {
   @Input() pieData: PieData<any>;

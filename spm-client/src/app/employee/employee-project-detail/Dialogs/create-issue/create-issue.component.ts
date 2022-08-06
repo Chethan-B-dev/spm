@@ -1,4 +1,10 @@
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { AngularFireStorage } from "@angular/fire/storage";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -15,6 +21,7 @@ import { SnackbarService } from "src/app/shared/services/snackbar.service";
   selector: "app-create-issue",
   templateUrl: "./create-issue.component.html",
   styleUrls: ["./create-issue.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateIssueComponent implements OnInit, OnDestroy {
   createIssueForm: FormGroup;

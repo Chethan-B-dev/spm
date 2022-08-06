@@ -1,4 +1,9 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { AngularFireStorage } from "@angular/fire/storage";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -16,6 +21,7 @@ import { SnackbarService } from "../../services/snackbar.service";
   selector: "app-edit-profile",
   templateUrl: "./edit-profile.component.html",
   styleUrls: ["./edit-profile.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditProfileComponent implements OnInit, OnDestroy {
   editProfileForm: FormGroup;
@@ -77,32 +83,38 @@ export class EditProfileComponent implements OnInit, OnDestroy {
       const fileRef = this.storage.ref(filePath);
       const task = this.storage.upload(filePath, this.file);
       this.uploadPercent = task.percentageChanges();
-      task
-        .snapshotChanges()
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            this.snackbarService.showSnackBar(err);
-            this.disableButton = false;
-            return EMPTY;
-          }),
-          finalize(() => {
-            this.subscriptions.push(
-              fileRef
-                .getDownloadURL()
-                .pipe(
-                  switchMap((imageUrl: string) => this.changeProfile(imageUrl))
-                )
-                .subscribe(() => {
-                  this.currentUser = this.authService.currentUser;
-                  this.snackbarService.showSnackBar("profile has been edited");
-                  this.router.navigate(["/"]);
-                  this.disableButton = false;
-                })
-            );
-          })
-        )
-        .subscribe();
+      this.subscriptions.push(
+        task
+          .snapshotChanges()
+          .pipe(
+            takeUntil(this.destroy$),
+            catchError((err) => {
+              this.snackbarService.showSnackBar(err);
+              this.disableButton = false;
+              return EMPTY;
+            }),
+            finalize(() => {
+              this.subscriptions.push(
+                fileRef
+                  .getDownloadURL()
+                  .pipe(
+                    switchMap((imageUrl: string) =>
+                      this.changeProfile(imageUrl)
+                    )
+                  )
+                  .subscribe(() => {
+                    this.currentUser = this.authService.currentUser;
+                    this.snackbarService.showSnackBar(
+                      "profile has been edited"
+                    );
+                    this.router.navigate(["/"]);
+                    this.disableButton = false;
+                  })
+              );
+            })
+          )
+          .subscribe()
+      );
     } else {
       this.subscriptions.push(
         this.changeProfile(null).subscribe(() => {

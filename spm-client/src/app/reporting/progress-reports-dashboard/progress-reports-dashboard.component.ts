@@ -1,4 +1,9 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
@@ -15,6 +20,7 @@ import { goBack } from "src/app/shared/utility/common";
   selector: "app-progress-reports-dashboard",
   templateUrl: "./progress-reports-dashboard.component.html",
   styleUrls: ["./progress-reports-dashboard.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressReportsDashboardComponent implements OnInit, OnDestroy {
   currentUser: IAppUser;

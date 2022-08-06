@@ -1,15 +1,20 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import OrgChart from "@balkangraph/orgchart.js";
 import { EMPTY, Subject, Subscription } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { catchError, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { EmployeeService } from "src/app/employee/employee.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { TaskStatus } from "src/app/shared/interfaces/task.interface";
 import {
-  avatarImage,
+  AvatarImage,
   UserRole,
 } from "src/app/shared/interfaces/user.interface";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
@@ -19,9 +24,10 @@ import { ReportsService } from "../services/reports.service";
   selector: "app-org-chart-dashboard",
   templateUrl: "./org-chart-dashboard.component.html",
   styleUrls: ["./org-chart-dashboard.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrgChartDashboardComponent implements OnInit, OnDestroy {
-  projectId: number;
+  private projectId: number;
   private readonly currentUser = this.authService.currentUser;
   private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
@@ -40,7 +46,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((paramMap) => {
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((paramMap) => {
       this.projectId = +paramMap.get("projectId");
     });
 
@@ -86,7 +92,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
       id: project.manager.id,
       name: project.manager.username,
       title: myTitleCase(project.manager.role),
-      img: project.manager.image || avatarImage,
+      img: project.manager.image || AvatarImage,
     });
     project.users.forEach((user) => {
       const taskStatistics = this.reportService.getUserTaskStatistics(
@@ -98,7 +104,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
         pid: project.manager.id,
         name: user.username,
         title: myTitleCase(user.designation),
-        img: user.image || avatarImage,
+        img: user.image || AvatarImage,
         Tasks_Assigned: project.tasks.filter((task) => task.user.id === user.id)
           .length,
         Rank: this.reportService.getEmployeeRank(project, user),

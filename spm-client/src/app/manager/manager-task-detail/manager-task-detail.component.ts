@@ -1,4 +1,9 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
@@ -14,6 +19,7 @@ import { ConfirmDeleteComponent } from "src/app/shared/dialogs/confirm-delete/co
   selector: "app-manager-task-detail",
   templateUrl: "./manager-task-detail.component.html",
   styleUrls: ["./manager-task-detail.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManagerTaskDetailComponent implements OnInit, OnDestroy {
   taskId: number | undefined;
@@ -28,10 +34,12 @@ export class ManagerTaskDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      this.taskId = +params.get("id");
-      this.managerService.refresh();
-    });
+    this.route.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params: ParamMap) => {
+        this.taskId = +params.get("id");
+        this.managerService.refresh();
+      });
 
     this.task$ = this.managerService.refresh$.pipe(
       takeUntil(this.destroy$),
@@ -50,6 +58,7 @@ export class ManagerTaskDetailComponent implements OnInit, OnDestroy {
         data: deleteData,
       })
       .afterClosed()
+      .pipe(takeUntil(this.destroy$))
       .subscribe((deleted: boolean) => {
         if (deleted) {
           this.managerService
