@@ -33,7 +33,7 @@ import { stopLoading } from "../shared/utility/loading";
   styleUrls: ["./admin.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminComponent implements OnDestroy, OnInit {
+export class AdminComponent implements OnInit, OnDestroy {
   defaultUserCategory = "UNVERIFIED";
 
   private searchTermSubject = new BehaviorSubject<string>("");
@@ -138,9 +138,9 @@ export class AdminComponent implements OnDestroy, OnInit {
           return EMPTY;
         })
       )
-      .subscribe(() => {
+      .subscribe((user) => {
         this.adminService.refresh();
-        this.snackbarService.showSnackBar(`user has been enabled`);
+        this.snackbarService.showSnackBar(`${user.username} has been enabled`);
       });
     this.subscriptions.push(enableUserSubscription);
   }
@@ -148,9 +148,8 @@ export class AdminComponent implements OnDestroy, OnInit {
   private filterUserBySearchTerm(user: IAppUser, searchTerm: string): boolean {
     return (
       user.username.toLowerCase().includes(searchTerm) ||
-      user.role.toLowerCase().includes(searchTerm) ||
       user.email.toLowerCase().includes(searchTerm) ||
-      (user.designation && user.designation.toLowerCase().includes(searchTerm))
+      user.role.toLowerCase().includes(searchTerm)
     );
   }
 }

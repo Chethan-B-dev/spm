@@ -23,7 +23,6 @@
     "@angular/platform-browser": "~8.2.0",
     "@angular/platform-browser-dynamic": "~8.2.0",
     "@angular/router": "~8.2.0",
-    "@auth0/angular-jwt": "^5.0.2",
     "@balkangraph/orgchart.js": "^8.4.3",
     "@ng-bootstrap/ng-bootstrap": "^12.1.1",
     "@ngmodule/material-carousel": "^0.6.0",

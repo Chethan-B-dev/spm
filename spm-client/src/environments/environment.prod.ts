@@ -1,11 +1,13 @@
+import { host } from "./environment";
+
 export const environment = {
   production: true,
-  managerUrl: "http://localhost:8080/api/manager",
-  employeeUrl: "http://localhost:8080/api/employee",
-  adminUrl: "http://localhost:8080/api/admin",
-  sharedUrl: "http://localhost:8080/api/shared",
-  authUrl: "http://localhost:8080/api/auth",
-  loginUrl: "http://localhost:8080/api/login",
+  managerUrl: `${host}/api/manager`,
+  employeeUrl: `${host}/api/employee`,
+  adminUrl: `${host}/api/admin`,
+  sharedUrl: `${host}/api/shared`,
+  authUrl: `${host}/api/auth`,
+  loginUrl: `${host}/api/login`,
   firebaseConfig: {
     apiKey: "AIzaSyATkbBKvnu-VMUTxfh78LG0lpzruw5QDiw",
     authDomain: "spm-mce.firebaseapp.com",

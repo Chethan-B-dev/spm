@@ -41,9 +41,9 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      this.taskId = +params.get("id");
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.employeeService.refresh();
+      this.taskId = +params.get("id");
     });
 
     this.task$ = this.employeeService.refresh$.pipe(
@@ -80,7 +80,7 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
   canMarkAsCompleted(task: ITask): boolean {
     return (
       this.currentUser.role == UserRole.EMPLOYEE &&
-      task.todos.length !== 0 &&
+      task.todos.length > 0 &&
       task.status === TaskStatus.IN_PROGRESS &&
       task.todos.every((todo) => todo.status === TodoStatus.DONE)
     );

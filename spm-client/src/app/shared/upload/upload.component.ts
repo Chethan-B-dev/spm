@@ -42,11 +42,11 @@ export class UploadComponent implements OnInit, OnDestroy {
     private readonly snackbarService: SnackbarService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.startUpload();
   }
 
-  private startUpload() {
+  private startUpload(): void {
     // The storage path
     const path = `project/${this.project.name}/${Date.now()}_${this.file.name}`;
 
@@ -66,7 +66,6 @@ export class UploadComponent implements OnInit, OnDestroy {
         this.errorEvent.emit(err);
         return EMPTY;
       }),
-      // The file's download URL
       finalize(async () => {
         this.downloadURL = await ref.getDownloadURL().toPromise();
         this.editProject(this.downloadURL);
@@ -75,10 +74,7 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   private editProject(url: string): void {
-    let files = JSON.parse(this.project.files);
-
-    if (!files) files = [];
-
+    const files = (JSON.parse(this.project.files) as string[]) || [];
     files.push(url);
 
     const editProjectSubscription = this.managerService

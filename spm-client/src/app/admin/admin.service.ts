@@ -19,15 +19,7 @@ export class AdminService {
   private refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
-
-  getAllUsers(): Observable<IAppUser[]> {
-    return this.refresh$.pipe(
-      switchMap(() => this.http.get<IAppUser[]>(this.adminUrl)),
-      shareReplay(1),
-      catchError(handleError)
-    );
-  }
+  constructor(private readonly http: HttpClient) {}
 
   refresh(): void {
     this.refreshSubject.next();
@@ -35,6 +27,14 @@ export class AdminService {
 
   selectUserCategory(selectedUserCategory: string): void {
     this.userCategorySelectedSubject.next(selectedUserCategory);
+  }
+
+  getAllUsers(): Observable<IAppUser[]> {
+    return this.refresh$.pipe(
+      switchMap(() => this.http.get<IAppUser[]>(this.adminUrl)),
+      shareReplay(1),
+      catchError(handleError)
+    );
   }
 
   takeDecision(userId: number, adminDecision: string): Observable<IAppUser> {

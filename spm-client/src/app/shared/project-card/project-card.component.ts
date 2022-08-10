@@ -15,15 +15,17 @@ import { catchError, switchMap, takeUntil } from "rxjs/operators";
 
 // components
 import { CreateTaskComponent } from "src/app/manager/dialogs/create-task/create-task.component";
+import { EditProjectComponent } from "src/app/manager/dialogs/edit-project/edit-project.component";
+import { SetDesignationComponent } from "src/app/manager/dialogs/set-designation/set-designation.component";
 import { ShowEmployeesComponent } from "src/app/manager/dialogs/show-employees/show-employees.component";
+import { ImageSliderComponent } from "../dialogs/image-slider/image-slider.component";
 
 // services
 import { ManagerService } from "src/app/manager/services/manager.service";
+import { NotificationService } from "../notification.service";
 import { SnackbarService } from "../services/snackbar.service";
 
 // interfaces
-import { EditProjectComponent } from "src/app/manager/dialogs/edit-project/edit-project.component";
-import { SetDesignationComponent } from "src/app/manager/dialogs/set-designation/set-designation.component";
 import { IIssue } from "../interfaces/issue.interface";
 import { INotification } from "../interfaces/notification.interface";
 import { IProject, ProjectStatus } from "../interfaces/project.interface";
@@ -33,9 +35,9 @@ import {
 } from "../interfaces/task.interface";
 import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
-import { NotificationService } from "../notification.service";
+
+// utility
 import { DataType, goBack, PieData } from "../utility/common";
-import { ImageSliderComponent } from "../dialogs/image-slider/image-slider.component";
 
 @Component({
   selector: "app-project-card",
@@ -59,15 +61,23 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    public dialog: MatDialog,
+    private dialog: MatDialog,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService
   ) {}
 
+  get pieChartData(): PieData<IIssue> {
+    return {
+      type: DataType.ISSUE,
+      data: this.project.issues,
+    } as PieData<IIssue>;
+  }
+
   ngOnInit(): void {
     if (this.showAddEmps) {
       this.users$ = this.managerService.refresh$.pipe(
+        takeUntil(this.destroy$),
         switchMap(() => this.managerService.getAllEmployees(this.project.id)),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
@@ -77,13 +87,6 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     }
     this.projectProgress = getProjectProgress(this.project.tasks);
     this.projectTaskStatistics = getTaskStatistics(this.project.tasks);
-  }
-
-  get pieChartData(): PieData<IIssue> {
-    return {
-      type: DataType.ISSUE,
-      data: this.project.issues,
-    } as PieData<IIssue>;
   }
 
   scrollToBottom(): void {
@@ -201,7 +204,13 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.dialog.open(SetDesignationComponent, dialogConfig);
 
-    return dialogRef.afterClosed();
+    return dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$),
+      catchError((err) => {
+        this.snackbarService.showSnackBar(err);
+        return EMPTY;
+      })
+    );
   }
 
   openShowEmployeesDialog(): void {
