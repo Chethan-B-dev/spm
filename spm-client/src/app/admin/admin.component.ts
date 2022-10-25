@@ -1,31 +1,23 @@
-// angular
 import {
   ChangeDetectionStrategy,
   Component,
   OnDestroy,
   OnInit,
 } from "@angular/core";
-//rxjs
-import {
-  BehaviorSubject,
-  combineLatest,
-  EMPTY,
-  Subject,
-  Subscription,
-} from "rxjs";
+import { BehaviorSubject, combineLatest, EMPTY, Subject } from "rxjs";
 import {
   catchError,
   debounceTime,
   distinctUntilChanged,
   map,
-  switchMap,
   takeUntil,
   tap,
 } from "rxjs/operators";
 import { IAppUser } from "../shared/interfaces/user.interface";
-import { AdminService } from "./admin.service";
 import { SnackbarService } from "../shared/services/snackbar.service";
-import { stopLoading } from "../shared/utility/loading";
+import { startLoading, stopLoading } from "../shared/utility/loading";
+import { UserStatus } from "./../shared/interfaces/user.interface";
+import { AdminService } from "./admin.service";
 
 @Component({
   selector: "app-admin",
@@ -34,51 +26,44 @@ import { stopLoading } from "../shared/utility/loading";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminComponent implements OnInit, OnDestroy {
-  defaultUserCategory = "UNVERIFIED";
+  defaultUserCategory = UserStatus.UNVERIFIED;
 
-  private searchTermSubject = new BehaviorSubject<string>("");
-  searchTerm$ = this.searchTermSubject.asObservable();
+  private readonly searchTermSubject = new BehaviorSubject<string>("");
+  readonly searchTerm$ = this.searchTermSubject.asObservable();
 
-  private isLoadingSubject = new BehaviorSubject<boolean>(true);
-  isLoading$ = this.isLoadingSubject.asObservable();
-
-  private readonly subscriptions = [] as Subscription[];
+  private readonly isLoadingSubject = new BehaviorSubject<boolean>(true);
+  readonly isLoading$ = this.isLoadingSubject.asObservable();
 
   private readonly destroy$ = new Subject<void>();
 
-  users$ = this.adminService.refresh$.pipe(
-    takeUntil(this.destroy$),
-    switchMap(() => this.usersWithoutRefresh$),
-    tap(() => stopLoading(this.isLoadingSubject)),
-    catchError((err) => {
-      stopLoading(this.isLoadingSubject);
-      this.snackbarService.showSnackBar(err);
-      return EMPTY;
-    })
-  );
-
-  usersWithoutRefresh$ = combineLatest([
-    this.adminService.getAllUsers(),
+  users$ = combineLatest([
+    this.adminService.usersWithAction$,
     this.adminService.userCategorySelectedAction$,
-    this.searchTerm$.pipe(debounceTime(500), distinctUntilChanged()),
+    this.searchTerm$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ),
   ]).pipe(
     takeUntil(this.destroy$),
+    tap(() => startLoading(this.isLoadingSubject)),
     map(([users, userSelectedCategory, searchTerm]) => {
-      if (userSelectedCategory === "ALL" && !searchTerm) return users;
+      if (userSelectedCategory === UserStatus.ALL && !searchTerm) {
+        return users;
+      }
       return users.filter((user) => {
         if (
-          userSelectedCategory === "ALL" &&
-          this.filterUserBySearchTerm(user, searchTerm)
-        )
+          (userSelectedCategory === UserStatus.ALL &&
+            this.filterUserBySearchTerm(user, searchTerm)) ||
+          (userSelectedCategory === user.status &&
+            this.filterUserBySearchTerm(user, searchTerm))
+        ) {
           return true;
-        else if (
-          userSelectedCategory === user.status &&
-          this.filterUserBySearchTerm(user, searchTerm)
-        )
-          return true;
+        }
         return false;
       });
     }),
+    tap(() => stopLoading(this.isLoadingSubject)),
     catchError((err) => {
       stopLoading(this.isLoadingSubject);
       this.snackbarService.showSnackBar(err);
@@ -98,7 +83,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.isLoadingSubject.complete();
+    this.searchTermSubject.complete();
   }
 
   searchUser(searchTerm: string): void {
@@ -110,7 +96,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   takeDecision(userId: number, adminDecision: string): void {
-    const takeDecisionSubscription = this.adminService
+    this.adminService
       .takeDecision(userId, adminDecision)
       .pipe(
         takeUntil(this.destroy$),
@@ -120,16 +106,14 @@ export class AdminComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(() => {
-        this.adminService.refresh();
         this.snackbarService.showSnackBar(
           `user has been ${adminDecision.toLowerCase()}ed`
         );
       });
-    this.subscriptions.push(takeDecisionSubscription);
   }
 
   enableUser(userId: number): void {
-    const enableUserSubscription = this.adminService
+    this.adminService
       .enableUser(userId)
       .pipe(
         takeUntil(this.destroy$),
@@ -139,10 +123,8 @@ export class AdminComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((user) => {
-        this.adminService.refresh();
         this.snackbarService.showSnackBar(`${user.username} has been enabled`);
       });
-    this.subscriptions.push(enableUserSubscription);
   }
 
   private filterUserBySearchTerm(user: IAppUser, searchTerm: string): boolean {

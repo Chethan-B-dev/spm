@@ -14,12 +14,10 @@ import { UserRole } from "../shared/interfaces/user.interface";
 export class AdminGuard implements CanActivate {
   constructor(
     private readonly authService: AuthService,
-    private router: Router
+    private readonly router: Router
   ) {}
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean | Promise<boolean> {
+
+  canActivate(): boolean {
     const isAuthenticated = this.authService.isLoggedIn();
     if (!isAuthenticated || !this.authService.checkRole(UserRole.ADMIN)) {
       this.router.navigate(["/"]);

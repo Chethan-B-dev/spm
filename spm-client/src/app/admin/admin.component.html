@@ -14,7 +14,7 @@
       <mat-form-field>
         <mat-label>Select User Status</mat-label>
         <mat-select
-          [(value)]="defaultUserCategory"
+          [value]="defaultUserCategory"
           (selectionChange)="onUserCategoryChange($event.value)"
         >
           <mat-option value="UNVERIFIED" selected>Pending Users</mat-option>
@@ -51,6 +51,7 @@
                   user.status === 'VERIFIED' ? 'primary' : 'warn'
                 "
                 [matTooltip]="user.status | titlecase"
+                matTooltipPosition="after"
                 matBadgeOverlap="false"
                 >{{ user.username }}</span
               >

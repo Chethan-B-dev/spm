@@ -1,52 +1,83 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
-import { catchError, shareReplay, switchMap } from "rxjs/operators";
+import { BehaviorSubject, combineLatest, Observable } from "rxjs";
+import { catchError, map, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { IAppUser } from "../shared/interfaces/user.interface";
 import { handleError } from "../shared/utility/error";
+import {
+  IUserAction,
+  UserStatus,
+  userStatusActions,
+} from "./../shared/interfaces/user.interface";
 
 @Injectable({
   providedIn: "root",
 })
 export class AdminService {
-  private adminUrl = environment.adminUrl;
-  private userCategorySelectedSubject = new BehaviorSubject<string>(
-    "UNVERIFIED"
+  private readonly adminUrl = environment.adminUrl;
+  private readonly userCategorySelectedSubject = new BehaviorSubject<string>(
+    UserStatus.UNVERIFIED
   );
-  userCategorySelectedAction$ = this.userCategorySelectedSubject.asObservable();
+  readonly userCategorySelectedAction$ =
+    this.userCategorySelectedSubject.asObservable();
 
-  private refreshSubject = new BehaviorSubject<void>(null);
-  refresh$ = this.refreshSubject.asObservable();
+  private readonly defaultUserStatus = {
+    userId: -1,
+    status: UserStatus.ALL,
+  };
+
+  private readonly userStatusSubject = new BehaviorSubject<IUserAction>(
+    this.defaultUserStatus
+  );
+  readonly userStatusAction$ = this.userStatusSubject.asObservable();
+
+  users$ = this.http
+    .get<IAppUser[]>(this.adminUrl)
+    .pipe(catchError(handleError));
+
+  usersWithAction$ = combineLatest(this.users$, this.userStatusAction$).pipe(
+    map(([users, userAction]) => {
+      if (userAction.userId === -1 || userAction.status === UserStatus.ALL) {
+        return users;
+      }
+      return users.map((user) => {
+        if (userAction.userId === user.id) {
+          return { ...user, status: userAction.status };
+        }
+        return user;
+      });
+    }),
+    catchError(handleError)
+  );
 
   constructor(private readonly http: HttpClient) {}
 
-  refresh(): void {
-    this.refreshSubject.next();
-  }
-
   selectUserCategory(selectedUserCategory: string): void {
     this.userCategorySelectedSubject.next(selectedUserCategory);
-  }
-
-  getAllUsers(): Observable<IAppUser[]> {
-    return this.refresh$.pipe(
-      switchMap(() => this.http.get<IAppUser[]>(this.adminUrl)),
-      shareReplay(1),
-      catchError(handleError)
-    );
   }
 
   takeDecision(userId: number, adminDecision: string): Observable<IAppUser> {
     const requestBody = { userId, adminDecision };
     return this.http
       .post<IAppUser>(`${this.adminUrl}/take-decision`, requestBody)
-      .pipe(catchError(handleError));
+      .pipe(
+        tap(() => this.setUserStatus(userId, userStatusActions[adminDecision])),
+        catchError(handleError)
+      );
   }
 
   enableUser(userId: number): Observable<IAppUser> {
-    return this.http
-      .get<IAppUser>(`${this.adminUrl}/enable/${userId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<IAppUser>(`${this.adminUrl}/enable/${userId}`).pipe(
+      tap(() => this.setUserStatus(userId, UserStatus.UNVERIFIED)),
+      catchError(handleError)
+    );
+  }
+
+  private setUserStatus(userId: number, status: UserStatus): void {
+    this.userStatusSubject.next({
+      userId,
+      status,
+    });
   }
 }

@@ -10,6 +10,11 @@ export interface IAppUser {
   designation?: UserDesignation;
 }
 
+export interface IUserAction {
+  userId: number;
+  status: UserStatus;
+}
+
 export interface IAppUserRanking {
   user: IAppUser;
   ranking: number;
@@ -44,6 +49,7 @@ export enum UserStatus {
   VERIFIED = "VERIFIED",
   UNVERIFIED = "UNVERIFIED",
   DISABLED = "DISABLED",
+  ALL = "ALL",
 }
 
 export enum UserRole {
@@ -74,3 +80,9 @@ export const UserDesignations = [...Object.keys(UserDesignation)];
 
 export const AvatarImage =
   "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000";
+
+export const userStatusActions = {
+  APPROVE: UserStatus.VERIFIED,
+  REJECT: UserStatus.DISABLED,
+  ENABLE: UserStatus.UNVERIFIED,
+};
