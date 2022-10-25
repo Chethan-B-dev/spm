@@ -6,8 +6,8 @@ import {
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { EMPTY, Subject, Subscribable, Subscription } from "rxjs";
-import { catchError, pluck, takeUntil, tap } from "rxjs/operators";
+import { EMPTY, Subject } from "rxjs";
+import { catchError, pluck, takeUntil } from "rxjs/operators";
 import { EmployeeService } from "src/app/employee/employee.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { ILoginRequest } from "src/app/shared/interfaces/user.interface";
@@ -22,11 +22,10 @@ import { AuthService } from "../auth.service";
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
     private readonly authService: AuthService,
     private readonly snackbarService: SnackbarService,
     private readonly employeeService: EmployeeService,
@@ -34,6 +33,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.authService.logout();
+    }
     this.loginForm = this.fb.group({
       email: ["", [Validators.required, Validators.email]],
       password: ["", Validators.required],
@@ -43,11 +45,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   login(): void {
-    const loginSubscription = this.authService
+    this.authService
       .login(this.loginForm.value as ILoginRequest)
       .pipe(
         takeUntil(this.destroy$),
@@ -63,6 +64,5 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.snackbarService.showSnackBar(`Welcome ${user.username}`);
         this.router.navigate([`/${user.role.toLowerCase()}`]);
       });
-    this.subscriptions.push(loginSubscription);
   }
 }

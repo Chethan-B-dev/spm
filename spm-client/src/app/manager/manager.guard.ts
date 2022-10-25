@@ -1,10 +1,5 @@
 import { Injectable } from "@angular/core";
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-} from "@angular/router";
+import { CanActivate, Router } from "@angular/router";
 import { AuthService } from "../auth/auth.service";
 import { UserRole } from "../shared/interfaces/user.interface";
 import { ManagerService } from "./services/manager.service";
@@ -16,12 +11,9 @@ export class ManagerGuard implements CanActivate {
   constructor(
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
-    private router: Router
+    private readonly router: Router
   ) {}
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean | Promise<boolean> {
+  canActivate(): boolean {
     const isAuthenticated = this.authService.isLoggedIn();
     if (!isAuthenticated || !this.authService.checkRole(UserRole.MANAGER)) {
       this.router.navigate(["/"]);

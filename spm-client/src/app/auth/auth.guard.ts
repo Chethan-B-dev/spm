@@ -1,10 +1,5 @@
 import { Injectable } from "@angular/core";
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-} from "@angular/router";
+import { CanActivate, Router } from "@angular/router";
 import { SnackbarService } from "../shared/services/snackbar.service";
 import { AuthService } from "./auth.service";
 
@@ -13,14 +8,11 @@ import { AuthService } from "./auth.service";
 })
 export class AuthGuard implements CanActivate {
   constructor(
-    private router: Router,
+    private readonly router: Router,
     private readonly authService: AuthService,
     private readonly snackbarService: SnackbarService
   ) {}
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean | Promise<boolean> {
+  canActivate(): boolean {
     const isAuthenticated = this.authService.isLoggedIn();
     const user = this.authService.getUser();
     if (isAuthenticated && user) {
@@ -28,7 +20,7 @@ export class AuthGuard implements CanActivate {
     } else {
       this.authService.logout();
       this.snackbarService.showSnackBar(
-        "Please Login, Your session has Expired!"
+        "Please Login, Your session might have Expired!"
       );
       this.router.navigate(["/login"]);
     }

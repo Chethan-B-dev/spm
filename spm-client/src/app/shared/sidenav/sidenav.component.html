@@ -18,13 +18,13 @@
 
     <mat-divider></mat-divider>
 
-    <mat-nav-list *ngIf="isAdmin$ | async">
+    <mat-nav-list *ngIf="(currentUser$ | async)?.role === 'ADMIN'">
       <a mat-list-item [routerLink]="'/admin'">
         <mat-icon class="mr-2">person_outline</mat-icon>Admin
       </a>
     </mat-nav-list>
 
-    <mat-nav-list *ngIf="isEmployee$ | async">
+    <mat-nav-list *ngIf="(currentUser$ | async)?.role === 'EMPLOYEE'">
       <a mat-list-item [routerLink]="'/employee'">
         <mat-icon class="mr-2">dashboard</mat-icon> Dashboard
       </a>
@@ -33,7 +33,7 @@
       </a>
     </mat-nav-list>
 
-    <mat-nav-list *ngIf="isManager$ | async">
+    <mat-nav-list *ngIf="(currentUser$ | async)?.role === 'MANAGER'">
       <a mat-list-item (click)="openAddProjectDialog()">
         <mat-icon class="mr-2">work</mat-icon> Add Project
       </a>
@@ -62,8 +62,9 @@
         width="50"
         height="60"
       />
-      <!-- <span class="px-2">SPM</span> -->
+
       <button
+        *ngIf="isLoggedIn$ | async"
         class="mx-2"
         mat-button
         [routerLink]="'/' + (currentUser$ | async)?.role | lowercase"
@@ -73,7 +74,9 @@
 
       <!-- search -->
       <mat-form-field
-        *ngIf="(isLoggedIn$ | async) && !(isAdmin$ | async)"
+        *ngIf="
+          (isLoggedIn$ | async) && (currentUser$ | async)?.role !== 'ADMIN'
+        "
         appearance="fill"
         class="searchForm"
       >
@@ -125,7 +128,7 @@
         routerLink="/profile"
         *ngIf="isLoggedIn$ | async"
         [matTooltip]="(currentUser$ | async)?.username"
-        [matTooltipPosition]="'right'"
+        matTooltipPosition="below"
       >
         <mat-icon>person</mat-icon>
         Profile
@@ -134,7 +137,7 @@
       <ng-container *ngIf="isLoggedIn$ | async">
         <button
           matTooltip="Notifications"
-          [matTooltipPosition]="'right'"
+          matTooltipPosition="below"
           mat-icon-button
           class="mr-4"
           (click)="toggleNotifications($event)"

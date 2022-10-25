@@ -6,10 +6,11 @@ import {
   OnInit,
   Renderer2,
   ViewChild,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { Router } from "@angular/router";
-import { EMPTY, Observable, of, Subject, Subscription } from "rxjs";
+import { EMPTY, Observable, of, Subject } from "rxjs";
 import {
   catchError,
   debounceTime,
@@ -17,6 +18,7 @@ import {
   filter,
   map,
   pluck,
+  shareReplay,
   switchMap,
   takeUntil,
   tap,
@@ -36,6 +38,7 @@ import { DataType, ISearchData, ISearchGroup } from "../utility/common";
   selector: "app-sidenav",
   templateUrl: "./sidenav.component.html",
   styleUrls: ["./sidenav.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidenavComponent implements OnInit, OnDestroy {
   @ViewChild("notifications", { static: false }) notifications: ElementRef;
@@ -56,49 +59,46 @@ export class SidenavComponent implements OnInit, OnDestroy {
   }
   isExpanded = false;
   isOnline = true;
-  isManager$: Observable<boolean>;
-  isEmployee$: Observable<boolean>;
-  isAdmin$: Observable<boolean>;
   isLoggedIn$: Observable<boolean>;
   searchResults$: Observable<ISearchGroup[]>;
   currentUser$: Observable<IAppUser>;
   currentUserRole: UserRole;
   currentUserId: number;
   notificationMessages: INotification[] = [];
-  private searchTermSubject = new Subject<string>();
-  searchTerm$ = this.searchTermSubject.asObservable();
-  private readonly subscriptions = [] as Subscription[];
+  private readonly searchTermSubject = new Subject<string>();
+  readonly searchTerm$ = this.searchTermSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private dialog: MatDialog,
+    private readonly dialog: MatDialog,
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
     private readonly employeeService: EmployeeService,
     private readonly notificationService: NotificationService,
     private readonly connectionService: ConnectionService,
-    private router: Router,
-    private renderer: Renderer2
+    private readonly router: Router,
+    private readonly renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
-    const connectionSubscription = this.connectionService
+    this.connectionService
       .monitor()
       .pipe(takeUntil(this.destroy$))
       .subscribe((online) => (this.isOnline = online));
 
-    this.subscriptions.push(connectionSubscription);
-
     this.isLoggedIn$ = this.authService.isLoggedIn$.pipe(
+      takeUntil(this.destroy$),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
-      })
+      }),
+      shareReplay(1)
     );
 
     this.currentUser$ = this.authService.currentUser$.pipe(
       filter((currentUser) => Boolean(currentUser)),
+      takeUntil(this.destroy$),
       tap((currentUser) => {
         this.currentUserRole = currentUser.role;
         this.currentUserId = currentUser.id;
@@ -106,77 +106,24 @@ export class SidenavComponent implements OnInit, OnDestroy {
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
-      })
-    );
-
-    this.isAdmin$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.checkRole(UserRole.ADMIN))),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
-    );
-    this.isManager$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.checkRole(UserRole.MANAGER))),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
-    );
-    this.isEmployee$ = this.authService.isLoggedIn$.pipe(
-      switchMap(() => of(this.authService.checkRole(UserRole.EMPLOYEE))),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
+      }),
+      shareReplay(1)
     );
 
     this.searchResults$ = this.searchTerm$.pipe(
       takeUntil(this.destroy$),
       debounceTime(500),
       distinctUntilChanged(),
-      switchMap((searchTerm) =>
-        !searchTerm
-          ? of([])
-          : this.currentUserRole === UserRole.MANAGER
-          ? this.managerService.globalSearch(searchTerm)
-          : this.employeeService.globalSearch(searchTerm)
-      ),
+      switchMap((searchTerm) => this.performSearch(searchTerm)),
+      map((groups) => groups.filter((group) => group.data.length)),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
       })
     );
-    // todo: uncomment this after development to allow notifications
-    // const notificationSubscription = this.currentUser$
-    //   .pipe(
-    //     pluck("id"),
-    //     switchMap((currentUserId) =>
-    //       this.notificationService.getAllNotifications().pipe(
-    //         map((snapshots) =>
-    //           snapshots.map(
-    //             (snapshot) =>
-    //               ({
-    //                 id: snapshot.payload.doc.id,
-    //                 ...snapshot.payload.doc.data(),
-    //               } as INotification)
-    //           )
-    //         ),
-    //         map((notifications: INotification[]) =>
-    //           notifications.filter(
-    //             (notification) => notification.userId === currentUserId
-    //           )
-    //         ),
-    //         map((notifications) =>
-    //           notifications.sort((a, b) => b.time - a.time)
-    //         )
-    //       )
-    //     )
-    //   )
-    //   .subscribe(
-    //     (notifications) => (this.notificationMessages = notifications)
-    //   );
-    // this.subscriptions.push(notificationSubscription);
+
+    // todo: uncomment this if you want notifications enabled
+    // this.populateNotifications();
   }
 
   deleteNotification(notificationId: string): void {
@@ -184,16 +131,18 @@ export class SidenavComponent implements OnInit, OnDestroy {
   }
 
   deleteAllNotifications(): void {
-    this.notificationMessages.forEach((notification) =>
+    const notifications = [...this.notificationMessages];
+    this.notificationMessages = [];
+    // todo: check if this works
+    notifications.forEach((notification) =>
       this.deleteNotification(notification.id)
     );
-    this.notificationMessages = [];
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.searchTermSubject.complete();
   }
 
   search(searchTerm: string): void {
@@ -241,5 +190,47 @@ export class SidenavComponent implements OnInit, OnDestroy {
     } else {
       this.renderer.setStyle(overlay, "display", "none");
     }
+  }
+
+  private performSearch(searchTerm) {
+    if (!searchTerm) {
+      return of([]);
+    }
+    if (this.currentUserRole === UserRole.MANAGER) {
+      return this.managerService.globalSearch(searchTerm);
+    }
+    return this.employeeService.globalSearch(searchTerm);
+  }
+
+  private populateNotifications(): void {
+    this.currentUser$
+      .pipe(
+        tap(() => console.log("notification code running")),
+        pluck("id"),
+        switchMap((currentUserId) =>
+          this.notificationService.getAllNotifications().pipe(
+            map((snapshots) =>
+              snapshots.map(
+                (snapshot) =>
+                  ({
+                    id: snapshot.payload.doc.id,
+                    ...snapshot.payload.doc.data(),
+                  } as INotification)
+              )
+            ),
+            map((notifications: INotification[]) =>
+              notifications.filter(
+                (notification) => notification.userId === currentUserId
+              )
+            ),
+            map((notifications) =>
+              notifications.sort((a, b) => b.time - a.time)
+            )
+          )
+        )
+      )
+      .subscribe(
+        (notifications) => (this.notificationMessages = notifications)
+      );
   }
 }

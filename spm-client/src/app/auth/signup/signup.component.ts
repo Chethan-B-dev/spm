@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { EMPTY, Subject, Subscription } from "rxjs";
+import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { ISignUpRequest } from "src/app/shared/interfaces/user.interface";
@@ -19,11 +19,10 @@ import { AuthService } from "../auth.service";
 })
 export class SignupComponent implements OnInit {
   signupForm: FormGroup;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
     private readonly authService: AuthService,
     private readonly sharedService: SharedService,
     private readonly snackbarService: SnackbarService,
@@ -31,6 +30,9 @@ export class SignupComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.authService.logout();
+    }
     this.signupForm = this.fb.group({
       username: ["", Validators.required],
       email: ["", [Validators.required, Validators.email]],
@@ -40,8 +42,13 @@ export class SignupComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   signup(): void {
-    const registerSubscription = this.authService
+    this.authService
       .signup(this.signupForm.value as ISignUpRequest)
       .pipe(
         takeUntil(this.destroy$),
@@ -50,39 +57,30 @@ export class SignupComponent implements OnInit {
           return EMPTY;
         })
       )
-      .subscribe((user) => {
-        // todo: this is not working try this again
-        this.sharedService
-          .getAdmin()
-          .pipe(
-            takeUntil(this.destroy$),
-            catchError((err) => {
-              this.snackbarService.showSnackBar(err);
-              return EMPTY;
-            })
-          )
-          .subscribe((admin) => {
-            const notification: INotification = {
-              userId: admin.id,
-              notification: `A new ${myTitleCase(user.role)} with name ${
-                user.username
-              } has registered on ${new Date().toLocaleString()}`,
-              time: Date.now(),
-            };
-            this.notificationService.addNotification(notification);
-          });
-        this.snackbarService.showSnackBar(
-          "Your account has been created, Please wait for the Admin to approve your request",
-          5000
-        );
-        this.router.navigate(["/login"]);
+      .subscribe(async (user) => {
+        try {
+          const admin = await this.sharedService.getAdmin().toPromise();
+          const notification: INotification = {
+            userId: admin.id,
+            notification: `A new ${myTitleCase(user.role)} with name ${
+              user.username
+            } has registered on ${new Date().toLocaleString()}`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+        } catch (error) {
+          console.error(error);
+          this.snackbarService.showSnackBar(
+            "A notification to the admin could not be sent",
+            2000
+          );
+        } finally {
+          this.snackbarService.showSnackBar(
+            "Your account has been created, Please wait for the Admin to approve your request",
+            5000
+          );
+          this.router.navigate(["/login"]);
+        }
       });
-    this.subscriptions.push(registerSubscription);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

@@ -3,8 +3,6 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { catchError, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
-import { EmployeeService } from "../employee/employee.service";
-import { ManagerService } from "../manager/services/manager.service";
 import {
   IAppUser,
   IEditProfileRequest,
@@ -19,14 +17,18 @@ import { handleError } from "../shared/utility/error";
   providedIn: "root",
 })
 export class AuthService {
-  private loginUrl = environment.loginUrl;
-  private authUrl = environment.authUrl;
-  private currentUserSubject = new BehaviorSubject<IAppUser>(this.getUser());
-  currentUser$ = this.currentUserSubject.asObservable();
-  private isLoggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
-  isLoggedIn$ = this.isLoggedInSubject.asObservable();
+  private readonly loginUrl = environment.loginUrl;
+  private readonly authUrl = environment.authUrl;
+  private readonly currentUserSubject = new BehaviorSubject<IAppUser>(
+    this.getUser()
+  );
+  readonly currentUser$ = this.currentUserSubject.asObservable();
+  private readonly isLoggedInSubject = new BehaviorSubject<boolean>(
+    this.isLoggedIn()
+  );
+  readonly isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   get currentUser(): IAppUser {
     return this.getUser();
