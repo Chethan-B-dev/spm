@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { MatDialog } from "@angular/material";
 import { ConfirmDeleteComponent } from "src/app/shared/dialogs/confirm-delete/confirm-delete.component";
 import { ITodo, TodoStatus } from "src/app/shared/interfaces/todo.interface";
@@ -8,11 +8,12 @@ import { DataType, DeleteData } from "src/app/shared/utility/common";
   selector: "issue-card",
   templateUrl: "./issue-card.component.html",
   styleUrls: ["./issue-card.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IssueCardComponent {
   @Input() todo: ITodo;
 
-  constructor(public dialog: MatDialog) {}
+  constructor(private readonly dialog: MatDialog) {}
 
   openDeleteTodoConfirmDialog(): void {
     const deleteData: DeleteData = {

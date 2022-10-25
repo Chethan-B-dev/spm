@@ -1,16 +1,20 @@
-// angular
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
+import { TaskStatus } from "./../../shared/interfaces/task.interface";
 
-// rxjs
 import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
-import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
+import {
+  catchError,
+  map,
+  switchMap,
+  takeUntil,
+  tap,
+  withLatestFrom,
+} from "rxjs/operators";
 
-// services
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../services/manager.service";
 
-// interfaces
 import {
   IIssue,
   sortIssuesByPriority,
@@ -27,16 +31,15 @@ import {
   styleUrls: ["./manager-project-detail.component.scss"],
 })
 export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
-  defaultTaskCategory = "ALL";
+  defaultTaskCategory = TaskStatus.ALL;
   showIssues = false;
   project$: Observable<IProject>;
   tasks$: Observable<ITask[]>;
   issues$: Observable<IIssue[]>;
-  private projectId: number;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService
   ) {}
@@ -50,15 +53,17 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      this.projectId = +params.get("id");
-      this.managerService.refresh();
-    });
-
-    // ! we are refreshing in case we update project information
-    this.project$ = this.managerService.refresh$.pipe(
+    const projectId$ = this.route.paramMap.pipe(
       takeUntil(this.destroy$),
-      switchMap(() => this.managerService.getProjectById(this.projectId)),
+      map((params) => +params.get("id"))
+    );
+
+    this.project$ = this.managerService.refresh$.pipe(
+      withLatestFrom(projectId$),
+      takeUntil(this.destroy$),
+      switchMap(([_, projectId]) =>
+        this.managerService.getProjectById(projectId)
+      ),
       tap((project) => this.managerService.setProject(project)),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
@@ -68,23 +73,22 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
 
     this.managerService.selectTaskCategory(this.defaultTaskCategory);
 
-    // todo: add pagination to this stream and scan to add more elements
     this.tasks$ = combineLatest(
       this.managerService.tasksWithAdd$,
       this.managerService.taskCategorySelectedAction$
     ).pipe(
       takeUntil(this.destroy$),
-      map(([tasks, selectedTaskCategory]) =>
-        selectedTaskCategory === "ALL"
-          ? tasks
-          : tasks.filter((task) => task.status === selectedTaskCategory)
-      ),
-      map((tasks) => tasks.sort(sortTasksByPriority)),
+      map(this.filterTasksByStatusAndSortByPriority),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
       })
     );
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getIssueKey(projectName: string, issueId: number): string {
@@ -95,8 +99,14 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
     return issues.sort(sortIssuesByPriority);
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  private filterTasksByStatusAndSortByPriority([tasks, taskStatus]: [
+    ITask[],
+    string
+  ]) {
+    const filteredTasks =
+      taskStatus === TaskStatus.ALL
+        ? tasks
+        : tasks.filter((task) => task.status === taskStatus);
+    return filteredTasks.sort(sortTasksByPriority);
   }
 }

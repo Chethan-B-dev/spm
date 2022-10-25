@@ -1,13 +1,9 @@
-// angular
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-// rxjs
 import {
   BehaviorSubject,
-  combineLatest,
   merge,
   Observable,
-  of,
   ReplaySubject,
   Subject,
 } from "rxjs";
@@ -19,7 +15,6 @@ import {
   pluck,
   scan,
   shareReplay,
-  startWith,
   switchMap,
   takeWhile,
   tap,
@@ -29,7 +24,6 @@ import {
   IUpdateIssueDTO,
 } from "src/app/shared/interfaces/issue.interface";
 import { IPagedData } from "src/app/shared/interfaces/pagination.interface";
-// interfaces
 import {
   IProject,
   ProjectStatus,
@@ -48,48 +42,56 @@ import {
   mapSearchResults,
   sendProjectApproachingDeadlineNotification,
 } from "src/app/shared/utility/common";
-// utility
 import { handleError } from "src/app/shared/utility/error";
 import { environment } from "src/environments/environment";
+import { TaskStatus } from "./../../shared/interfaces/task.interface";
+import {
+  DataType,
+  ICrudAction,
+  ICrudOperation,
+} from "./../../shared/utility/common";
 
 @Injectable({
   providedIn: "root",
 })
 export class ManagerService {
-  private managerUrl = environment.managerUrl;
+  private readonly managerUrl = environment.managerUrl;
 
-  private refreshSubject = new BehaviorSubject<void>(null);
+  private readonly refreshSubject = new BehaviorSubject<void>(null);
   refresh$ = this.refreshSubject.asObservable();
 
-  private stateRefreshSubject = new BehaviorSubject<IAppUser>(null);
-  stateRefresh$ = this.stateRefreshSubject.asObservable();
+  private readonly stateRefreshSubject = new BehaviorSubject<IAppUser>(null);
+  readonly stateRefresh$ = this.stateRefreshSubject.asObservable();
 
-  private projectInsertedSubject = new Subject<IProject>();
-  projectInsertedAction$ = this.projectInsertedSubject.asObservable();
+  private readonly projectSubject = new Subject<ICrudAction<IProject>>();
+  readonly projectAction$ = this.projectSubject.asObservable();
 
-  private taskInsertedSubject = new Subject<ITask>();
-  taskInsertedAction$ = this.taskInsertedSubject.asObservable();
+  private readonly taskInsertedSubject = new Subject<ITask>();
+  readonly taskInsertedAction$ = this.taskInsertedSubject.asObservable();
 
-  private userPageNumberSubject = new ReplaySubject<number>(1);
-  userPageNumber$ = this.userPageNumberSubject.asObservable();
+  private readonly userPageNumberSubject = new ReplaySubject<number>(1);
+  readonly userPageNumber$ = this.userPageNumberSubject.asObservable();
 
-  private projectPageNumberSubject = new ReplaySubject<number>(1);
-  projectPageNumber$ = this.projectPageNumberSubject.asObservable();
+  private readonly projectPageNumberSubject = new ReplaySubject<number>(1);
+  readonly projectPageNumber$ = this.projectPageNumberSubject.asObservable();
 
-  private projectIdSubject = new ReplaySubject<number>(1);
-  projectId$ = this.projectIdSubject.asObservable();
+  private readonly projectIdSubject = new ReplaySubject<number>(1);
+  readonly projectId$ = this.projectIdSubject.asObservable();
 
-  private taskCategorySelectedSubject = new BehaviorSubject<string>("ALL");
-  taskCategorySelectedAction$ = this.taskCategorySelectedSubject.asObservable();
+  private readonly taskCategorySelectedSubject = new BehaviorSubject<string>(
+    TaskStatus.ALL
+  );
+  readonly taskCategorySelectedAction$ =
+    this.taskCategorySelectedSubject.asObservable();
 
-  private selectedProjectSubject = new Subject<IProject>();
-  selectedProject$ = this.selectedProjectSubject.asObservable();
+  private readonly selectedProjectSubject = new Subject<IProject>();
+  readonly selectedProject$ = this.selectedProjectSubject.asObservable();
 
-  private loadMoreUsersSubject = new ReplaySubject<boolean>(1);
-  loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
+  private readonly loadMoreUsersSubject = new ReplaySubject<boolean>(1);
+  readonly loadMoreUsers$ = this.loadMoreUsersSubject.asObservable();
 
-  private loadMoreProjectsSubject = new ReplaySubject<boolean>(1);
-  loadMoreProjects$ = this.loadMoreProjectsSubject.asObservable();
+  private readonly loadMoreProjectsSubject = new ReplaySubject<boolean>(1);
+  readonly loadMoreProjects$ = this.loadMoreProjectsSubject.asObservable();
 
   projects$ = this.stateRefresh$.pipe(
     filter((user) => Boolean(user && user.role === UserRole.MANAGER)),
@@ -99,21 +101,10 @@ export class ManagerService {
 
   pagedProjects$ = this.stateRefresh$.pipe(
     filter((user) => Boolean(user && user.role === UserRole.MANAGER)),
-    tap(() => {
-      this.loadMoreProjects(true);
-      this.changeProjectPageNumber(1);
-    }),
+    tap(() => this.setDefaultPagination(DataType.PROJECT)),
     switchMap(() => this.projectPageNumber$),
     concatMap((pageNumber) => this.getPagedProjects(pageNumber)),
-    takeWhile((pagedData) => {
-      if (pagedData.totalPages === 0) {
-        this.loadMoreProjects(false);
-        return true;
-      }
-      const isNotOver = pagedData.currentPage < pagedData.totalPages;
-      if (!isNotOver) this.loadMoreProjects(false);
-      return isNotOver;
-    }),
+    takeWhile((pagedData) => this.checkPagedData(pagedData, DataType.PROJECT)),
     pluck("data"),
     tap((projects) => {
       projects.forEach((project) => {
@@ -126,52 +117,23 @@ export class ManagerService {
 
   users$ = this.stateRefresh$.pipe(
     filter((user) => Boolean(user && user.role === UserRole.MANAGER)),
-    tap(() => {
-      this.loadMoreUsers(true);
-      this.changeUserPageNumber(1);
-    }),
+    tap(() => this.setDefaultPagination(DataType.USER)),
     switchMap(() => this.userPageNumber$),
     concatMap((pageNumber) => this.getMoreUsers(pageNumber)),
-    takeWhile((pagedData) => {
-      if (pagedData.totalPages === 0) {
-        this.loadMoreUsers(false);
-        return true;
-      }
-      const isNotOver = pagedData.currentPage < pagedData.totalPages;
-      if (!isNotOver) this.loadMoreUsers(false);
-      return isNotOver;
-    }),
+    takeWhile((pagedData) => this.checkPagedData(pagedData, DataType.USER)),
     pluck("data"),
     scan((acc, value) => [...acc, ...value], [] as IAppUser[]),
     catchError(handleError)
   );
 
   projectsWithAdd$: Observable<IProject[]> = this.stateRefresh$.pipe(
-    switchMap(() => merge(this.pagedProjects$, this.projectInsertedAction$)),
-    scan(
-      (acc: IProject[], value: IProject) =>
-        value instanceof Array ? [...value] : [value, ...acc],
-      [] as IProject[]
-    ),
+    switchMap(() => merge(this.pagedProjects$, this.projectAction$)),
+    scan((acc, value) => this.modifyProjects(acc, value), [] as IProject[]),
     shareReplay(1),
     catchError(handleError)
   );
 
-  // todo: this is not used anywhere, keeping it as reference to use in the future
-  selectedSingleProject$ = combineLatest(
-    this.projectsWithAdd$,
-    this.projectId$
-  ).pipe(
-    map(([projects, projectId]) =>
-      projects.find((project) => project.id === projectId)
-    ),
-    catchError(handleError)
-  );
-
-  tasks$ = this.selectedProject$.pipe(
-    switchMap((project) => of(project.tasks)),
-    catchError(handleError)
-  );
+  tasks$ = this.selectedProject$.pipe(pluck("tasks"), catchError(handleError));
 
   tasksWithAdd$ = merge(this.tasks$, this.taskInsertedAction$).pipe(
     scan(
@@ -183,7 +145,7 @@ export class ManagerService {
   );
 
   constructor(
-    private http: HttpClient,
+    private readonly http: HttpClient,
     private readonly sharedService: SharedService,
     private readonly notificationService: NotificationService
   ) {}
@@ -317,7 +279,7 @@ export class ManagerService {
     return this.http
       .post<IProject>(`${this.managerUrl}/create-project`, requestBody)
       .pipe(
-        tap((project) => this.addProject(project)),
+        tap((project) => this.addProjectAction(project)),
         catchError(handleError)
       );
   }
@@ -343,7 +305,10 @@ export class ManagerService {
         requestBody
       )
       .pipe(
-        tap(() => this.refresh()),
+        tap((project) => {
+          this.editProjectAction(project);
+          this.refresh();
+        }),
         catchError(handleError)
       );
   }
@@ -412,11 +377,71 @@ export class ManagerService {
       .pipe(map(mapSearchResults), catchError(handleError));
   }
 
-  private addProject(newProject: IProject): void {
-    this.projectInsertedSubject.next(newProject);
+  private modifyProjects(
+    projects: IProject[],
+    projectAction: ICrudAction<IProject> | IProject[]
+  ) {
+    if (projectAction instanceof Array) {
+      return [...projectAction];
+    }
+    if (projectAction.action === ICrudOperation.ADD) {
+      return [projectAction.data, ...projects];
+    } else if (projectAction.action === ICrudOperation.UPDATE) {
+      return projects.map((project) =>
+        project.id === projectAction.data.id ? projectAction.data : project
+      );
+    }
+    return [...projects];
+  }
+
+  private addProjectAction(newProject: IProject): void {
+    this.projectSubject.next({
+      data: newProject,
+      action: ICrudOperation.ADD,
+    });
+  }
+
+  private editProjectAction(editedProject: IProject): void {
+    this.projectSubject.next({
+      data: editedProject,
+      action: ICrudOperation.UPDATE,
+    });
   }
 
   private addTask(newTask: ITask): void {
     this.taskInsertedSubject.next(newTask);
+  }
+
+  private checkPagedData(
+    pagedData: IPagedData<IAppUser | IProject>,
+    dataType: DataType.USER | DataType.PROJECT
+  ): boolean {
+    if (pagedData.totalPages === 0) {
+      if (dataType === DataType.USER) {
+        this.loadMoreUsers(false);
+      } else {
+        this.loadMoreProjects(false);
+      }
+      return true;
+    }
+    const isNotOver = pagedData.currentPage < pagedData.totalPages;
+    if (!isNotOver) {
+      if (dataType === DataType.USER) {
+        this.loadMoreUsers(false);
+      } else {
+        this.loadMoreProjects(false);
+      }
+    }
+    return isNotOver;
+  }
+
+  private setDefaultPagination(dataType: DataType.USER | DataType.PROJECT) {
+    if (dataType === DataType.USER) {
+      this.loadMoreUsers(true);
+      this.changeUserPageNumber(1);
+    } else {
+      this.loadMoreProjects(true);
+      this.changeProjectPageNumber(1);
+    }
   }
 }

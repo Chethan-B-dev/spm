@@ -1,8 +1,19 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { MatDialog, MatDialogConfig } from "@angular/material";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
-import { catchError, switchMap, takeUntil } from "rxjs/operators";
+import {
+  catchError,
+  map,
+  switchMap,
+  takeUntil,
+  withLatestFrom,
+} from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { ITask, TaskStatus } from "src/app/shared/interfaces/task.interface";
 import {
@@ -20,27 +31,29 @@ import { ManagerService } from "../services/manager.service";
   selector: "app-manager-scrum-board",
   templateUrl: "./manager-scrum-board.component.html",
   styleUrls: ["./manager-scrum-board.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
-  taskId: number;
   task$: Observable<ITask>;
   private readonly destroy$ = new Subject<void>();
   constructor(
-    public dialog: MatDialog,
-    private route: ActivatedRoute,
+    private readonly dialog: MatDialog,
+    private readonly route: ActivatedRoute,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(
-      (params: ParamMap) => (this.taskId = +params.get("taskId"))
+    const taskId$ = this.route.paramMap.pipe(
+      takeUntil(this.destroy$),
+      map((params) => +params.get("taskId"))
     );
 
     this.task$ = this.managerService.refresh$.pipe(
-      switchMap(() => this.managerService.getTaskById(this.taskId)),
+      withLatestFrom(taskId$),
       takeUntil(this.destroy$),
+      switchMap(([_, taskId]) => this.managerService.getTaskById(taskId)),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
@@ -62,18 +75,23 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = this.taskId;
+    dialogConfig.data = task.id;
 
-    this.dialog.open(CreateTodoComponent, dialogConfig);
-
-    const notification: INotification = {
-      userId: task.user.id,
-      notification: `A new Todo for your task ${
-        task.name
-      } has been added on ${new Date().toLocaleString()}`,
-      time: Date.now(),
-    };
-    this.notificationService.addNotification(notification);
+    this.dialog
+      .open(CreateTodoComponent, dialogConfig)
+      .afterClosed()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          return EMPTY;
+        })
+      )
+      .subscribe((todoCreated: boolean) => {
+        if (todoCreated) {
+          this.sendTodoNotification(task);
+        }
+      });
   }
 
   getCompletedPercentage(todos: ITodo[]): number {
@@ -83,5 +101,16 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
 
   isTaskCompleted(task: ITask): boolean {
     return task.status === TaskStatus.COMPLETED;
+  }
+
+  private sendTodoNotification(task: ITask) {
+    const notification: INotification = {
+      userId: task.user.id,
+      notification: `A new Todo for your task ${
+        task.name
+      } has been added on ${new Date().toLocaleString()}`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
   }
 }
