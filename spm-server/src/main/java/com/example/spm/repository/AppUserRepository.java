@@ -13,6 +13,8 @@ import java.util.Optional;
 
 public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
     AppUser findByEmail (String email);
+
+    boolean existsByUsername (String username);
     Integer deleteByEmail (String email);
     List<AppUser> findAllByStatus (UserStatus userStatus);
 
