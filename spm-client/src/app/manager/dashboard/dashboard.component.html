@@ -5,10 +5,6 @@
   crossorigin="anonymous"
 />
 
-<!--Hey! This is the original version
-of Simple CSS Waves-->
-
-<!--Waves Container-->
 <div>
   <svg
     class="waves"
@@ -51,15 +47,83 @@ of Simple CSS Waves-->
     </g>
   </svg>
 </div>
-<!--Waves end-->
-<!--Header ends-->
 
 <div class="row row-height" *ngIf="projects$ | async as projects">
-  <!-- project cards -->
-
   <div class="col-md-9 border-right">
     <div class="container my-3">
-      <h4 class="py-2">Projects</h4>
+      <div class="left-and-right">
+        <h4 class="py-2">Projects</h4>
+        <div class="right options">
+          <!-- search: START -->
+          <mat-form-field appearance="fill">
+            <mat-label>Search Project</mat-label>
+            <input
+              #projectSearch
+              type="search"
+              matInput
+              [matAutocomplete]="auto"
+              (input)="searchProject($event.target.value)"
+            />
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option
+                *ngFor="let project of projects; trackBy: trackByFn"
+                [value]="project.name"
+                [routerLink]="['project-detail', project.id]"
+              >
+                {{ project.name }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <!-- search: END -->
+
+          <!-- sort: START -->
+          <mat-form-field appearance="fill">
+            <mat-label>Sort By</mat-label>
+            <mat-select
+              #sort
+              [value]="defaultSort"
+              (selectionChange)="onSortChange($event.value)"
+            >
+              <mat-option value="name">Title</mat-option>
+              <mat-option value="fromDate">Created Date</mat-option>
+              <mat-option value="toDate">Deadline Date</mat-option>
+              <mat-option value="tasks">Number Of Tasks</mat-option>
+              <mat-option value="issues">Number Of Issues</mat-option>
+              <mat-option value="employees">Number Of Employees</mat-option>
+              <mat-option value="progress">Project Progress</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!-- sort: END -->
+
+          <!-- sortOrder: START -->
+          <mat-button-toggle-group
+            #sortOrder
+            class="button-toggle"
+            appearance="legacy"
+            name="Sort Order"
+            aria-label="Sort Order"
+            [value]="defaultSortOrder"
+            (change)="onSortOrderChange($event.value)"
+          >
+            <mat-button-toggle value="asc">Ascending</mat-button-toggle>
+            <mat-button-toggle value="desc">Descending</mat-button-toggle>
+          </mat-button-toggle-group>
+          <!-- sortOrder: END -->
+
+          <!-- reset: START -->
+          <button
+            mat-icon-button
+            matTooltip="Reset Sort"
+            matTooltipPosition="right"
+            class="reset-button"
+            aria-label="Example icon button with a vertical three dot icon"
+            (click)="resetProjectOptions()"
+          >
+            <mat-icon style="color: green">sync</mat-icon>
+          </button>
+          <!-- reset: END -->
+        </div>
+      </div>
       <app-project-card
         *ngFor="let project of projects"
         [project]="project"
@@ -70,7 +134,7 @@ of Simple CSS Waves-->
           mat-button
           color="primary"
           class="content-center"
-          (click)="loadMoreProjects()"
+          (click)="getMoreProjects()"
         >
           Load More <mat-icon>arrow_downward</mat-icon>
         </button>
@@ -80,9 +144,6 @@ of Simple CSS Waves-->
       >
     </div>
   </div>
-  <!-- stats -->
-
-  <!-- TODO: toggle button to change status to inprogress for a task-->
 
   <div class="col-md-3 users">
     <div class="stats container my-3">

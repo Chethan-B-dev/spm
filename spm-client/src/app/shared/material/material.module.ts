@@ -28,6 +28,7 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatButtonToggleModule } from "@angular/material/button-toggle";
 
 const materialModules = [
   MatToolbarModule,
@@ -57,10 +58,10 @@ const materialModules = [
   MatExpansionModule,
   MatTabsModule,
   MatAutocompleteModule,
+  MatButtonToggleModule,
 ];
 
 @NgModule({
-  declarations: [],
   imports: [CommonModule, ...materialModules],
   exports: [...materialModules],
 })

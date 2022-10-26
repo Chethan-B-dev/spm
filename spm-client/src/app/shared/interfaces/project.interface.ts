@@ -16,6 +16,21 @@ export interface IProject {
   files?: string;
 }
 
+export enum ProjectSort {
+  TITLE = "name",
+  CREATED = "fromDate",
+  DEADLINE = "toDate",
+  TASKS = "tasks",
+  ISSUES = "issues",
+  EMPLOYEES = "employees",
+  PROGRESS = "progress",
+}
+
+export enum ProjectSortOrder {
+  ASCENDING = "asc",
+  DESCENDING = "desc",
+}
+
 export enum ProjectStatus {
   IN_PROGRESS = "IN_PROGRESS",
   ON_HOLD = "ON_HOLD",
