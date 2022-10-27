@@ -21,7 +21,6 @@ import { ManagerService } from "../../services/manager.service";
 export class CreateTodoComponent implements OnInit, OnDestroy {
   createTodoForm: FormGroup;
   taskId: number;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -43,29 +42,26 @@ export class CreateTodoComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   createTodo(): void {
-    const createTodoSubscription = this.managerService
+    this.managerService
       .createTodo(this.createTodoForm.value, this.taskId)
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
-          this.close();
+          this.close(false);
           return EMPTY;
         })
       )
       .subscribe(() => {
         this.snackbarService.showSnackBar("Todo has been created");
-        this.close();
+        this.close(true);
       });
-
-    this.subscriptions.push(createTodoSubscription);
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(todoCreated: boolean): void {
+    this.dialogRef.close(todoCreated);
   }
 }
