@@ -4,7 +4,6 @@ import {
   BehaviorSubject,
   combineLatest,
   Observable,
-  of,
   ReplaySubject,
   Subject,
 } from "rxjs";
@@ -36,33 +35,37 @@ import {
   sendTaskApproachingDeadlineNotification,
 } from "../shared/utility/common";
 import { handleError } from "../shared/utility/error";
+import { TaskStatus } from "./../shared/interfaces/task.interface";
 
 @Injectable({
   providedIn: "root",
 })
 export class EmployeeService {
-  private employeeUrl = environment.employeeUrl;
+  private readonly employeeUrl = environment.employeeUrl;
 
-  private refreshSubject = new BehaviorSubject<void>(null);
-  refresh$ = this.refreshSubject.asObservable();
+  private readonly refreshSubject = new BehaviorSubject<void>(null);
+  readonly refresh$ = this.refreshSubject.asObservable();
 
-  private stateRefreshSubject = new BehaviorSubject<IAppUser>(null);
-  stateRefresh$ = this.stateRefreshSubject.asObservable();
+  private readonly stateRefreshSubject = new BehaviorSubject<IAppUser>(null);
+  readonly stateRefresh$ = this.stateRefreshSubject.asObservable();
 
-  private taskCategorySelectedSubject = new BehaviorSubject<string>("ALL");
-  taskCategorySelectedAction$ = this.taskCategorySelectedSubject.asObservable();
+  private readonly taskCategorySelectedSubject = new BehaviorSubject<string>(
+    TaskStatus.ALL
+  );
+  readonly taskCategorySelectedAction$ =
+    this.taskCategorySelectedSubject.asObservable();
 
-  private projectIdSubject = new ReplaySubject<number>(1);
-  projectId$ = this.projectIdSubject.asObservable();
+  private readonly projectIdSubject = new ReplaySubject<number>(1);
+  readonly projectId$ = this.projectIdSubject.asObservable();
 
-  private projectPageNumberSubject = new ReplaySubject<number>(1);
-  projectPageNumber$ = this.projectPageNumberSubject.asObservable();
+  private readonly projectPageNumberSubject = new ReplaySubject<number>(1);
+  readonly projectPageNumber$ = this.projectPageNumberSubject.asObservable();
 
-  private selectedProjectSubject = new Subject<IProject>();
-  selectedProject$ = this.selectedProjectSubject.asObservable();
+  private readonly selectedProjectSubject = new Subject<IProject>();
+  readonly selectedProject$ = this.selectedProjectSubject.asObservable();
 
-  private loadMoreProjectsSubject = new ReplaySubject<boolean>(1);
-  loadMoreProjects$ = this.loadMoreProjectsSubject.asObservable();
+  private readonly loadMoreProjectsSubject = new ReplaySubject<boolean>(1);
+  readonly loadMoreProjects$ = this.loadMoreProjectsSubject.asObservable();
 
   projects$ = this.stateRefresh$.pipe(
     filter((user) => Boolean(user && user.role === UserRole.EMPLOYEE)),
@@ -72,21 +75,10 @@ export class EmployeeService {
 
   pagedProjects$ = this.stateRefresh$.pipe(
     filter((user) => Boolean(user && user.role === UserRole.EMPLOYEE)),
-    tap(() => {
-      this.loadMoreProjects(true);
-      this.changeProjectPageNumber(1);
-    }),
+    tap(() => this.setDefaultPagination()),
     switchMap(() => this.projectPageNumber$),
     concatMap((pageNumber) => this.getPagedProjects(pageNumber)),
-    takeWhile((pagedData) => {
-      if (pagedData.totalPages === 0) {
-        this.loadMoreProjects(false);
-        return true;
-      }
-      const isNotOver = pagedData.currentPage < pagedData.totalPages;
-      if (!isNotOver) this.loadMoreProjects(false);
-      return isNotOver;
-    }),
+    takeWhile((pagedData) => this.checkPagedData(pagedData)),
     pluck("data"),
     scan((acc, value) => [...acc, ...value], [] as IProject[]),
     catchError(handleError)
@@ -97,12 +89,9 @@ export class EmployeeService {
     this.authService.currentUser$
   ).pipe(
     filter(([project, currentUser]) => Boolean(project && currentUser)),
-    switchMap(([project, currentUser]) => {
-      const myTasks = project.tasks.filter(
-        (task) => task.user.id === currentUser.id
-      );
-      return of(myTasks);
-    }),
+    map(([project, currentUser]) =>
+      project.tasks.filter((task) => task.user.id === currentUser.id)
+    ),
     tap((tasks) => {
       tasks.forEach((task) => {
         sendTaskApproachingDeadlineNotification.call(this, task);
@@ -112,7 +101,7 @@ export class EmployeeService {
   );
 
   constructor(
-    private http: HttpClient,
+    private readonly http: HttpClient,
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService
   ) {}
@@ -215,5 +204,22 @@ export class EmployeeService {
     return this.http
       .get<ISearchResult>(`${this.employeeUrl}/search/${searchKey}`)
       .pipe(map(mapSearchResults), catchError(handleError));
+  }
+
+  private checkPagedData(pagedData: IPagedData<IProject>): boolean {
+    if (pagedData.totalPages === 0) {
+      this.loadMoreProjects(false);
+      return true;
+    }
+    const isNotOver = pagedData.currentPage < pagedData.totalPages;
+    if (!isNotOver) {
+      this.loadMoreProjects(false);
+    }
+    return isNotOver;
+  }
+
+  private setDefaultPagination(): void {
+    this.loadMoreProjects(true);
+    this.changeProjectPageNumber(1);
   }
 }
