@@ -13,8 +13,8 @@ import { handleError } from "./utility/error";
 })
 export class SharedService {
   private readonly sharedUrl = environment.sharedUrl;
-  private refreshSubject = new BehaviorSubject<void>(null);
-  refresh$ = this.refreshSubject.asObservable();
+  private readonly refreshSubject = new BehaviorSubject<void>(null);
+  readonly refresh$ = this.refreshSubject.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 

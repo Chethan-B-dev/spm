@@ -7,7 +7,7 @@ import { MatSnackBar } from "@angular/material";
 export class SnackbarService {
   constructor(private readonly snackBar: MatSnackBar) {}
 
-  showSnackBar(message: string, duration?: number): void {
+  showSnackBar(message?: string, duration?: number): void {
     this.snackBar.open(message || "An unknown error occurred", "Close", {
       duration: duration || 3000,
     });

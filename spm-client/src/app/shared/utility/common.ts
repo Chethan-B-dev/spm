@@ -1,3 +1,4 @@
+import { IComment } from "./../interfaces/issue.interface";
 import { IIssue } from "../interfaces/issue.interface";
 import { INotification } from "../interfaces/notification.interface";
 import { IProject } from "../interfaces/project.interface";
@@ -14,15 +15,33 @@ export enum DataType {
   COMMENT = "COMMENT",
 }
 
+export type ProjectData =
+  | IProject
+  | ITodo
+  | IAppUser
+  | ITask
+  | IIssue
+  | IComment;
+
 export interface DeleteData {
   deleteType: DataType;
   id: number;
 }
 
+export enum ICrudOperation {
+  ADD = "ADD",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE",
+}
+
+export interface ICrudAction<T> {
+  data: T;
+  action: ICrudOperation;
+}
+
 export interface ISearchResult {
   projects: IProject[];
-  // todo: remove optional param if nikhil refactors searchDTO
-  users?: IAppUser[];
+  users: IAppUser[];
   tasks: ITask[];
   issues: IIssue[];
   todos: ITodo[];
@@ -52,53 +71,24 @@ export function myTitleCase(string) {
 }
 
 export function mapSearchResults(searchResults: ISearchResult): ISearchGroup[] {
-  const searchGroups = [] as ISearchGroup[];
-  for (const [key, values] of Object.entries(searchResults)) {
-    if (!values.length) continue;
-    switch (key) {
-      case "projects":
-        searchGroups.push({
-          type: DataType.PROJECT,
-          data: values.map((project: IProject): ISearchData => {
-            return { name: project.name, id: project.id } as ISearchData;
-          }),
-        } as ISearchGroup);
-        break;
-      case "users":
-        searchGroups.push({
-          type: DataType.USER,
-          data: values.map((user: IAppUser): ISearchData => {
-            return { name: user.username, id: user.id } as ISearchData;
-          }),
-        } as ISearchGroup);
-        break;
-      case "tasks":
-        searchGroups.push({
-          type: DataType.TASK,
-          data: values.map((task: ITask): ISearchData => {
-            return { name: task.name, id: task.id } as ISearchData;
-          }),
-        } as ISearchGroup);
-        break;
-      case "todos":
-        searchGroups.push({
-          type: DataType.TODO,
-          data: values.map((todo: ITodo): ISearchData => {
-            return { name: todo.name, id: todo.id } as ISearchData;
-          }),
-        } as ISearchGroup);
-        break;
-      case "issues":
-        searchGroups.push({
-          type: DataType.ISSUE,
-          data: values.map((issue: IIssue): ISearchData => {
-            return { name: issue.summary, id: issue.id } as ISearchData;
-          }),
-        } as ISearchGroup);
-        break;
-    }
-  }
-  return searchGroups;
+  const dataTypesNameKey = {
+    [DataType.PROJECT]: "name",
+    [DataType.USER]: "username",
+    [DataType.TASK]: "name",
+    [DataType.TODO]: "name",
+    [DataType.ISSUE]: "summary",
+  };
+  return Object.entries(searchResults).map(([key, values]) => {
+    const actualDataType = key.substring(0, key.length - 1).toUpperCase();
+    const nameKey = dataTypesNameKey[actualDataType];
+    return {
+      type: actualDataType,
+      data: values.map((data: ProjectData) => ({
+        name: data[nameKey] as string,
+        id: data.id,
+      })),
+    } as ISearchGroup;
+  });
 }
 
 export function sendProjectApproachingDeadlineNotification(
@@ -131,7 +121,7 @@ export function sendTaskApproachingDeadlineNotification(task: ITask): void {
   }
 }
 /**
- * this function returns the difference between two daytes in days
+ * this function returns the difference between two dates in days
  * @param fromDate
  * @param toDate
  */

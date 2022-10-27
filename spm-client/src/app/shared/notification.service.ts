@@ -11,8 +11,8 @@ import { handleError } from "./utility/error";
 export class NotificationService {
   private readonly COLLECTION_NAME = "notifications";
   constructor(
-    private store: AngularFirestore,
-    private snackbarService: SnackbarService
+    private readonly store: AngularFirestore,
+    private readonly snackbarService: SnackbarService
   ) {}
 
   getAllNotifications(): Observable<any> {
@@ -23,6 +23,8 @@ export class NotificationService {
   }
 
   addNotification(notification: INotification): void {
+    // todo: uncomment this if you want notifications enabled
+    return;
     this.store
       .collection(this.COLLECTION_NAME)
       .add(notification)
@@ -30,6 +32,8 @@ export class NotificationService {
   }
 
   deleteNotification(notificationId: string): void {
+    // todo: uncomment this if you want notifications enabled
+    return;
     this.store
       .collection(this.COLLECTION_NAME)
       .doc(notificationId)
