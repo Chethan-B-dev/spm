@@ -1,8 +1,20 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { MatDialog, MatDialogConfig } from "@angular/material";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { combineLatest, EMPTY, Observable, Subject } from "rxjs";
-import { catchError, map, switchMap, takeUntil, tap } from "rxjs/operators";
+import {
+  catchError,
+  map,
+  switchMap,
+  takeUntil,
+  tap,
+  withLatestFrom,
+} from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { ShowEmployeesComponent } from "src/app/manager/dialogs/show-employees/show-employees.component";
 import { ImageSliderComponent } from "src/app/shared/dialogs/image-slider/image-slider.component";
@@ -29,28 +41,29 @@ import {
   sendProjectApproachingDeadlineNotification,
 } from "src/app/shared/utility/common";
 import { EmployeeService } from "../employee.service";
+import { TaskStatus } from "./../../shared/interfaces/task.interface";
 import { CreateIssueComponent } from "./Dialogs/create-issue/create-issue.component";
 
 @Component({
   selector: "app-employee-project-detail",
   templateUrl: "./employee-project-detail.component.html",
   styleUrls: ["./employee-project-detail.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
-  defaultTaskCategory = "ALL";
+  readonly defaultTaskCategory = TaskStatus.ALL;
   projectProgress: number;
   projectTaskStatistics: TaskStatistics;
   showIssues = false;
   issueProgress: number;
   project$: Observable<IProject>;
   tasks$: Observable<ITask[]>;
-  private projectId: number;
   private currentUser = this.authService.currentUser;
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    public dialog: MatDialog,
-    private route: ActivatedRoute,
+    private readonly dialog: MatDialog,
+    private readonly route: ActivatedRoute,
     private readonly employeeService: EmployeeService,
     private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService,
@@ -58,14 +71,17 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      this.projectId = +params.get("id");
-      this.employeeService.refresh();
-    });
+    const projectId$ = this.route.paramMap.pipe(
+      takeUntil(this.destroy$),
+      map((params) => +params.get("id"))
+    );
 
     this.project$ = this.employeeService.refresh$.pipe(
       takeUntil(this.destroy$),
-      switchMap(() => this.employeeService.getProjectById(this.projectId)),
+      withLatestFrom(projectId$),
+      switchMap(([_, projectId]) =>
+        this.employeeService.getProjectById(projectId)
+      ),
       tap((project) => {
         this.employeeService.setProject(project);
         this.issueProgress = getIssueProgress(project.issues) || 0;
@@ -81,14 +97,13 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
 
     this.employeeService.selectTaskCategory(this.defaultTaskCategory);
 
-    // todo: add pagination to this stream and scan to add more elements
     this.tasks$ = combineLatest(
       this.employeeService.tasks$,
       this.employeeService.taskCategorySelectedAction$
     ).pipe(
       takeUntil(this.destroy$),
       map(([tasks, selectedTaskCategory]) =>
-        selectedTaskCategory === "ALL"
+        selectedTaskCategory === TaskStatus.ALL
           ? tasks
           : tasks.filter((task) => task.status === selectedTaskCategory)
       ),
@@ -134,21 +149,30 @@ export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.dialog.open(CreateIssueComponent, dialogConfig);
 
-    dialogRef.afterClosed().subscribe((createdIssue: boolean) => {
-      if (createdIssue) {
-        const managerId = project.manager.id;
-        const notification: INotification = {
-          userId: managerId,
-          notification: `An Issue was raised for project '${
-            project.name
-          }' by '${
-            this.currentUser.username
-          }' on ${new Date().toLocaleString()}`,
-          time: Date.now(),
-        };
-        this.notificationService.addNotification(notification);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          return EMPTY;
+        })
+      )
+      .subscribe((createdIssue: boolean) => {
+        if (createdIssue) {
+          const managerId = project.manager.id;
+          const notification: INotification = {
+            userId: managerId,
+            notification: `An Issue was raised for project '${
+              project.name
+            }' by '${
+              this.currentUser.username
+            }' on ${new Date().toLocaleString()}`,
+            time: Date.now(),
+          };
+          this.notificationService.addNotification(notification);
+        }
+      });
   }
 
   getIssueStats(issues: IIssue[]): string {

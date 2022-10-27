@@ -2,7 +2,6 @@
   rel="stylesheet"
   href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 />
-<!--Waves Container-->
 <div>
   <svg
     class="waves"
@@ -45,9 +44,7 @@
     </g>
   </svg>
 </div>
-<!--Waves end-->
 <div class="row">
-  <!-- project -->
   <div class="col-md-8" *ngIf="project$ | async as project">
     <div class="container my-3">
       <mat-card>
@@ -118,7 +115,7 @@
             </mat-chip-list>
           </div>
           <div class="col-5">
-            <app-progress-bar [value]="projectProgress"></app-progress-bar>
+            <app-progress-bar [value]="+projectProgress"></app-progress-bar>
           </div>
           <div class="col">
             <mat-card style="width: 18rem">
@@ -160,7 +157,7 @@
             mode="determinate"
             [value]="issueProgress"
             [matTooltip]="'Resolved: ' + issueProgress + ' %'"
-            [matTooltipPosition]="'right'"
+            matTooltipPosition="right"
           ></mat-progress-bar>
           <mat-chip>{{ issueProgress + "%" }}</mat-chip>
         </div>
