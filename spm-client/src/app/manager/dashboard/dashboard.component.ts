@@ -13,16 +13,13 @@ import {
   combineLatest,
   EMPTY,
   Observable,
-  of,
   Subject,
 } from "rxjs";
 import {
   catchError,
   debounceTime,
-  delay,
   distinctUntilChanged,
   map,
-  switchMap,
   takeUntil,
   tap,
 } from "rxjs/operators";
@@ -47,9 +44,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  readonly defaultSort = ProjectSort.CREATED;
-  readonly defaultSortOrder = ProjectSortOrder.DESCENDING;
-  private readonly pageSize = 7;
   currentUserPageNumber = 1;
   currentProjectPageNumber = 1;
   loadMoreUsers$: Observable<boolean>;
@@ -61,6 +55,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild("sort", { static: false }) sort!: MatSelect;
   @ViewChild("projectSearch", { static: false }) projectSearch!: ElementRef;
 
+  readonly defaultSort = ProjectSort.CREATED;
+  readonly defaultSortOrder = ProjectSortOrder.DESCENDING;
+
+  private readonly pageSize = 7;
   private readonly isLoadingSubject = new BehaviorSubject<boolean>(true);
   readonly isLoading$ = this.isLoadingSubject.asObservable();
 
@@ -93,11 +91,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       tap(() => startLoading(this.isLoadingSubject)),
       map(([projects, projectSort, projectSortOrder, searchTerm]) => {
-        const filteredProjects = projects.filter(
-          (project) =>
-            project.name.toLowerCase().includes(searchTerm) ||
-            project.description.toLowerCase().includes(searchTerm)
-        );
+        const filteredProjects = projects.filter((project) => {
+          const { name, description } = project;
+          return (
+            name.toLowerCase().includes(searchTerm) ||
+            description.toLowerCase().includes(searchTerm)
+          );
+        });
 
         this.managerService.loadMoreProjects(
           filteredProjects.length >= this.pageSize
