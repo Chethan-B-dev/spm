@@ -23,25 +23,24 @@ import { ManagerService } from "../../services/manager.service";
   styleUrls: ["./set-designation.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SetDesignationComponent implements OnInit, OnDestroy {
-  avatarImage = AvatarImage;
+export class SetDesignationComponent implements OnDestroy {
   employees: IAppUser[];
   manager: IAppUser;
   designations: string[];
+
+  readonly avatarImage = AvatarImage;
   private readonly destroy$ = new Subject<void>();
+
   constructor(
-    private dialogRef: MatDialogRef<SetDesignationComponent>,
     @Inject(MAT_DIALOG_DATA) data,
+    private readonly dialogRef: MatDialogRef<SetDesignationComponent>,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService
   ) {
     this.employees = data.employees;
     this.manager = data.manager;
-  }
-
-  ngOnInit(): void {
-    this.designations = new Array(this.employees.length).fill("");
+    this.designations = Array(this.employees.length).fill("");
   }
 
   ngOnDestroy(): void {
@@ -49,8 +48,8 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  close(setDesignations: boolean): void {
-    this.dialogRef.close(setDesignations);
+  close(designationsSet: boolean): void {
+    this.dialogRef.close(designationsSet);
   }
 
   setDesignations(): void {
@@ -93,7 +92,7 @@ export class SetDesignationComponent implements OnInit, OnDestroy {
       });
   }
 
-  allDesignationsAreSet(): boolean {
-    return this.designations.every((designation) => !!designation);
+  isAnyDesignationNotSet(): boolean {
+    return this.designations.some((designation) => !designation);
   }
 }
