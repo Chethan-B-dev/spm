@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.validation.ValidationException;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,7 +86,7 @@ public class AppUserService {
     }
 
     public static MyAppUserDetails checkIfUserIsLoggedIn(MyAppUserDetails myAppUserDetails) {
-        if (myAppUserDetails == null)
+        if (Objects.isNull(myAppUserDetails))
             throw new UserNotLoggedInException("Please Log in");
         return myAppUserDetails;
     }
@@ -119,19 +120,22 @@ public class AppUserService {
     @Modifying
     public AppUser editProfile(EditProfileDTO editProfileDTO, MyAppUserDetails loggedInUser) {
         AppUser user = loggedInUser.getUser();
-        // if the user has changed to the same name, then do not edit anything
-        if (user.getUsername().equalsIgnoreCase(editProfileDTO.getUsername())) {
-            return user;
-        }
+
         // if a user with the same name exists throw an error
-        if (appUserRepository.existsByUsername(editProfileDTO.getUsername())) {
+        final boolean hasChangedUsername = !user.getUsername().equalsIgnoreCase(editProfileDTO.getUsername());
+        if (hasChangedUsername && appUserRepository.existsByUsername(editProfileDTO.getUsername())) {
             throw new ActionNotAllowedException("A user with the username '" + editProfileDTO.getUsername() + "' already exists.");
         }
+
         user.setUsername(editProfileDTO.getUsername());
+
         // phone number validation should be 10 digits
         if (editProfileDTO.getPhone().length() == 10) {
             user.setPhone(editProfileDTO.getPhone());
+        } else {
+            throw new ValidationException("Phone number has to be 10 digits");
         }
+
         if (!Objects.isNull(editProfileDTO.getImage())) {
             user.setImage(editProfileDTO.getImage());
         }
