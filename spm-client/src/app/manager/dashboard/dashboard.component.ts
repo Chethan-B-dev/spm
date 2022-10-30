@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly defaultSort = ProjectSort.CREATED;
   readonly defaultSortOrder = ProjectSortOrder.DESCENDING;
 
-  private readonly pageSize = 7;
+  private readonly projectPageSize = 7;
   private readonly isLoadingSubject = new BehaviorSubject<boolean>(true);
   readonly isLoading$ = this.isLoadingSubject.asObservable();
 
@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
 
         this.managerService.loadMoreProjects(
-          filteredProjects.length >= this.pageSize
+          filteredProjects.length >= this.projectPageSize
         );
 
         return this.sortProjects(

@@ -424,8 +424,10 @@ export class ManagerService {
       }
       return true;
     }
+
     const isNotOver = pagedData.currentPage < pagedData.totalPages;
-    if (!isNotOver) {
+
+    if (!isNotOver || pagedData.currentPage + 1 === pagedData.totalPages) {
       if (dataType === DataType.USER) {
         this.loadMoreUsers(false);
       } else {
@@ -435,7 +437,9 @@ export class ManagerService {
     return isNotOver;
   }
 
-  private setDefaultPagination(dataType: DataType.USER | DataType.PROJECT) {
+  private setDefaultPagination(
+    dataType: DataType.USER | DataType.PROJECT
+  ): void {
     if (dataType === DataType.USER) {
       this.loadMoreUsers(true);
       this.changeUserPageNumber(1);
