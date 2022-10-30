@@ -43,8 +43,9 @@ export class BoardDndComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.todos = changes.todos.currentValue;
-    this.refreshLane$.next();
+    if (changes.todos) {
+      this.refreshLane$.next();
+    }
   }
 
   ngOnDestroy(): void {

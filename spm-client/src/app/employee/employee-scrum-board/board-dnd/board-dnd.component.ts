@@ -1,6 +1,12 @@
-import { Component, Input, OnInit, SimpleChanges } from "@angular/core";
-import { BehaviorSubject, EMPTY, Observable, of, Subject } from "rxjs";
-import { catchError, switchMap, takeUntil } from "rxjs/operators";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+  SimpleChanges,
+} from "@angular/core";
+import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
+import { catchError, map, takeUntil } from "rxjs/operators";
 import { ILane } from "src/app/manager/manager-scrum-board/interface/lane";
 import {
   ITodo,
@@ -11,6 +17,7 @@ import { SnackbarService } from "src/app/shared/services/snackbar.service";
   selector: "app-board-dnd",
   templateUrl: "./board-dnd.component.html",
   styleUrls: ["./board-dnd.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoardDndComponent implements OnInit {
   @Input() todos: ITodo[];
@@ -24,16 +31,7 @@ export class BoardDndComponent implements OnInit {
   ngOnInit(): void {
     this.lanes$ = this.refreshLane$.pipe(
       takeUntil(this.destroy$),
-      switchMap(() =>
-        of(
-          TodoStatusOptions.map((todoStatus) => ({
-            title: todoStatus.replace("_", " "),
-            todos: this.todos
-              .filter((todo) => todo.status === todoStatus)
-              .sort((a, b) => b.id - a.id),
-          }))
-        )
-      ),
+      map(() => this.getLanes()),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
         return EMPTY;
@@ -42,13 +40,22 @@ export class BoardDndComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.todos = changes.todos.currentValue;
-    this.canDrag = changes.canDrag.currentValue;
-    this.refreshLane$.next();
+    if (changes.todos || changes.canDrag) {
+      this.refreshLane$.next();
+    }
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private getLanes(): ILane[] {
+    return TodoStatusOptions.map((todoStatus) => ({
+      title: todoStatus.replace("_", " "),
+      todos: this.todos
+        .filter((todo) => todo.status === todoStatus)
+        .sort((a, b) => b.id - a.id),
+    }));
   }
 }

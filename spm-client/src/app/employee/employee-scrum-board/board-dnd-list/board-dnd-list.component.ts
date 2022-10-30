@@ -4,6 +4,7 @@ import {
   transferArrayItem,
 } from "@angular/cdk/drag-drop";
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
   OnChanges,
@@ -27,6 +28,7 @@ import { EmployeeService } from "../../employee.service";
   templateUrl: "./board-dnd-list.component.html",
   styleUrls: ["./board-dnd-list.component.scss"],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoardDndListComponent implements OnChanges, OnDestroy {
   @Input() lane: ILane;
@@ -41,13 +43,19 @@ export class BoardDndListComponent implements OnChanges, OnDestroy {
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.lane = changes.lane.currentValue;
-    this.canDrag = changes.canDrag.currentValue;
-    this.refreshLane$.next();
+    if (changes.lane || changes.canDrag) {
+      this.refreshLane$.next();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   drop(event: CdkDragDrop<any>) {
-    let isMovingInsideTheSameList = event.previousContainer === event.container;
+    const isMovingInsideTheSameList =
+      event.previousContainer === event.container;
     if (isMovingInsideTheSameList) {
       moveItemInArray(
         event.container.data,
@@ -62,31 +70,30 @@ export class BoardDndListComponent implements OnChanges, OnDestroy {
         event.currentIndex
       );
       const todo: ITodo = event.item.data;
-      const movedToLane: string = event.container.id.replace(" ", "_");
+      const movedToLane = event.container.id.replace(" ", "_");
       const updateTodoDto: IUpdateTodoDTO = {
         todoName: todo.name,
         taskId: this.taskId,
         status: movedToLane as TodoStatus,
       };
-      this.employeeService
-        .updateTodo(updateTodoDto, todo.id)
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            this.snackbarService.showSnackBar(err);
-            return EMPTY;
-          })
-        )
-        .subscribe(() =>
-          this.snackbarService.showSnackBar(
-            `todo moved to ${movedToLane.replace("_", " ")}`
-          )
-        );
+      this.updateTodoStatus(updateTodoDto, todo.id);
     }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  private updateTodoStatus(updatedTodo: IUpdateTodoDTO, todoId: number) {
+    this.employeeService
+      .updateTodo(updatedTodo, todoId)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          return EMPTY;
+        })
+      )
+      .subscribe(() => {
+        this.snackbarService.showSnackBar(
+          `todo moved to ${updatedTodo.status.replace("_", " ")}`
+        );
+      });
   }
 }
