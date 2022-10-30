@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -11,7 +12,7 @@ import {
   AngularFireUploadTask,
 } from "@angular/fire/storage";
 import * as firebase from "firebase";
-import { EMPTY, Observable, Subject, Subscription } from "rxjs";
+import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, finalize, takeUntil } from "rxjs/operators";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "../interfaces/project.interface";
@@ -21,6 +22,7 @@ import { SnackbarService } from "../services/snackbar.service";
   selector: "app-upload",
   templateUrl: "./upload.component.html",
   styleUrls: ["./upload.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadComponent implements OnInit, OnDestroy {
   @Input() file: File;
@@ -28,12 +30,11 @@ export class UploadComponent implements OnInit, OnDestroy {
   @Output() projectEvent = new EventEmitter<IProject>();
   @Output() errorEvent = new EventEmitter<any>();
 
+  downloadURL: string;
   task: AngularFireUploadTask;
   uploadPercent$: Observable<number>;
   snapshot$: Observable<firebase.storage.UploadTaskSnapshot>;
-  downloadURL: string;
 
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -44,6 +45,15 @@ export class UploadComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.startUpload();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  bytesToMegaBytes(bytes): number {
+    return bytes / 1024 ** 2;
   }
 
   private startUpload(): void {
@@ -67,17 +77,25 @@ export class UploadComponent implements OnInit, OnDestroy {
         return EMPTY;
       }),
       finalize(async () => {
-        this.downloadURL = await ref.getDownloadURL().toPromise();
+        const downloadUrl$ = ref.getDownloadURL().pipe(
+          takeUntil(this.destroy$),
+          catchError((err) => {
+            this.snackbarService.showSnackBar(err);
+            this.errorEvent.emit(err);
+            return EMPTY;
+          })
+        );
+        this.downloadURL = await downloadUrl$.toPromise();
         this.editProject(this.downloadURL);
       })
     );
   }
 
-  private editProject(url: string): void {
+  private editProject(url: string | undefined | null): void {
     const files = (JSON.parse(this.project.files) as string[]) || [];
-    files.push(url);
+    url && files.push(url);
 
-    const editProjectSubscription = this.managerService
+    this.managerService
       .editProject(
         this.project.id,
         this.project.name,
@@ -95,17 +113,5 @@ export class UploadComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((project) => this.projectEvent.emit(project));
-
-    this.subscriptions.push(editProjectSubscription);
-  }
-
-  bytesToMegaBytes(bytes): number {
-    return bytes / 1024 ** 2;
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

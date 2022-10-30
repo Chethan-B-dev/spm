@@ -6,7 +6,7 @@ import {
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material";
-import { EMPTY, Subject, Subscription } from "rxjs";
+import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import {
   IProject,
@@ -25,11 +25,10 @@ import { ManagerService } from "../../services/manager.service";
 export class EditProjectComponent implements OnDestroy {
   project: IProject;
   editProjectForm: FormGroup;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private fb: FormBuilder,
+    private readonly fb: FormBuilder,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
     private dialogRef: MatDialogRef<EditProjectComponent>,
@@ -47,7 +46,6 @@ export class EditProjectComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   isProjectOnHold(): boolean {
@@ -85,7 +83,7 @@ export class EditProjectComponent implements OnDestroy {
       return;
     }
 
-    const editProjectSubscription = this.managerService
+    this.managerService
       .editProject(
         this.project.id,
         projectName,
@@ -107,8 +105,6 @@ export class EditProjectComponent implements OnDestroy {
         );
         this.close();
       });
-
-    this.subscriptions.push(editProjectSubscription);
   }
 
   close(): void {

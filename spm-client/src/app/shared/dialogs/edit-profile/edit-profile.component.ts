@@ -7,8 +7,14 @@ import {
 import { AngularFireStorage } from "@angular/fire/storage";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { EMPTY, Observable, Subject, Subscription } from "rxjs";
-import { catchError, finalize, switchMap, takeUntil } from "rxjs/operators";
+import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
+import {
+  catchError,
+  finalize,
+  switchMap,
+  take,
+  takeUntil,
+} from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import {
   IAppUser,
@@ -24,109 +30,107 @@ import { SnackbarService } from "../../services/snackbar.service";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditProfileComponent implements OnInit, OnDestroy {
-  editProfileForm: FormGroup;
-  currentUser = this.authService.currentUser;
-  file: File;
-  uploadPercent: Observable<number>;
   disableButton = false;
-  private readonly subscriptions = [] as Subscription[];
+  editProfileForm: FormGroup;
+  file: File;
+  uploadPercent$: Observable<number>;
+
+  private readonly currentUserSubject = new BehaviorSubject<IAppUser>(
+    this.authService.currentUser
+  );
+  readonly currentUser$ = this.currentUserSubject.asObservable();
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private storage: AngularFireStorage,
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
+    private readonly storage: AngularFireStorage,
     private readonly authService: AuthService,
     private readonly snackbarService: SnackbarService
   ) {}
 
-  ngOnInit() {
-    this.editProfileForm = this.fb.group({
-      email: [
-        { value: this.currentUser.email, disabled: true },
-        Validators.required,
-      ],
-      username: [this.currentUser.username || "", Validators.required],
-      phone: [this.currentUser.phone || "", Validators.required],
-      designation: this.isImportant(this.currentUser)
-        ? [
-            {
-              value: this.currentUser.designation || "",
-              disabled: true,
-            },
-          ]
-        : [this.currentUser.designation || ""],
-      image: [null],
-    });
+  ngOnInit(): void {
+    this.authService.currentUser$
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          this.disableButton = false;
+          return EMPTY;
+        })
+      )
+      .subscribe((currentUser) => {
+        this.currentUserSubject.next(currentUser);
+        this.setProfileForm(currentUser);
+      });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.currentUserSubject.complete();
   }
 
-  onFileChange(event) {
+  onFileChange(event): void {
     this.file = (event.target.files as FileList).item(0);
+  }
+
+  goBack(): void {
+    this.router.navigate(["/"]);
   }
 
   editProfile(): void {
     const isImageChanged = !!this.file;
     this.disableButton = true;
     if (isImageChanged) {
-      const fileType = this.file.type;
-      if (!fileType.startsWith("image/")) {
-        this.snackbarService.showSnackBar("Only Images can be uploaded");
-        return;
-      }
-      const filePath = `/profile/${this.currentUser.email}_${this.currentUser.id}`;
-      const fileRef = this.storage.ref(filePath);
-      const task = this.storage.upload(filePath, this.file);
-      this.uploadPercent = task.percentageChanges();
-      this.subscriptions.push(
-        task
-          .snapshotChanges()
-          .pipe(
-            takeUntil(this.destroy$),
-            catchError((err) => {
-              this.snackbarService.showSnackBar(err);
-              this.disableButton = false;
-              return EMPTY;
-            }),
-            finalize(() => {
-              this.subscriptions.push(
-                fileRef
-                  .getDownloadURL()
-                  .pipe(
-                    switchMap((imageUrl: string) =>
-                      this.changeProfile(imageUrl)
-                    )
-                  )
-                  .subscribe(() => {
-                    this.currentUser = this.authService.currentUser;
-                    this.snackbarService.showSnackBar(
-                      "profile has been edited"
-                    );
-                    this.router.navigate(["/"]);
-                    this.disableButton = false;
-                  })
-              );
-            })
-          )
-          .subscribe()
-      );
+      this.performFileUpload();
     } else {
-      this.subscriptions.push(
-        this.changeProfile(null).subscribe(() => {
-          this.snackbarService.showSnackBar("profile has been edited");
-          this.disableButton = false;
-        })
-      );
+      this.changeProfile().subscribe(() => {
+        this.snackbarService.showSnackBar("profile has been edited");
+        this.disableButton = false;
+      });
     }
   }
 
-  changeProfile(imageUrl: string | null): Observable<IAppUser> {
-    this.editProfileForm.value.image = imageUrl;
+  private performFileUpload() {
+    if (!this.file.type.startsWith("image/")) {
+      this.snackbarService.showSnackBar("Only Images can be uploaded");
+      return;
+    }
+    const currentUser = this.currentUserSubject.getValue();
+    const filePath = `/profile/${currentUser.email}_${currentUser.id}`;
+    const fileRef = this.storage.ref(filePath);
+    const task = this.storage.upload(filePath, this.file);
+    this.uploadPercent$ = task.percentageChanges();
+    task
+      .snapshotChanges()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          this.disableButton = false;
+          return EMPTY;
+        }),
+        finalize(() => {
+          fileRef
+            .getDownloadURL()
+            .pipe(
+              takeUntil(this.destroy$),
+              switchMap((imageUrl: string) => this.changeProfile(imageUrl))
+            )
+            .subscribe(() => {
+              this.snackbarService.showSnackBar("profile has been edited");
+              this.router.navigate(["/"]);
+              this.disableButton = false;
+            });
+        })
+      )
+      .subscribe();
+  }
+
+  private changeProfile(imageUrl?: string): Observable<IAppUser> {
+    this.editProfileForm.value.image = imageUrl || null;
     return this.authService
       .editProfile({
         ...this.editProfileForm.value,
@@ -135,6 +139,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         catchError((err) => {
           this.snackbarService.showSnackBar(err);
+          this.disableButton = false;
           return EMPTY;
         })
       );
@@ -142,5 +147,29 @@ export class EditProfileComponent implements OnInit, OnDestroy {
 
   private isImportant(currentUser: IAppUser): boolean {
     return currentUser.role !== UserRole.EMPLOYEE;
+  }
+
+  private setProfileForm(currentUser: IAppUser): void {
+    if (!currentUser) {
+      return;
+    }
+
+    this.editProfileForm = this.fb.group({
+      email: [
+        { value: currentUser.email, disabled: true },
+        Validators.required,
+      ],
+      username: [currentUser.username || "", Validators.required],
+      phone: [currentUser.phone || "", Validators.required],
+      designation: this.isImportant(currentUser)
+        ? [
+            {
+              value: currentUser.designation || "",
+              disabled: true,
+            },
+          ]
+        : [currentUser.designation || ""],
+      image: [null],
+    });
   }
 }

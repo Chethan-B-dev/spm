@@ -75,7 +75,7 @@
     [project]="project"
     (projectEvent)="onProjectChange($event)"
     (errorEvent)="handleError($event)"
-    *ngFor="let file of files"
+    *ngFor="let file of files$ | async"
   ></app-upload>
 </mat-dialog-content>
 
