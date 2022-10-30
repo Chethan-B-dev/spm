@@ -47,9 +47,9 @@ export interface IssueStatistics {
   [status: string]: number;
 }
 
-export const IssueStatusOptions = [...Object.keys(IssueStatus)];
+export const IssueStatusOptions = Object.keys(IssueStatus);
 
-export const IssuePriorityOptions = [...Object.keys(IssuePriority)];
+export const IssuePriorityOptions = Object.keys(IssuePriority);
 
 export function getIssueStatistics(issues: IIssue[]): IssueStatistics {
   const issueStatistics = IssueStatusOptions.reduce((stats, status) => {

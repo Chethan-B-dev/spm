@@ -76,7 +76,7 @@ export interface UserDesignationStatisticsCount {
   [designation: string]: number;
 }
 
-export const UserDesignations = [...Object.keys(UserDesignation)];
+export const UserDesignations = Object.keys(UserDesignation);
 
 export const AvatarImage =
   "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=2000";

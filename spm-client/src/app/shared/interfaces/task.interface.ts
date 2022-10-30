@@ -27,6 +27,7 @@ export interface ITaskRequestDTO {
 export enum TaskStatus {
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
+  ALL = "ALL",
 }
 
 export interface TaskStatistics {
@@ -42,7 +43,7 @@ export function getTaskStatistics(tasks: ITask[]): TaskStatistics {
   return taskStatistics;
 }
 
-export const TaskStatusOptions = [...Object.keys(TaskStatus)];
+export const TaskStatusOptions = Object.keys(TaskStatus);
 
 export enum TaskPriority {
   LOW = "LOW",
@@ -50,7 +51,7 @@ export enum TaskPriority {
   HIGH = "HIGH",
 }
 
-export const TaskPriorityOptions = [...Object.keys(TaskPriority)];
+export const TaskPriorityOptions = Object.keys(TaskPriority);
 export interface TaskPriorityStatistics {
   [priority: string]: number;
 }

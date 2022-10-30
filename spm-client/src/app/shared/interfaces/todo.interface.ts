@@ -21,7 +21,7 @@ export enum TodoStatus {
   DONE = "DONE",
 }
 
-export const TodoStatusOptions = [...Object.keys(TodoStatus)];
+export const TodoStatusOptions = Object.keys(TodoStatus);
 
 export interface TodoStatistics {
   [status: string]: number;
@@ -37,7 +37,7 @@ export function getTodoStatistics(todos: ITodo[]): TodoStatistics {
 }
 
 export function getProjectProgress(tasks: ITask[]): number {
-  let completedTasks = tasks.filter(
+  const completedTasks = tasks.filter(
     (task) => task.status === TaskStatus.COMPLETED
   ).length;
   return ((completedTasks / tasks.length) * 100) | 0;

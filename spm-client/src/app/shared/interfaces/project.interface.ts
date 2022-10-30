@@ -37,4 +37,4 @@ export enum ProjectStatus {
   COMPLETE = "COMPLETE",
 }
 
-export const ProjectStatusOptions = [...Object.keys(ProjectStatus)];
+export const ProjectStatusOptions = Object.keys(ProjectStatus);
