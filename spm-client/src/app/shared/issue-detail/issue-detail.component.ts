@@ -8,7 +8,13 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute } from "@angular/router";
 import { EMPTY, Observable, Subject } from "rxjs";
-import { catchError, switchMap, takeUntil } from "rxjs/operators";
+import {
+  catchError,
+  switchMap,
+  switchMapTo,
+  takeUntil,
+  tap,
+} from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { ConfirmDeleteComponent } from "src/app/shared/dialogs/confirm-delete/confirm-delete.component";
@@ -62,12 +68,17 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
 
     this.issue$ = this.sharedService.refresh$.pipe(
       switchMap(() => this.sharedService.getIssueById(this.issueId)),
+      tap((issue) => {
+        if (issue.status === IssueStatus.RESOLVED && issue.resolvedDate) {
+          this.addCommentForm.disable();
+        }
+      }),
       takeUntil(this.destroy$),
       catchError(() => EMPTY)
     );
 
     this.comments$ = this.sharedService.refresh$.pipe(
-      switchMap(() => this.sharedService.getAllComments(this.issueId)),
+      switchMapTo(this.sharedService.getAllComments(this.issueId)),
       takeUntil(this.destroy$),
       catchError(() => EMPTY)
     );
@@ -118,8 +129,9 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this.sharedService.refresh();
-        this.sendIssueResolvedNotification(issue);
         this.snackbarService.showSnackBar("issue has been resolved");
+        this.addCommentForm.disable();
+        this.sendIssueResolvedNotification(issue);
       });
   }
 
