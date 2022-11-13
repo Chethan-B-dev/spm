@@ -12,6 +12,7 @@ import org.jsoup.safety.Safelist;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -78,11 +79,18 @@ public class ManagerService {
     }
 
     public void handleValidationErrors(BindingResult bindingResult) {
-        StringBuilder errors = new StringBuilder();
+
         if (bindingResult.hasFieldErrors()) {
-            bindingResult.getFieldErrors().forEach(fieldError -> errors.append(fieldError.getField()).append(" : ")
-                    .append(fieldError.getDefaultMessage()).append(","));
-            throw new ActionNotAllowedException(errors.substring(0, errors.length() - 1));
+
+            final String SEPARATOR = ",";
+            final StringBuilder errors = new StringBuilder();
+
+            for (FieldError fieldError: bindingResult.getFieldErrors()) {
+                errors.append(fieldError.getField()).append(" : ").append(fieldError.getDefaultMessage());
+                errors.append(SEPARATOR);
+            }
+
+            throw new ActionNotAllowedException(errors.substring(0, errors.length() - SEPARATOR.length()));
         }
     }
 
@@ -123,7 +131,7 @@ public class ManagerService {
     }
 
     public Todo createTodo(CreateTodoDTO createTodoDTO, MyAppUserDetails loggedInUser, Integer taskId) {
-        return todoService.createTodo(createTodoDTO, loggedInUser,  taskId);
+        return todoService.createTodo(createTodoDTO, loggedInUser, taskId);
     }
 
     public Todo getTodoById(Integer todoId) {
@@ -163,15 +171,15 @@ public class ManagerService {
         issueService.deleteIssue(issueId, loggedInUser);
     }
 
-    public IssueComment addComment(AddCommentDTO addCommentDTO, Integer issueId){
+    public IssueComment addComment(AddCommentDTO addCommentDTO, Integer issueId) {
         return issueService.addComment(addCommentDTO, issueId);
     }
 
-    public List<IssueComment> getComments(Integer issueId){
+    public List<IssueComment> getComments(Integer issueId) {
         return issueService.getComments(issueId);
     }
 
-    public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser){
+    public void deleteComment(Integer commentId, MyAppUserDetails loggedInUser) {
         issueService.deleteComment(commentId, loggedInUser);
     }
 
@@ -185,6 +193,7 @@ public class ManagerService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public SearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
         // sanitizing search string
         searchKey = Jsoup.clean(searchKey.trim(), Safelist.basic());

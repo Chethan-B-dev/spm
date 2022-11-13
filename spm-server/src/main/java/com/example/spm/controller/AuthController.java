@@ -28,7 +28,7 @@ public class AuthController {
     @PostMapping("/user/save")
     public ResponseEntity<AppUser> saveUser(
             @RequestBody @Valid final UserRegisterDTO userRegisterDTO,
-            BindingResult bindingResult
+            final BindingResult bindingResult
     ) {
         managerService.handleValidationErrors(bindingResult);
         return new ResponseEntity<>(
@@ -50,7 +50,7 @@ public class AuthController {
     @PutMapping("/user/edit")
     public ResponseEntity<AppUser> editUser(
             @RequestBody @Valid final EditProfileDTO editProfileDTO,
-            BindingResult bindingResult,
+            final BindingResult bindingResult,
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails
     ) {
         MyAppUserDetails loggedInUser = AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);

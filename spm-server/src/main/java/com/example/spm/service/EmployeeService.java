@@ -26,7 +26,7 @@ public class EmployeeService {
     private final TodoService todoService;
     private final IssueService issueService;
 
-    public List<Project> getAllProjectsByEmployee(AppUser employee) {
+    public List<Project> getAllProjectsByEmployee(final AppUser employee) {
         return projectService.getAllProjectsByEmployeeId(employee);
     }
 
@@ -115,6 +115,7 @@ public class EmployeeService {
         issueService.deleteComment(commentId, loggedInUser);
     }
 
+    @Transactional
     public SearchResultDTO getSearchResult(String searchKey, MyAppUserDetails loggedInUser) {
         // sanitizing search string
         searchKey = Jsoup.clean(searchKey.trim(), Safelist.basic());

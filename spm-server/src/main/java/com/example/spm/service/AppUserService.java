@@ -14,7 +14,10 @@ import com.example.spm.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,9 +36,25 @@ public class AppUserService {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
 
+    public static MyAppUserDetails checkIfUserIsLoggedIn(MyAppUserDetails myAppUserDetails) {
+        if (Objects.isNull(myAppUserDetails))
+            throw new UserNotLoggedInException("Please Log in");
+        return myAppUserDetails;
+    }
+
+    public static void checkIfUserIsManager(MyAppUserDetails myAppUserDetails) {
+        if (!myAppUserDetails.getUser().getRole().equals(UserRole.MANAGER))
+            throw new ActionNotAllowedException("Only a Manager can perform this action");
+    }
+
+    public static void checkIfUserIsRole(MyAppUserDetails myAppUserDetails, UserRole userRole) {
+        if (!myAppUserDetails.getUser().getRole().equals(userRole))
+            throw new ActionNotAllowedException(myAppUserDetails.getUser().getRole().toString().toLowerCase() + "'s" + " is not allowed to perform this action");
+    }
+
     public AppUser saveUser(UserRegisterDTO userRegisterDTO) {
 
-        if (userRegisterDTO.getUserRole() != null && userRegisterDTO.getUserRole().equals(UserRole.ADMIN))
+        if (!Objects.isNull(userRegisterDTO.getUserRole()) && userRegisterDTO.getUserRole().equals(UserRole.ADMIN))
             throw new ActionNotAllowedException("Cannot register as an admin");
 
         checkIfEmailAlreadyExists(userRegisterDTO.getEmail());
@@ -56,14 +75,14 @@ public class AppUserService {
 
     public AppUser getUser(String email) {
         log.info("Fetching user {}", email);
-        return appUserRepository.findByEmail(email);
+        return appUserRepository.findByEmailOrUsername(email, email);
     }
 
     public List<AppUser> getVerifiedUsers() {
         return appUserRepository.findAllByStatusAndRoleNot(UserStatus.VERIFIED, UserRole.ADMIN);
     }
 
-    public AppUser checkIfUserExists (Integer userId) {
+    public AppUser checkIfUserExists(Integer userId) {
         return appUserRepository
                 .findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("user with id " + userId + " not found"));
@@ -85,20 +104,9 @@ public class AppUserService {
         return appUserRepository.deleteByEmail(email).equals(1);
     }
 
-    public static MyAppUserDetails checkIfUserIsLoggedIn(MyAppUserDetails myAppUserDetails) {
-        if (Objects.isNull(myAppUserDetails))
-            throw new UserNotLoggedInException("Please Log in");
-        return myAppUserDetails;
-    }
-
     public void checkIfEmailAlreadyExists(String email) {
         if (appUserRepository.existsByEmail(email))
             throw new ActionNotAllowedException("User with the email '" + email + "' already exists");
-    }
-
-    public static void checkIfUserIsManager(MyAppUserDetails myAppUserDetails) {
-        if (!myAppUserDetails.getUser().getRole().equals(UserRole.MANAGER))
-            throw new ActionNotAllowedException("Only a Manager can perform this action");
     }
 
     public PagedData<AppUser> getPagedVerifiedEmployees(int pageNumber, int pageSize) {
@@ -119,7 +127,7 @@ public class AppUserService {
     @Transactional
     @Modifying
     public AppUser editProfile(EditProfileDTO editProfileDTO, MyAppUserDetails loggedInUser) {
-        AppUser user = loggedInUser.getUser();
+        final AppUser user = loggedInUser.getUser();
 
         // if a user with the same name exists throw an error
         final boolean hasChangedUsername = !user.getUsername().equalsIgnoreCase(editProfileDTO.getUsername());
@@ -129,11 +137,13 @@ public class AppUserService {
 
         user.setUsername(editProfileDTO.getUsername());
 
-        // phone number validation should be 10 digits
-        if (editProfileDTO.getPhone().length() == 10) {
-            user.setPhone(editProfileDTO.getPhone());
-        } else {
-            throw new ValidationException("Phone number has to be 10 digits");
+        // if phone number has changed and phone number validation should be 10 digits
+        if (!user.getPhone().equals(editProfileDTO.getPhone())) {
+            if (editProfileDTO.getPhone().length() == 10) {
+                user.setPhone(editProfileDTO.getPhone());
+            } else {
+                throw new ValidationException("Phone number has to be 10 digits");
+            }
         }
 
         if (!Objects.isNull(editProfileDTO.getImage())) {
