@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 import { AdminGuard } from "./admin/admin.guard";
 import { AuthGuard } from "./auth/auth.guard";
 import { LoggedInGuard } from "./auth/isloggedin.guard";
@@ -23,22 +23,26 @@ const routes: Routes = [
   // lazy loaded modules
   {
     path: "admin",
-    loadChildren: "./admin/admin.module#AdminModule",
+    loadChildren: () =>
+      import("./admin/admin.module").then((m) => m.AdminModule),
     canActivate: [AdminGuard],
   },
   {
     path: "manager",
-    loadChildren: "./manager/manager.module#ManagerModule",
+    loadChildren: () =>
+      import("./manager/manager.module").then((m) => m.ManagerModule),
     canActivate: [ManagerGuard],
   },
   {
     path: "employee",
-    loadChildren: "./employee/employee.module#EmployeeModule",
+    loadChildren: () =>
+      import("./employee/employee.module").then((m) => m.EmployeeModule),
     canActivate: [EmployeeGuard],
   },
   {
     path: "reporting",
-    loadChildren: "./reporting/reporting.module#ReportingModule",
+    loadChildren: () =>
+      import("./reporting/reporting.module").then((m) => m.ReportingModule),
     canActivate: [LoggedInGuard],
   },
   // 404 route
@@ -46,7 +50,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

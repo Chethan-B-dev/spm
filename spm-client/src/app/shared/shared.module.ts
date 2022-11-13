@@ -3,7 +3,6 @@ import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { SidenavComponent } from "./sidenav/sidenav.component";
 
-import { AuthModule } from "../auth/auth.module";
 import { ConfirmDeleteComponent } from "./dialogs/confirm-delete/confirm-delete.component";
 import { EditProfileComponent } from "./dialogs/edit-profile/edit-profile.component";
 import { ProgressBarComponent } from "./progress-bar/progress-bar.component";
@@ -53,7 +52,6 @@ import { MatCarouselModule } from "@ngmodule/material-carousel";
   imports: [
     RouterModule,
     CommonModule,
-    AuthModule,
     MaterialModule,
     HttpClientModule,
     FormsModule,
@@ -74,6 +72,8 @@ import { MatCarouselModule } from "@ngmodule/material-carousel";
     PieChartComponent,
     UploadComponent,
     ImageSliderComponent,
+    MaterialModule,
+    CommonModule,
   ],
 })
 export class SharedModule {}

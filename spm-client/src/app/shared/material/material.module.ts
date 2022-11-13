@@ -29,6 +29,7 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
+import { MatTableModule } from "@angular/material/table";
 
 const materialModules = [
   MatToolbarModule,
@@ -59,6 +60,7 @@ const materialModules = [
   MatTabsModule,
   MatAutocompleteModule,
   MatButtonToggleModule,
+  MatTableModule,
 ];
 
 @NgModule({

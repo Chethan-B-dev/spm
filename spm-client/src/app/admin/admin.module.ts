@@ -1,12 +1,11 @@
-import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
-import { MaterialModule } from "../shared/material/material.module";
 import { SharedModule } from "../shared/shared.module";
 import { AdminRoutingModule } from "./admin-routing.module";
+import { AdminTableComponent } from "./admin-table/admin-table.component";
 import { AdminComponent } from "./admin.component";
 
 @NgModule({
-  declarations: [AdminComponent],
-  imports: [CommonModule, AdminRoutingModule, MaterialModule, SharedModule],
+  declarations: [AdminComponent, AdminTableComponent],
+  imports: [AdminRoutingModule, SharedModule],
 })
 export class AdminModule {}

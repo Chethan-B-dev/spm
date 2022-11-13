@@ -1,9 +1,6 @@
 import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { ReportsDashboardComponent } from "./reports-dashboard/reports-dashboard.component";
-import { MaterialModule } from "../shared/material/material.module";
 import { ReactiveFormsModule } from "@angular/forms";
-import { RouterModule } from "@angular/router";
 import { SharedModule } from "../shared/shared.module";
 import { ProgressReportsDashboardComponent } from "./progress-reports-dashboard/progress-reports-dashboard.component";
 import { BurnDownChartDashboardComponent } from "./burn-down-chart-dashboard/burn-down-chart-dashboard.component";
@@ -23,13 +20,6 @@ import { ReportingRoutingModule } from "./reporting-routing.module";
     EachProjectProgressBoardComponent,
     EmpReportListComponent,
   ],
-  imports: [
-    CommonModule,
-    MaterialModule,
-    SharedModule,
-    RouterModule,
-    ReportingRoutingModule,
-    ReactiveFormsModule,
-  ],
+  imports: [SharedModule, ReportingRoutingModule, ReactiveFormsModule],
 })
 export class ReportingModule {}

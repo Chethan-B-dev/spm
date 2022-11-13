@@ -1,13 +1,10 @@
-import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { RouterModule } from "@angular/router";
 import { SharedModule } from "../shared/shared.module";
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { CreateTaskComponent } from "./dialogs/create-task/create-task.component";
 import { ManagerProjectDetailComponent } from "./manager-project-detail/manager-project-detail.component";
 
-import { MaterialModule } from "../shared/material/material.module";
 import { CreateTodoComponent } from "./dialogs/create-todo/create-todo.component";
 import { EditProjectComponent } from "./dialogs/edit-project/edit-project.component";
 import { SetDesignationComponent } from "./dialogs/set-designation/set-designation.component";
@@ -38,14 +35,10 @@ import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-d
     SetDesignationComponent,
     EditProjectComponent,
   ],
-
   imports: [
-    CommonModule,
-    RouterModule,
     ReactiveFormsModule,
     FormsModule,
     ManagerRoutingModule,
-    MaterialModule,
     SharedModule,
   ],
 })
