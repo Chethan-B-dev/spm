@@ -29,3 +29,7 @@ spm-server/src/main/resources/application.properties
 spm-client/.vscode/settings.json
 spm-server/src/main/resources/application.properties
 spm-client/package-lock.json
+spm-client/TODO
+spm-client\TODO
+spm-client/noOnPush.txt
+spm-client\noOnPush.txt
