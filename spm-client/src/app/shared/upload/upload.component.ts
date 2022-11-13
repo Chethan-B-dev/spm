@@ -107,7 +107,6 @@ export class UploadComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         catchError((err) => {
-          this.snackbarService.showSnackBar(err);
           this.errorEvent.emit(err);
           return EMPTY;
         })

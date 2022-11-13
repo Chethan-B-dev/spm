@@ -54,10 +54,7 @@ export class ManagerScrumBoardComponent implements OnInit, OnDestroy {
       withLatestFrom(taskId$),
       takeUntil(this.destroy$),
       switchMap(([_, taskId]) => this.managerService.getTaskById(taskId)),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
+      catchError(() => EMPTY)
     );
   }
 

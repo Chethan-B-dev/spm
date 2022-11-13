@@ -38,6 +38,7 @@ import { IAppUser } from "../interfaces/user.interface";
 
 // utility
 import { DataType, goBack, PieData } from "../utility/common";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-project-card",
@@ -61,7 +62,8 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private dialog: MatDialog,
+    private readonly dialog: MatDialog,
+    private readonly router: Router,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService
@@ -79,14 +81,16 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       this.users$ = this.managerService.refresh$.pipe(
         takeUntil(this.destroy$),
         switchMap(() => this.managerService.getAllEmployees(this.project.id)),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       );
     }
     this.projectProgress = getProjectProgress(this.project.tasks);
     this.projectTaskStatistics = getTaskStatistics(this.project.tasks);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   scrollToBottom(): void {
@@ -95,11 +99,6 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
 
   toggleShowIssues(): void {
     this.showIssues.emit();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   addEmployees(): void {
@@ -113,40 +112,21 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
     );
 
     this.openSetDesignationDialog(employeesWithoutDesignation).subscribe(
-      (result: boolean) => {
-        if (result) {
-          this.managerService
-            .addEmployees(this.project.id, this.employees)
-            .pipe(
-              takeUntil(this.destroy$),
-              catchError((err) => {
-                this.snackbarService.showSnackBar(err);
-                return EMPTY;
-              })
-            )
-            .subscribe(() => {
-              this.employees.forEach((employee) => {
-                const notification: INotification = {
-                  userId: employee.id,
-                  notification: `You have been assigned to the project '${
-                    this.project.name
-                  }' by Manager: ${
-                    this.project.manager.username
-                  } on ${new Date().toLocaleString()}`,
-                  time: Date.now(),
-                };
-                this.notificationService.addNotification(notification);
-              });
-              this.snackbarService.showSnackBar("Employees have been added");
-              this.employees = [];
-            });
+      (designationsSet) => {
+        if (designationsSet) {
+          this.addEmployeesToProject();
+        } else {
+          this.snackbarService.showSnackBar(
+            "Something went wrong could not Add Employees to Project"
+          );
+          this.employees = [];
         }
       }
     );
   }
 
   goBack(): void {
-    goBack();
+    this.router.navigate(["/"]);
   }
 
   showNoEmployeesSnackbar(): void {
@@ -156,6 +136,13 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   openCreateTaskDialog(): void {
+    if (!this.project.users.length) {
+      this.snackbarService.showSnackBar(
+        "Please Add Employees to the project before creating tasks"
+      );
+      return;
+    }
+
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
@@ -176,8 +163,9 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   openProjectFilesDialog(): void {
-    const files = JSON.parse(this.project.files) as string[];
-    if (!files || !files.length) {
+    const files = (JSON.parse(this.project.files) as string[]) || [];
+
+    if (!files.length) {
       this.snackbarService.showSnackBar("There are no files for this project");
       return;
     }
@@ -194,7 +182,9 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   }
 
   openSetDesignationDialog(employees: IAppUser[]): Observable<boolean> {
-    if (!employees.length) return of(true);
+    if (!employees.length) {
+      return of(true);
+    }
 
     const dialogConfig = new MatDialogConfig();
 
@@ -235,6 +225,35 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
       new Date().getTime() > new Date(this.project.toDate).getTime();
     const isProjectInProgress =
       this.project.status === ProjectStatus.IN_PROGRESS;
-    return !isProjectExpired && isProjectInProgress;
+    return isProjectInProgress && !isProjectExpired;
+  }
+
+  private sendProjectAssignmentNotifications() {
+    this.employees.forEach((employee) => {
+      const notification: INotification = {
+        userId: employee.id,
+        notification: `You have been assigned to the project '${
+          this.project.name
+        }' by Manager: ${
+          this.project.manager.username
+        } on ${new Date().toLocaleString()}`,
+        time: Date.now(),
+      };
+      this.notificationService.addNotification(notification);
+    });
+  }
+
+  private addEmployeesToProject(): void {
+    this.managerService
+      .addEmployees(this.project.id, this.employees)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(() => EMPTY)
+      )
+      .subscribe(() => {
+        this.sendProjectAssignmentNotifications();
+        this.snackbarService.showSnackBar("Employees have been added");
+        this.employees = [];
+      });
   }
 }

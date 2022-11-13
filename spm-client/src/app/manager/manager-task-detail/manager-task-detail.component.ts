@@ -73,10 +73,7 @@ export class ManagerTaskDetailComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         filter((deleted: boolean) => deleted),
         switchMap(() => this.managerService.deleteTask(taskId)),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe(() => {
         this.snackbarService.showSnackBar("Task has been deleted");

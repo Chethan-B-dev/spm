@@ -7,7 +7,7 @@ import {
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialog } from "@angular/material";
 import { ActivatedRoute } from "@angular/router";
-import { EMPTY, Observable, Subject, Subscription } from "rxjs";
+import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
@@ -37,12 +37,11 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
   issue$: Observable<IIssue>;
   comments$: Observable<IComment[]>;
   currentUser = this.authService.currentUser;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
-    private dialog: MatDialog,
-    private route: ActivatedRoute,
-    private fb: FormBuilder,
+    private readonly dialog: MatDialog,
+    private readonly route: ActivatedRoute,
+    private readonly fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
@@ -51,57 +50,49 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // can add scan to comments and increase performance instead of calling api each time
     this.addCommentForm = this.fb.group({
       comment: ["", Validators.required],
     });
-    this.route.paramMap.subscribe((paramMap) => {
+
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((paramMap) => {
       this.issueId = +paramMap.get("id");
       this.sharedService.refresh();
     });
+
     this.issue$ = this.sharedService.refresh$.pipe(
       switchMap(() => this.sharedService.getIssueById(this.issueId)),
       takeUntil(this.destroy$),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
+      catchError(() => EMPTY)
     );
+
     this.comments$ = this.sharedService.refresh$.pipe(
       switchMap(() => this.sharedService.getAllComments(this.issueId)),
       takeUntil(this.destroy$),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
+      catchError(() => EMPTY)
     );
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   addComment(issueId: number): void {
-    this.subscriptions.push(
-      this.sharedService
-        .addComment(
-          this.addCommentForm.value.comment,
-          this.currentUser.id,
-          issueId
-        )
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            this.snackbarService.showSnackBar(err);
-            return EMPTY;
-          })
-        )
-        .subscribe(() => {
-          this.snackbarService.showSnackBar(`comment added`);
-          this.addCommentForm.reset();
-        })
-    );
+    this.sharedService
+      .addComment(
+        this.addCommentForm.value.comment,
+        this.currentUser.id,
+        issueId
+      )
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(() => EMPTY)
+      )
+      .subscribe(() => {
+        this.snackbarService.showSnackBar(`comment added`);
+        this.addCommentForm.reset();
+      });
   }
 
   deleteComment(commentId: number): void {
@@ -119,28 +110,17 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
       summary: issue.summary,
       status: IssueStatus.RESOLVED,
     };
-    this.subscriptions.push(
-      this.managerService
-        .updateIssue(updateIssueDTO, issue.id)
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            this.snackbarService.showSnackBar(err);
-            return EMPTY;
-          })
-        )
-        .subscribe(() => {
-          const notification: INotification = {
-            userId: issue.user.id,
-            notification: `issue: '${
-              issue.summary
-            }' has been resolved on ${new Date().toLocaleString()}`,
-            time: Date.now(),
-          };
-          this.notificationService.addNotification(notification);
-          this.snackbarService.showSnackBar(`issue has been resolved`);
-        })
-    );
+    this.managerService
+      .updateIssue(updateIssueDTO, issue.id)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(() => EMPTY)
+      )
+      .subscribe(() => {
+        this.sharedService.refresh();
+        this.sendIssueResolvedNotification(issue);
+        this.snackbarService.showSnackBar("issue has been resolved");
+      });
   }
 
   canResolve(issue: IIssue): boolean {
@@ -160,5 +140,16 @@ export class IssueDetailComponent implements OnInit, OnDestroy {
 
   isMyComment(comment: IComment): boolean {
     return comment.user.id === this.currentUser.id;
+  }
+
+  private sendIssueResolvedNotification(issue: IIssue): void {
+    const notification: INotification = {
+      userId: issue.user.id,
+      notification: `issue: '${
+        issue.summary
+      }' has been resolved on ${new Date().toLocaleString()}`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
   }
 }

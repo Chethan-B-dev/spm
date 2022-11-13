@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
-import { Observable } from "rxjs";
-import { catchError } from "rxjs/operators";
+import { from, Observable } from "rxjs";
+import { catchError, map } from "rxjs/operators";
 import { INotification } from "./interfaces/notification.interface";
 import { SnackbarService } from "./services/snackbar.service";
 import { handleError } from "./utility/error";
@@ -15,11 +15,46 @@ export class NotificationService {
     private readonly snackbarService: SnackbarService
   ) {}
 
-  getAllNotifications(): Observable<any> {
+  getAllNotifications(): Observable<INotification[]> {
+    return from(this.store.collection(this.COLLECTION_NAME).ref.get()).pipe(
+      map((snapshots) => {
+        const notifications = [];
+        snapshots.forEach((snapshot) => {
+          notifications.push({
+            id: snapshot.id,
+            ...snapshot.data(),
+          } as INotification);
+        });
+        return notifications;
+      }),
+      catchError((err) =>
+        handleError(err, (errorMessage) => {
+          this.snackbarService.showSnackBar(errorMessage);
+        })
+      )
+    );
+  }
+
+  getAllNotificationChanges(): Observable<INotification[]> {
     return this.store
       .collection(this.COLLECTION_NAME)
       .snapshotChanges()
-      .pipe(catchError(handleError));
+      .pipe(
+        map((snapshots: any) =>
+          snapshots.map(
+            (snapshot) =>
+              ({
+                id: snapshot.payload.doc.id,
+                ...snapshot.payload.doc.data(),
+              } as INotification)
+          )
+        ),
+        catchError((err) =>
+          handleError(err, (errorMessage) => {
+            this.snackbarService.showSnackBar(errorMessage);
+          })
+        )
+      );
   }
 
   addNotification(notification: INotification): void {
@@ -28,7 +63,11 @@ export class NotificationService {
     this.store
       .collection(this.COLLECTION_NAME)
       .add(notification)
-      .catch((err) => this.snackbarService.showSnackBar(err.message));
+      .catch((err) =>
+        handleError(err, (errorMessage) =>
+          this.snackbarService.showSnackBar(errorMessage)
+        )
+      );
   }
 
   deleteNotification(notificationId: string): void {
@@ -38,6 +77,10 @@ export class NotificationService {
       .collection(this.COLLECTION_NAME)
       .doc(notificationId)
       .delete()
-      .catch((err) => this.snackbarService.showSnackBar(err.message));
+      .catch((err) =>
+        handleError(err, (errorMessage) =>
+          this.snackbarService.showSnackBar(errorMessage)
+        )
+      );
   }
 }

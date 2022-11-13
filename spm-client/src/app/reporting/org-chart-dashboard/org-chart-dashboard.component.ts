@@ -29,7 +29,6 @@ import { ReportsService } from "../services/reports.service";
 export class OrgChartDashboardComponent implements OnInit, OnDestroy {
   private projectId: number;
   private readonly currentUser = this.authService.currentUser;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -38,7 +37,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
     private readonly employeeService: EmployeeService,
     private readonly snackbarService: SnackbarService,
     private readonly authService: AuthService,
-    private route: ActivatedRoute
+    private readonly route: ActivatedRoute
   ) {}
 
   goBack(): void {
@@ -55,35 +54,25 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
         ? this.managerService.getProjectById(this.projectId)
         : this.employeeService.getProjectById(this.projectId);
 
-    const projectSubscription = projectObservable
-      .pipe(
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
-      )
-      .subscribe((project) => {
-        const tree = document.getElementById("tree");
-        if (tree) {
-          const chart = new OrgChart(tree, {
-            template: "olivia",
-            nodeBinding: {
-              field_0: "name",
-              img_0: "img",
-              title_0: "title",
-            },
-          });
-          chart.load(this.prepareData(project));
-        }
-      });
-
-    this.subscriptions.push(projectSubscription);
+    projectObservable.pipe(catchError(() => EMPTY)).subscribe((project) => {
+      const tree = document.getElementById("tree");
+      if (tree) {
+        const chart = new OrgChart(tree, {
+          template: "olivia",
+          nodeBinding: {
+            field_0: "name",
+            img_0: "img",
+            title_0: "title",
+          },
+        });
+        chart.load(this.prepareData(project));
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   private prepareData(project: IProject) {
@@ -103,7 +92,7 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
         id: user.id,
         pid: project.manager.id,
         name: user.username,
-        title: myTitleCase(user.designation),
+        title: myTitleCase(user.designation || user.role),
         img: user.image || AvatarImage,
         Tasks_Assigned: project.tasks.filter((task) => task.user.id === user.id)
           .length,

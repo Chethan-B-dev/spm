@@ -48,8 +48,7 @@ export class EmpReportListComponent implements OnInit, OnDestroy {
       switchMap(() =>
         this.managerService.getEmployeesUnderProject(this.projectId)
       ),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
+      catchError(() => {
         this.router.navigate(["/reporting"]);
         return EMPTY;
       })

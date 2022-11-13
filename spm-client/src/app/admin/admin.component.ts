@@ -100,10 +100,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       .takeDecision(userId, adminDecision)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe(() => {
         this.snackbarService.showSnackBar(
@@ -117,10 +114,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       .enableUser(userId)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe((user) => {
         this.snackbarService.showSnackBar(`${user.username} has been enabled`);

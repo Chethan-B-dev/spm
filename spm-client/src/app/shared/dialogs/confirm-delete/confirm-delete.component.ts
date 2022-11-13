@@ -23,10 +23,10 @@ export class ConfirmDeleteComponent implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
   constructor(
     @Inject(MAT_DIALOG_DATA) deleteData,
-    private dialogRef: MatDialogRef<ConfirmDeleteComponent>,
-    private managerService: ManagerService,
-    private sharedService: SharedService,
-    private snackbarService: SnackbarService
+    private readonly dialogRef: MatDialogRef<ConfirmDeleteComponent>,
+    private readonly managerService: ManagerService,
+    private readonly sharedService: SharedService,
+    private readonly snackbarService: SnackbarService
   ) {
     this.deleteData = deleteData;
   }
@@ -52,8 +52,8 @@ export class ConfirmDeleteComponent implements OnDestroy {
     this.destroy$.complete();
   }
 
-  close(deleted: boolean): void {
-    this.dialogRef.close(deleted);
+  close(isDeleted: boolean): void {
+    this.dialogRef.close(isDeleted);
   }
 
   private deleteTodo(): void {
@@ -61,8 +61,7 @@ export class ConfirmDeleteComponent implements OnDestroy {
       .deleteTodo(this.deleteData.id)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
+        catchError(() => {
           this.close(false);
           return EMPTY;
         })
@@ -78,10 +77,7 @@ export class ConfirmDeleteComponent implements OnDestroy {
       .deleteComment(this.deleteData.id)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe((isCommentDeleted: boolean) => {
         if (isCommentDeleted) {

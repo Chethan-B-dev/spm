@@ -49,8 +49,7 @@ export class CreateTodoComponent implements OnInit, OnDestroy {
       .createTodo(this.createTodoForm.value, this.taskId)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
+        catchError(() => {
           this.close(false);
           return EMPTY;
         })

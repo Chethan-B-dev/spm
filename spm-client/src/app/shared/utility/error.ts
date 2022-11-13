@@ -2,7 +2,8 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
 
 export function handleError(
-  err: HttpErrorResponse | string
+  err: HttpErrorResponse | string,
+  callBack: Function
 ): Observable<never> {
   let errorMessage: string;
   if (typeof err === "string") {
@@ -25,5 +26,6 @@ export function handleError(
     }
   }
   console.error(err);
+  callBack(errorMessage);
   return throwError(errorMessage);
 }

@@ -19,7 +19,10 @@
             <h3 class="mb-0">List Of Projects</h3>
           </div>
           <div class="table-responsive">
-            <table class="table align-items-center table-flush">
+            <table
+              class="table align-items-center table-flush"
+              *ngIf="projects$ | async as projects; else loadingProjects"
+            >
               <thead class="thead-light">
                 <tr>
                   <th scope="col">Project Name</th>
@@ -34,9 +37,7 @@
                   </th>
                 </tr>
               </thead>
-              <tbody
-                *ngIf="projects$ | async as projects; else loadingProjects"
-              >
+              <tbody>
                 <tr *ngFor="let project of projects">
                   <th scope="row">
                     <div class="media align-items-center">
@@ -111,10 +112,13 @@
                   </td>
                 </tr>
               </tbody>
-              <ng-template #loadingProjects>
-                <app-loading-spinner class="center"></app-loading-spinner>
-              </ng-template>
             </table>
+            <ng-template #loadingProjects>
+              <app-loading-spinner
+                class="center"
+                *ngIf="!(error$ | async)"
+              ></app-loading-spinner>
+            </ng-template>
           </div>
         </div>
       </div>

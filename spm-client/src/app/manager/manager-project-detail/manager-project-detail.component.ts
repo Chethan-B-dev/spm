@@ -65,10 +65,7 @@ export class ManagerProjectDetailComponent implements OnInit, OnDestroy {
         this.managerService.getProjectById(projectId)
       ),
       tap((project) => this.managerService.setProject(project)),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
+      catchError(() => EMPTY)
     );
 
     this.managerService.selectTaskCategory(this.defaultTaskCategory);

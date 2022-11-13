@@ -79,7 +79,7 @@
   <mat-card-content>
     <p>{{ project.description }}</p>
   </mat-card-content>
-  <app-progress-bar [value]="projectProgress"></app-progress-bar>
+  <app-progress-bar [value]="+projectProgress"></app-progress-bar>
   <div class="row">
     <div class="col-md-4 left" *ngIf="showAddEmps">
       <mat-form-field
@@ -102,7 +102,9 @@
 
       <button
         mat-icon-button
-        aria-label="Example icon button with a vertical three dot icon"
+        aria-label="Add employees to Project"
+        matTooltip="Add Employees and Sync Project"
+        matTooltipPosition="right"
         (click)="addEmployees()"
       >
         <mat-icon style="color: green">sync</mat-icon>

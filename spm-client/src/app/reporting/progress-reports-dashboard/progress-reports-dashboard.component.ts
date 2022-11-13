@@ -4,7 +4,7 @@ import {
   OnDestroy,
   OnInit,
 } from "@angular/core";
-import { EMPTY, Observable, Subject } from "rxjs";
+import { BehaviorSubject, EMPTY, Observable, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { EmployeeService } from "src/app/employee/employee.service";
@@ -25,6 +25,8 @@ import { goBack } from "src/app/shared/utility/common";
 export class ProgressReportsDashboardComponent implements OnInit, OnDestroy {
   currentUser: IAppUser;
   projects$: Observable<IProject[]>;
+  private readonly errorSubject = new BehaviorSubject<String>(null);
+  readonly error$ = this.errorSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
   constructor(
     private readonly authService: AuthService,
@@ -53,6 +55,7 @@ export class ProgressReportsDashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       catchError((err) => {
         this.snackbarService.showSnackBar(err);
+        this.errorSubject.next(err);
         return EMPTY;
       })
     );

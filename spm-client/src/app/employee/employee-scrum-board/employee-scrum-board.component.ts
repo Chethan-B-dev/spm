@@ -56,10 +56,7 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       switchMap(() => this.employeeService.getTaskById(this.taskId)),
       tap((task) => (this.canDrag = task.status === TaskStatus.IN_PROGRESS)),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
+      catchError(() => EMPTY)
     );
   }
 
@@ -86,16 +83,12 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
       .completeTask(task.id)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe(() => {
         this.sendTaskCompletedNotification(task);
         this.snackbarService.showSnackBar("This task has been completed");
         this.canDrag = false;
-        window.location.reload();
       });
   }
 
@@ -116,10 +109,7 @@ export class EmployeeScrumBoardComponent implements OnInit, OnDestroy {
     const manager$ = this.sharedService.getManagerOfTask(this.taskId).pipe(
       take(1),
       takeUntil(this.destroy$),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
-        return EMPTY;
-      })
+      catchError(() => EMPTY)
     );
     this.manager = await manager$.toPromise();
   }

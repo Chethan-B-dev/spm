@@ -7,7 +7,7 @@ import {
 } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { EMPTY, Subject, Subscription } from "rxjs";
+import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
@@ -25,12 +25,11 @@ import { ManagerService } from "../../services/manager.service";
 export class CreateTaskComponent implements OnInit, OnDestroy {
   createTaskForm: FormGroup;
   project: IProject;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
     @Inject(MAT_DIALOG_DATA) project,
-    private fb: FormBuilder,
-    private dialogRef: MatDialogRef<CreateTaskComponent>,
+    private readonly fb: FormBuilder,
+    private readonly dialogRef: MatDialogRef<CreateTaskComponent>,
     private readonly managerService: ManagerService,
     private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService
@@ -51,7 +50,6 @@ export class CreateTaskComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   showNoEmployeesSnackbar(): void {
@@ -80,33 +78,35 @@ export class CreateTaskComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions.push(
-      this.managerService
-        .createTask(taskRequestDTO, this.project.id)
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            this.snackbarService.showSnackBar(err);
-            this.close();
-            return EMPTY;
-          })
-        )
-        .subscribe(() => {
-          const notification: INotification = {
-            userId: taskRequestDTO.userId,
-            notification: `A new Task: '${
-              taskRequestDTO.name
-            }' has been assigned to you on ${new Date().toLocaleString()}`,
-            time: Date.now(),
-          };
-          this.notificationService.addNotification(notification);
-          this.snackbarService.showSnackBar("Task has been created");
+    this.managerService
+      .createTask(taskRequestDTO, this.project.id)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(() => {
           this.close();
+          return EMPTY;
         })
-    );
+      )
+      .subscribe(() => {
+        this.snackbarService.showSnackBar("Task has been created");
+        this.sendTaskCreatedNotification(
+          taskRequestDTO.userId,
+          taskRequestDTO.name
+        );
+        this.close();
+      });
   }
 
   close(): void {
     this.dialogRef.close();
+  }
+
+  private sendTaskCreatedNotification(userId: number, taskName: string): void {
+    const notification: INotification = {
+      userId: userId,
+      notification: `A new Task: '${taskName}' has been assigned to you on ${new Date().toLocaleString()}`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
   }
 }

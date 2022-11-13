@@ -29,7 +29,6 @@ export class CreateIssueComponent implements OnInit, OnDestroy {
   file: File;
   uploadPercent: Observable<number>;
   disableButton = false;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
     private fb: FormBuilder,
@@ -57,7 +56,6 @@ export class CreateIssueComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   createIssue(projectId: number): void {
@@ -71,33 +69,30 @@ export class CreateIssueComponent implements OnInit, OnDestroy {
     const fileRef = this.storage.ref(filePath);
     const task = this.storage.upload(filePath, this.file);
     this.uploadPercent = task.percentageChanges();
-    this.subscriptions.push(
-      task
-        .snapshotChanges()
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            this.snackbarService.showSnackBar(err);
-            this.disableButton = false;
-            this.close(false);
-            return EMPTY;
-          }),
-          finalize(() => {
-            this.subscriptions.push(
-              fileRef
-                .getDownloadURL()
-                .pipe(
-                  switchMap((imageUrl) => this.addIssue(projectId, imageUrl))
-                )
-                .subscribe(() => {
-                  this.snackbarService.showSnackBar("issue has been created");
-                  this.close(true);
-                })
-            );
-          })
-        )
-        .subscribe()
-    );
+    task
+      .snapshotChanges()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          this.disableButton = false;
+          this.close(false);
+          return EMPTY;
+        }),
+        finalize(() => {
+          fileRef
+            .getDownloadURL()
+            .pipe(
+              switchMap((imageUrl) => this.addIssue(projectId, imageUrl)),
+              catchError(() => EMPTY)
+            )
+            .subscribe(() => {
+              this.snackbarService.showSnackBar("issue has been created");
+              this.close(true);
+            });
+        })
+      )
+      .subscribe();
   }
 
   addIssue(projectId: number, image: string): Observable<IIssue> {
@@ -108,8 +103,7 @@ export class CreateIssueComponent implements OnInit, OnDestroy {
     };
     return this.employeeService.createIssue(projectId, createIssueDTO).pipe(
       takeUntil(this.destroy$),
-      catchError((err) => {
-        this.snackbarService.showSnackBar(err);
+      catchError(() => {
         this.disableButton = false;
         this.close(false);
         return EMPTY;

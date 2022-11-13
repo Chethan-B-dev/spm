@@ -93,8 +93,7 @@ export class EditProjectComponent implements OnDestroy {
       )
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
+        catchError(() => {
           this.close();
           return EMPTY;
         })

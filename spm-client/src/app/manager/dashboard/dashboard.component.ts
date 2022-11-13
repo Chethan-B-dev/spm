@@ -44,13 +44,14 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  currentUserPageNumber = 1;
-  currentProjectPageNumber = 1;
   loadMoreUsers$: Observable<boolean>;
   loadMoreProjects$: Observable<boolean>;
   projects$: Observable<IProject[]>;
   users$: Observable<IAppUser[]>;
   errors: string[] = [];
+
+  private currentUserPageNumber = 1;
+  private currentProjectPageNumber = 1;
 
   @ViewChild("sort", { static: false }) sort!: MatSelect;
   @ViewChild("projectSearch", { static: false }) projectSearch!: ElementRef;
@@ -76,10 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private readonly managerService: ManagerService,
-    private readonly snackbarService: SnackbarService
-  ) {}
+  constructor(private readonly managerService: ManagerService) {}
 
   ngOnInit(): void {
     this.projects$ = combineLatest(
@@ -112,8 +110,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       tap(() => stopLoading(this.isLoadingSubject)),
       catchError((err) => {
         stopLoading(this.isLoadingSubject);
-        this.snackbarService.showSnackBar(err);
-        this.errors.push(err);
+        this.errors = [...this.errors, err];
         return EMPTY;
       })
     );
@@ -121,7 +118,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.users$ = this.managerService.users$.pipe(
       takeUntil(this.destroy$),
       catchError((err) => {
-        this.errors.push(err);
+        this.errors = [...this.errors, err];
         return EMPTY;
       })
     );
@@ -145,7 +142,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadMoreProjects$ = this.managerService.loadMoreProjects$.pipe(
       takeUntil(this.destroy$),
       catchError((err) => {
-        this.errors.push(err);
+        this.errors = [...this.errors, err];
         return EMPTY;
       })
     );
@@ -153,7 +150,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadMoreUsers$ = this.managerService.loadMoreUsers$.pipe(
       takeUntil(this.destroy$),
       catchError((err) => {
-        this.errors.push(err);
+        this.errors = [...this.errors, err];
         return EMPTY;
       })
     );

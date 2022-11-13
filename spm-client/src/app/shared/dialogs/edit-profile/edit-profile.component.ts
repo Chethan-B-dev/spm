@@ -137,8 +137,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
       } as IEditProfileRequest)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
+        catchError(() => {
           this.disableButton = false;
           return EMPTY;
         })

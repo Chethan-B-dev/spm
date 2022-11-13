@@ -19,8 +19,8 @@ declare let Highcharts: any;
 })
 export class EmployeeReportsDashboardComponent implements OnInit {
   constructor(
-    private reportService: ReportsService,
-    private route: ActivatedRoute,
+    private readonly reportService: ReportsService,
+    private readonly route: ActivatedRoute,
     private readonly managerService: ManagerService,
     private readonly sharedService: SharedService,
     private readonly snackbarService: SnackbarService
@@ -46,21 +46,11 @@ export class EmployeeReportsDashboardComponent implements OnInit {
 
     this.employeeProjects$ = this.sharedService
       .getAllEmployeeProjects(this.userId)
-      .pipe(
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
-      );
+      .pipe(catchError(() => EMPTY));
 
     this.managerService
       .getProjectById(this.projectId)
-      .pipe(
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
-      )
+      .pipe(catchError(() => EMPTY))
       .subscribe((project) => {
         this.project = project;
         this.user = this.project.users.find((user) => user.id === this.userId);

@@ -45,10 +45,7 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
     const projectSubscription = projectObservable
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe((project) => {
         // !if burn-down chart does not work change this below line to -> this.project = mockProject

@@ -105,8 +105,7 @@ export class AddProjectComponent implements OnInit, OnDestroy {
       .createProject(projectName, projectDescription, projectDeadLine)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
+        catchError(() => {
           this.disableButton = false;
           this.done = false;
           return EMPTY;
