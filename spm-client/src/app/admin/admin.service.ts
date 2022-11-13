@@ -1,9 +1,10 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { IAppUser } from "../shared/interfaces/user.interface";
+import { SnackbarService } from "../shared/services/snackbar.service";
 import { handleError } from "../shared/utility/error";
 import {
   IUserAction,
@@ -14,7 +15,7 @@ import {
 @Injectable({
   providedIn: "root",
 })
-export class AdminService {
+export class AdminService implements OnDestroy {
   private readonly adminUrl = environment.adminUrl;
   private readonly userCategorySelectedSubject = new BehaviorSubject<string>(
     UserStatus.UNVERIFIED
@@ -32,9 +33,7 @@ export class AdminService {
   );
   readonly userStatusAction$ = this.userStatusSubject.asObservable();
 
-  users$ = this.http
-    .get<IAppUser[]>(this.adminUrl)
-    .pipe(catchError(handleError));
+  users$ = this.http.get<IAppUser[]>(this.adminUrl);
 
   usersWithAction$ = combineLatest(this.users$, this.userStatusAction$).pipe(
     map(([users, userAction]) => {
@@ -48,10 +47,17 @@ export class AdminService {
         return user;
       });
     }),
-    catchError(handleError)
+    catchError((err) =>
+      handleError(err, (errorMessage) => {
+        this.snackbarService.showSnackBar(errorMessage);
+      })
+    )
   );
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly snackbarService: SnackbarService
+  ) {}
 
   selectUserCategory(selectedUserCategory: string): void {
     this.userCategorySelectedSubject.next(selectedUserCategory);
@@ -62,16 +68,19 @@ export class AdminService {
     return this.http
       .post<IAppUser>(`${this.adminUrl}/take-decision`, requestBody)
       .pipe(
-        tap(() => this.setUserStatus(userId, userStatusActions[adminDecision])),
-        catchError(handleError)
+        tap(() => this.setUserStatus(userId, userStatusActions[adminDecision]))
       );
   }
 
   enableUser(userId: number): Observable<IAppUser> {
-    return this.http.get<IAppUser>(`${this.adminUrl}/enable/${userId}`).pipe(
-      tap(() => this.setUserStatus(userId, UserStatus.UNVERIFIED)),
-      catchError(handleError)
-    );
+    return this.http
+      .get<IAppUser>(`${this.adminUrl}/enable/${userId}`)
+      .pipe(tap(() => this.setUserStatus(userId, UserStatus.UNVERIFIED)));
+  }
+
+  ngOnDestroy(): void {
+    this.userStatusSubject.complete();
+    this.userCategorySelectedSubject.complete();
   }
 
   private setUserStatus(userId: number, status: UserStatus): void {

@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import {
   BehaviorSubject,
   merge,
@@ -16,6 +16,7 @@ import {
   scan,
   shareReplay,
   switchMap,
+  switchMapTo,
   takeWhile,
   tap,
 } from "rxjs/operators";
@@ -35,6 +36,7 @@ import {
 import { ITodo } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/notification.service";
+import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/shared.service";
 import {
   ISearchGroup,
@@ -54,7 +56,7 @@ import {
 @Injectable({
   providedIn: "root",
 })
-export class ManagerService {
+export class ManagerService implements OnDestroy {
   private readonly managerUrl = environment.managerUrl;
 
   private readonly refreshSubject = new BehaviorSubject<void>(null);
@@ -95,8 +97,7 @@ export class ManagerService {
 
   projects$ = this.stateRefresh$.pipe(
     filter((user) => Boolean(user && user.role === UserRole.MANAGER)),
-    switchMap(() => this.getAllProjects()),
-    catchError(handleError)
+    switchMapTo(this.getAllProjects())
   );
 
   pagedProjects$ = this.stateRefresh$.pipe(
@@ -112,7 +113,11 @@ export class ManagerService {
       });
     }),
     scan((acc, value) => [...acc, ...value], [] as IProject[]),
-    catchError(handleError)
+    catchError((err) =>
+      handleError(err, (errorMessage) => {
+        this.snackbarService.showSnackBar(errorMessage);
+      })
+    )
   );
 
   users$ = this.stateRefresh$.pipe(
@@ -123,30 +128,50 @@ export class ManagerService {
     takeWhile((pagedData) => this.checkPagedData(pagedData, DataType.USER)),
     pluck("data"),
     scan((acc, value) => [...acc, ...value], [] as IAppUser[]),
-    catchError(handleError)
+    catchError((err) =>
+      handleError(err, (errorMessage) => {
+        this.snackbarService.showSnackBar(errorMessage);
+      })
+    )
   );
 
   projectsWithAdd$: Observable<IProject[]> = this.stateRefresh$.pipe(
     switchMap(() => merge(this.pagedProjects$, this.projectAction$)),
     scan((acc, value) => this.modifyProjects(acc, value), [] as IProject[]),
-    shareReplay(1),
-    catchError(handleError)
+    catchError((err) =>
+      handleError(err, (errorMessage) => {
+        this.snackbarService.showSnackBar(errorMessage);
+      })
+    ),
+    shareReplay(1)
   );
 
-  tasks$ = this.selectedProject$.pipe(pluck("tasks"), catchError(handleError));
+  tasks$ = this.selectedProject$.pipe(
+    pluck("tasks"),
+    catchError((err) =>
+      handleError(err, (errorMessage) => {
+        this.snackbarService.showSnackBar(errorMessage);
+      })
+    )
+  );
 
   tasksWithAdd$ = merge(this.tasks$, this.taskInsertedAction$).pipe(
     scan(
       (acc, value) => (value instanceof Array ? [...value] : [value, ...acc]),
       [] as ITask[]
     ),
-    shareReplay(1),
-    catchError(handleError)
+    catchError((err) =>
+      handleError(err, (errorMessage) => {
+        this.snackbarService.showSnackBar(errorMessage);
+      })
+    ),
+    shareReplay(1)
   );
 
   constructor(
     private readonly http: HttpClient,
     private readonly sharedService: SharedService,
+    private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService
   ) {}
 
@@ -180,38 +205,31 @@ export class ManagerService {
 
   getPagedProjects(pageNumber: number): Observable<IPagedData<IProject>> {
     const params = new HttpParams().set("pageNumber", pageNumber.toString());
-    return this.http
-      .get<IPagedData<IProject>>(`${this.managerUrl}/projects/paged`, {
+    return this.http.get<IPagedData<IProject>>(
+      `${this.managerUrl}/projects/paged`,
+      {
         params,
-      })
-      .pipe(catchError(handleError));
+      }
+    );
   }
 
   getAllTasks(projectId: number): Observable<ITask[]> {
-    return this.http
-      .get<ITask[]>(`${this.managerUrl}/tasks/${projectId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<ITask[]>(`${this.managerUrl}/tasks/${projectId}`);
   }
 
   getTaskById(taskId: number): Observable<ITask> {
-    return this.http
-      .get<ITask>(`${this.managerUrl}/task/${taskId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<ITask>(`${this.managerUrl}/task/${taskId}`);
   }
 
   getAllIssues(projectId: number): Observable<IIssue[]> {
-    return this.http
-      .get<IIssue[]>(`${this.managerUrl}/issues/${projectId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<IIssue[]>(`${this.managerUrl}/issues/${projectId}`);
   }
 
   getMoreUsers(pageNumber: number): Observable<IPagedData<IAppUser>> {
     const params = new HttpParams().set("pageNumber", pageNumber.toString());
-    return this.http
-      .get<IPagedData<IAppUser>>(`${this.managerUrl}/employees`, {
-        params,
-      })
-      .pipe(catchError(handleError));
+    return this.http.get<IPagedData<IAppUser>>(`${this.managerUrl}/employees`, {
+      params,
+    });
   }
 
   changeUserPageNumber(userPageNumber: number): void {
@@ -225,19 +243,19 @@ export class ManagerService {
   getAllProjects(): Observable<IProject[]> {
     return this.http
       .get<IProject[]>(`${this.managerUrl}/projects`)
-      .pipe(shareReplay(1), catchError(handleError));
+      .pipe(shareReplay(1));
   }
 
   getAllEmployees(projectId: number): Observable<IAppUser[]> {
-    return this.http
-      .get<IAppUser[]>(`${this.managerUrl}/employees/${projectId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<IAppUser[]>(
+      `${this.managerUrl}/employees/${projectId}`
+    );
   }
 
   getEmployeesUnderProject(projectId: number): Observable<IAppUser[]> {
-    return this.http
-      .get<IAppUser[]>(`${this.managerUrl}/project/${projectId}/employees`)
-      .pipe(catchError(handleError));
+    return this.http.get<IAppUser[]>(
+      `${this.managerUrl}/project/${projectId}/employees`
+    );
   }
 
   addEmployees(projectId: number, employees: IAppUser[]): Observable<IProject> {
@@ -246,24 +264,20 @@ export class ManagerService {
       .put<IProject>(`${this.managerUrl}/assign-user/${projectId}`, {
         userIds,
       })
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(handleError)
-      );
+      .pipe(tap(() => this.refresh()));
   }
 
   setEmployeeDesignation(employee: IAppUser): Observable<IAppUser> {
-    return this.http
-      .put<IAppUser>(`${this.managerUrl}/edit-designation/${employee.id}`, {
+    return this.http.put<IAppUser>(
+      `${this.managerUrl}/edit-designation/${employee.id}`,
+      {
         designation: employee.designation,
-      })
-      .pipe(catchError(handleError));
+      }
+    );
   }
 
   getProjectById(projectId: number): Observable<IProject> {
-    return this.http
-      .get<IProject>(`${this.managerUrl}/project/${projectId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<IProject>(`${this.managerUrl}/project/${projectId}`);
   }
 
   createProject(
@@ -277,11 +291,8 @@ export class ManagerService {
       toDate: new Date(projectDeadLine + "Z").toISOString().substring(0, 10),
     };
     return this.http
-      .post<IProject>(`${this.managerUrl}/create-project`, requestBody)
-      .pipe(
-        tap((project) => this.addProjectAction(project)),
-        catchError(handleError)
-      );
+      .post<IProject>(`${this.managerUrl}/create-project1`, requestBody)
+      .pipe(tap((project) => this.addProjectAction(project)));
   }
 
   editProject(
@@ -308,8 +319,7 @@ export class ManagerService {
         tap((project) => {
           this.editProjectAction(project);
           this.refresh();
-        }),
-        catchError(handleError)
+        })
       );
   }
 
@@ -328,8 +338,7 @@ export class ManagerService {
         tap((task) => {
           this.addTask(task);
           this.refresh();
-        }),
-        catchError(handleError)
+        })
       );
   }
 
@@ -338,10 +347,7 @@ export class ManagerService {
       .post<ITodo>(`${this.managerUrl}/${taskId}/create-todo`, {
         todoName: todo.todo,
       })
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(handleError)
-      );
+      .pipe(tap(() => this.refresh()));
   }
 
   updateIssue(
@@ -350,31 +356,39 @@ export class ManagerService {
   ): Observable<IIssue> {
     return this.http
       .put<IIssue>(`${this.managerUrl}/edit-issue/${issueId}`, updateIssueDTO)
-      .pipe(
-        tap(() => this.sharedService.refresh()),
-        catchError(handleError)
-      );
+      .pipe(tap(() => this.sharedService.refresh()));
   }
 
   deleteTask(taskId: number): Observable<boolean> {
-    return this.http
-      .delete<boolean>(`${this.managerUrl}/delete-task/${taskId}`)
-      .pipe(catchError(handleError));
+    return this.http.delete<boolean>(
+      `${this.managerUrl}/delete-task/${taskId}`
+    );
   }
 
   deleteTodo(todoId: number): Observable<void> {
     return this.http
       .delete<void>(`${this.managerUrl}/delete-todo/${todoId}`)
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(handleError)
-      );
+      .pipe(tap(() => this.refresh()));
   }
 
   globalSearch(searchKey: string): Observable<ISearchGroup[]> {
     return this.http
       .get<ISearchResult>(`${this.managerUrl}/search/${searchKey}`)
-      .pipe(map(mapSearchResults), catchError(handleError));
+      .pipe(map(mapSearchResults));
+  }
+
+  ngOnDestroy(): void {
+    this.refreshSubject.complete();
+    this.stateRefreshSubject.complete();
+    this.taskCategorySelectedSubject.complete();
+    this.projectIdSubject.complete();
+    this.projectPageNumberSubject.complete();
+    this.userPageNumberSubject.complete();
+    this.selectedProjectSubject.complete();
+    this.loadMoreProjectsSubject.complete();
+    this.loadMoreUsersSubject.complete();
+    this.projectSubject.complete();
+    this.taskInsertedSubject.complete();
   }
 
   private modifyProjects(

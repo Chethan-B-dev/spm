@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
+import { tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import {
   IAppUser,
@@ -11,12 +11,11 @@ import {
   ISignUpRequest,
   UserRole,
 } from "../shared/interfaces/user.interface";
-import { handleError } from "../shared/utility/error";
 
 @Injectable({
   providedIn: "root",
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   private readonly loginUrl = environment.loginUrl;
   private readonly authUrl = environment.authUrl;
   private readonly currentUserSubject = new BehaviorSubject<IAppUser>(
@@ -35,24 +34,20 @@ export class AuthService {
   }
 
   login(loginData: ILoginRequest): Observable<ILoginResponse> {
-    return this.http.post<ILoginResponse>(this.loginUrl, loginData).pipe(
-      tap((loginResponse) => this.manageUserState(loginResponse)),
-      catchError(handleError)
-    );
+    return this.http
+      .post<ILoginResponse>(this.loginUrl, loginData)
+      .pipe(tap((loginResponse) => this.manageUserState(loginResponse)));
   }
 
   editProfile(editData: IEditProfileRequest): Observable<IAppUser> {
     editData.designation = editData.designation || null;
-    return this.http.put<IAppUser>(`${this.authUrl}/user/edit`, editData).pipe(
-      tap((user) => this.setUser(user)),
-      catchError(handleError)
-    );
+    return this.http
+      .put<IAppUser>(`${this.authUrl}/user/edit`, editData)
+      .pipe(tap((user) => this.setUser(user)));
   }
 
   signup(signupData: ISignUpRequest): Observable<IAppUser> {
-    return this.http
-      .post<IAppUser>(`${this.authUrl}/user/save`, signupData)
-      .pipe(catchError(handleError));
+    return this.http.post<IAppUser>(`${this.authUrl}/user/save`, signupData);
   }
 
   isLoggedIn(): boolean {
@@ -94,5 +89,10 @@ export class AuthService {
     localStorage.clear();
     this.setUser(null);
     this.isLoggedInSubject.next(false);
+  }
+
+  ngOnDestroy(): void {
+    this.isLoggedInSubject.complete();
+    this.currentUserSubject.complete();
   }
 }

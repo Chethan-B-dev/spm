@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import {
   BehaviorSubject,
   combineLatest,
@@ -16,6 +16,7 @@ import {
   scan,
   shareReplay,
   switchMap,
+  switchMapTo,
   takeWhile,
   tap,
 } from "rxjs/operators";
@@ -28,6 +29,7 @@ import { ITask } from "../shared/interfaces/task.interface";
 import { ITodo, IUpdateTodoDTO } from "../shared/interfaces/todo.interface";
 import { IAppUser, UserRole } from "../shared/interfaces/user.interface";
 import { NotificationService } from "../shared/notification.service";
+import { SnackbarService } from "../shared/services/snackbar.service";
 import {
   ISearchGroup,
   ISearchResult,
@@ -40,7 +42,7 @@ import { TaskStatus } from "./../shared/interfaces/task.interface";
 @Injectable({
   providedIn: "root",
 })
-export class EmployeeService {
+export class EmployeeService implements OnDestroy {
   private readonly employeeUrl = environment.employeeUrl;
 
   private readonly refreshSubject = new BehaviorSubject<void>(null);
@@ -69,8 +71,7 @@ export class EmployeeService {
 
   projects$ = this.stateRefresh$.pipe(
     filter((user) => Boolean(user && user.role === UserRole.EMPLOYEE)),
-    switchMap(() => this.getAllProjects()),
-    catchError(handleError)
+    switchMapTo(this.getAllProjects())
   );
 
   pagedProjects$ = this.stateRefresh$.pipe(
@@ -81,7 +82,11 @@ export class EmployeeService {
     takeWhile((pagedData) => this.checkPagedData(pagedData)),
     pluck("data"),
     scan((acc, value) => [...acc, ...value], [] as IProject[]),
-    catchError(handleError)
+    catchError((err) =>
+      handleError(err, (errorMessage) => {
+        this.snackbarService.showSnackBar(errorMessage);
+      })
+    )
   );
 
   tasks$ = combineLatest(
@@ -97,12 +102,17 @@ export class EmployeeService {
         sendTaskApproachingDeadlineNotification.call(this, task);
       });
     }),
-    catchError(handleError)
+    catchError((err) =>
+      handleError(err, (errorMessage) => {
+        this.snackbarService.showSnackBar(errorMessage);
+      })
+    )
   );
 
   constructor(
     private readonly http: HttpClient,
     private readonly authService: AuthService,
+    private readonly snackbarService: SnackbarService,
     private readonly notificationService: NotificationService
   ) {}
 
@@ -137,34 +147,29 @@ export class EmployeeService {
   getAllProjects(): Observable<IProject[]> {
     return this.http
       .get<IProject[]>(`${this.employeeUrl}/projects`)
-      .pipe(shareReplay(1), catchError(handleError));
+      .pipe(shareReplay(1));
   }
 
   getPagedProjects(pageNumber: number): Observable<IPagedData<IProject>> {
     const params = new HttpParams().set("pageNumber", pageNumber.toString());
-    return this.http
-      .get<IPagedData<IProject>>(`${this.employeeUrl}/projects/paged`, {
+    return this.http.get<IPagedData<IProject>>(
+      `${this.employeeUrl}/projects/paged`,
+      {
         params,
-      })
-      .pipe(catchError(handleError));
+      }
+    );
   }
 
   getProjectById(projectId: number): Observable<IProject> {
-    return this.http
-      .get<IProject>(`${this.employeeUrl}/project/${projectId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<IProject>(`${this.employeeUrl}/project/${projectId}`);
   }
 
   getTaskById(taskId: number): Observable<ITask> {
-    return this.http
-      .get<ITask>(`${this.employeeUrl}/task/${taskId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<ITask>(`${this.employeeUrl}/task/${taskId}`);
   }
 
   getAllIssues(projectId: number): Observable<IIssue[]> {
-    return this.http
-      .get<IIssue[]>(`${this.employeeUrl}/issues/${projectId}`)
-      .pipe(catchError(handleError));
+    return this.http.get<IIssue[]>(`${this.employeeUrl}/issues/${projectId}`);
   }
 
   createIssue(
@@ -176,34 +181,35 @@ export class EmployeeService {
         `${this.employeeUrl}/create-issue/${projectId}`,
         issueRequest
       )
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(handleError)
-      );
+      .pipe(tap(() => this.refresh()));
   }
 
   updateTodo(updateTodoDTO: IUpdateTodoDTO, todoId: number): Observable<ITodo> {
     return this.http
       .put<ITodo>(`${this.employeeUrl}/edit-todo/${todoId}`, updateTodoDTO)
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(handleError)
-      );
+      .pipe(tap(() => this.refresh()));
   }
 
   completeTask(taskId: number): Observable<ITask> {
     return this.http
       .put<ITask>(`${this.employeeUrl}/complete-task/${taskId}`, {})
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(handleError)
-      );
+      .pipe(tap(() => this.refresh()));
   }
 
   globalSearch(searchKey: string): Observable<ISearchGroup[]> {
     return this.http
       .get<ISearchResult>(`${this.employeeUrl}/search/${searchKey}`)
-      .pipe(map(mapSearchResults), catchError(handleError));
+      .pipe(map(mapSearchResults));
+  }
+
+  ngOnDestroy(): void {
+    this.refreshSubject.complete();
+    this.stateRefreshSubject.complete();
+    this.taskCategorySelectedSubject.complete();
+    this.projectIdSubject.complete();
+    this.projectPageNumberSubject.complete();
+    this.selectedProjectSubject.complete();
+    this.loadMoreProjectsSubject.complete();
   }
 
   private checkPagedData(pagedData: IPagedData<IProject>): boolean {
