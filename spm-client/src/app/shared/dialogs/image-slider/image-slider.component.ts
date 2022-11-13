@@ -20,7 +20,7 @@ export class ImageSliderComponent implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private dialogRef: MatDialogRef<EditProjectComponent>,
+    private readonly dialogRef: MatDialogRef<EditProjectComponent>,
     @Inject(MAT_DIALOG_DATA) project
   ) {
     this.project = project;

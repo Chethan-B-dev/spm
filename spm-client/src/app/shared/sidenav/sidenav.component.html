@@ -22,6 +22,9 @@
       <a mat-list-item [routerLink]="'/admin'">
         <mat-icon class="mr-2">person_outline</mat-icon>Admin
       </a>
+      <a mat-list-item [routerLink]="'/admin/table'">
+        <mat-icon class="mr-2">person_outline</mat-icon>Table View
+      </a>
     </mat-nav-list>
 
     <mat-nav-list *ngIf="(currentUser$ | async)?.role === 'EMPLOYEE'">
@@ -70,6 +73,17 @@
         [routerLink]="'/' + (currentUser$ | async)?.role | lowercase"
       >
         <mat-icon>home</mat-icon> Home
+      </button>
+
+      <button
+        *ngIf="
+          (isLoggedIn$ | async) && (currentUser$ | async)?.role === 'ADMIN'
+        "
+        class="mx-2"
+        mat-button
+        routerLink="/admin/table"
+      >
+        Table View
       </button>
 
       <!-- search -->
@@ -201,7 +215,9 @@
         </button>
       </ng-container>
     </mat-toolbar>
-    <mat-card *ngIf="!isOnline" class="bg-danger text-white text-center"
+    <mat-card
+      *ngIf="!(isOnline$ | async)"
+      class="bg-danger text-white text-center"
       >No Network Connection, Please Connect to the internet to use all the
       features of SPM.</mat-card
     >

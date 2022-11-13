@@ -51,7 +51,7 @@ import { CreateIssueComponent } from "./Dialogs/create-issue/create-issue.compon
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeProjectDetailComponent implements OnInit, OnDestroy {
-  readonly defaultTaskCategory = TaskStatus.ALL;
+  defaultTaskCategory = TaskStatus.ALL;
   projectProgress: number;
   projectTaskStatistics: TaskStatistics;
   showIssues = false;

@@ -35,6 +35,7 @@ export class PieChartComponent implements OnInit {
         break;
       case DataType.ISSUE:
         this.issueStats = getIssueStatistics(this.pieData.data);
+        break;
     }
 
     const chart = new CanvasJS.Chart("chartContainer", {

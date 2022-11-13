@@ -53,7 +53,7 @@ export class BoardDndListComponent implements OnChanges, OnDestroy {
     this.destroy$.complete();
   }
 
-  drop(event: CdkDragDrop<any>) {
+  drop(event: CdkDragDrop<any>): void {
     const isMovingInsideTheSameList =
       event.previousContainer === event.container;
     if (isMovingInsideTheSameList) {
@@ -80,15 +80,12 @@ export class BoardDndListComponent implements OnChanges, OnDestroy {
     }
   }
 
-  private updateTodoStatus(updatedTodo: IUpdateTodoDTO, todoId: number) {
+  private updateTodoStatus(updatedTodo: IUpdateTodoDTO, todoId: number): void {
     this.employeeService
       .updateTodo(updatedTodo, todoId)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe(() => {
         this.snackbarService.showSnackBar(

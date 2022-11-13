@@ -52,10 +52,7 @@ export class SignupComponent implements OnInit {
       .signup(this.signupForm.value as ISignUpRequest)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe(async (user) => {
         try {

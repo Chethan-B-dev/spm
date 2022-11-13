@@ -58,7 +58,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
     }
   }
   isExpanded = false;
-  isOnline = true;
+  isOnline$: Observable<boolean>;
   isLoggedIn$: Observable<boolean>;
   searchResults$: Observable<ISearchGroup[]>;
   currentUser$: Observable<IAppUser>;
@@ -82,10 +82,10 @@ export class SidenavComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.connectionService
-      .monitor()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((online) => (this.isOnline = online));
+    this.isOnline$ = this.connectionService.monitor().pipe(
+      takeUntil(this.destroy$),
+      catchError(() => EMPTY)
+    );
 
     this.isLoggedIn$ = this.authService.isLoggedIn$.pipe(
       takeUntil(this.destroy$),
@@ -131,12 +131,10 @@ export class SidenavComponent implements OnInit, OnDestroy {
   }
 
   deleteAllNotifications(): void {
-    const notifications = [...this.notificationMessages];
-    this.notificationMessages = [];
-    // todo: check if this works
-    notifications.forEach((notification) =>
+    this.notificationMessages.forEach((notification) =>
       this.deleteNotification(notification.id)
     );
+    this.notificationMessages = [];
   }
 
   ngOnDestroy(): void {
@@ -192,7 +190,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
     }
   }
 
-  private performSearch(searchTerm) {
+  private performSearch(searchTerm: string): Observable<ISearchGroup[]> {
     if (!searchTerm) {
       return of([]);
     }
@@ -205,20 +203,11 @@ export class SidenavComponent implements OnInit, OnDestroy {
   private populateNotifications(): void {
     this.currentUser$
       .pipe(
-        tap(() => console.log("notification code running")),
+        takeUntil(this.destroy$),
         pluck("id"),
         switchMap((currentUserId) =>
-          this.notificationService.getAllNotifications().pipe(
-            map((snapshots) =>
-              snapshots.map(
-                (snapshot) =>
-                  ({
-                    id: snapshot.payload.doc.id,
-                    ...snapshot.payload.doc.data(),
-                  } as INotification)
-              )
-            ),
-            map((notifications: INotification[]) =>
+          this.notificationService.getAllNotificationChanges().pipe(
+            map((notifications) =>
               notifications.filter(
                 (notification) => notification.userId === currentUserId
               )
@@ -227,7 +216,11 @@ export class SidenavComponent implements OnInit, OnDestroy {
               notifications.sort((a, b) => b.time - a.time)
             )
           )
-        )
+        ),
+        catchError((err) => {
+          this.snackbarService.showSnackBar(err);
+          return EMPTY;
+        })
       )
       .subscribe(
         (notifications) => (this.notificationMessages = notifications)

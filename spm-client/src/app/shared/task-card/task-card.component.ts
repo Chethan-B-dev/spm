@@ -30,6 +30,14 @@ export class TaskCardComponent {
 
   deleteTask(): void {
     this.deleteTaskId.emit(this.task.id);
+    this.sendDeletedNotification();
+  }
+
+  goBack(): void {
+    goBack();
+  }
+
+  private sendDeletedNotification(): void {
     const notification: INotification = {
       userId: this.task.user.id,
       notification: `Your task: ${
@@ -38,9 +46,5 @@ export class TaskCardComponent {
       time: Date.now(),
     };
     this.notificationService.addNotification(notification);
-  }
-
-  goBack(): void {
-    goBack();
   }
 }

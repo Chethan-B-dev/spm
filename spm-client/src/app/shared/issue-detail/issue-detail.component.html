@@ -36,6 +36,9 @@
         </button>
       </div>
       <mat-card-subtitle>{{ issue.createdDate | date }}</mat-card-subtitle>
+      <mat-card-subtitle *ngIf="isResolved(issue)"
+        >Resolved On: {{ issue.resolvedData }}</mat-card-subtitle
+      >
       <div class="center mt-4">
         <img mat-card-image [src]="issue.image" [alt]="issue.summary" />
       </div>

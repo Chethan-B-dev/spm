@@ -41,7 +41,7 @@ export interface ICrudAction<T> {
 
 export interface ISearchResult {
   projects: IProject[];
-  users: IAppUser[];
+  users?: IAppUser[];
   tasks: ITask[];
   issues: IIssue[];
   todos: ITodo[];

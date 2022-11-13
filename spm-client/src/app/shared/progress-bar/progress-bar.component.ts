@@ -14,15 +14,19 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressBarComponent implements AfterViewInit {
-  @Input() value: string;
-  constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
+  @Input() text: string;
+  @Input() value: number;
+  constructor(
+    private readonly elementRef: ElementRef,
+    private readonly renderer: Renderer2
+  ) {}
 
   ngAfterViewInit(): void {
-    const degree = +this.value ? (+this.value / 100) * 180 : 0;
+    const degree = this.value ? (this.value / 100) * 180 : 0;
     const progressBar = this.elementRef.nativeElement as HTMLElement;
     const nodes = progressBar.querySelectorAll(".value");
-    Array.from(nodes).forEach((element) =>
-      this.renderer.setStyle(element, "transform", `rotate(${degree}deg)`)
-    );
+    Array.from(nodes).forEach((element) => {
+      this.renderer.setStyle(element, "transform", `rotate(${degree}deg)`);
+    });
   }
 }
