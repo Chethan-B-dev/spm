@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.authService.logout();
     }
     this.loginForm = this.fb.group({
-      email: ["", [Validators.required, Validators.email]],
+      email: ["", Validators.required],
       password: ["", Validators.required],
     });
   }
@@ -53,10 +53,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         pluck("user"),
-        catchError((err) => {
-          this.snackbarService.showSnackBar(err);
-          return EMPTY;
-        })
+        catchError(() => EMPTY)
       )
       .subscribe((user) => {
         this.managerService.stateRefresh(user);
