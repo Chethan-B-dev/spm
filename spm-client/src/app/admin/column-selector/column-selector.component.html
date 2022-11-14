@@ -1,0 +1,94 @@
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+/>
+
+<div class="container-fluid left-and-right">
+  <h5>Column Selector</h5>
+  <button
+    mat-icon-button
+    (click)="close()"
+    aria-label="Example icon button with a vertical three dot icon"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-5 fields-column">
+      <p>Available Fields</p>
+      <mat-form-field class="example-full-width mr-4 search" appearance="fill">
+        <mat-label>Search</mat-label>
+        <input
+          type="search"
+          matInput
+          placeholder="Search"
+          (input)="searchAvailableFields($event.target.value)"
+        />
+      </mat-form-field>
+      <mat-selection-list
+        class="field-list"
+        #shoes
+        (selectionChange)="onSelect($event.source._value, 'AVAILABLE')"
+      >
+        <mat-list-option
+          *ngFor="let field of availableFields$ | async"
+          [value]="field"
+        >
+          {{ field | titlecase }}
+        </mat-list-option>
+      </mat-selection-list>
+      <!-- <p>Option selected: {{ log(shoes.selectedOptions.selected) }}</p> -->
+    </div>
+    <div class="col-md-2 transform-column">
+      <button
+        mat-icon-button
+        (click)="onRight()"
+        aria-label="Example icon button with a open in new tab icon"
+      >
+        <mat-icon>keyboard_arrow_right</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="onLeft()"
+        aria-label="Example icon button with a open in new tab icon"
+      >
+        <mat-icon>keyboard_arrow_left</mat-icon>
+      </button>
+    </div>
+    <div class="col-md-5 fields-column">
+      <p>Visible Fields</p>
+      <mat-form-field class="example-full-width mr-4 search" appearance="fill">
+        <mat-label>Search</mat-label>
+        <input
+          type="search"
+          matInput
+          placeholder="Search"
+          (input)="searchVisibleFields($event.target.value)"
+        />
+      </mat-form-field>
+      <mat-selection-list
+        class="field-list"
+        #shoes
+        (selectionChange)="onSelect($event.source._value, 'VISIBLE')"
+      >
+        <mat-list-option
+          *ngFor="let field of visibleFields$ | async"
+          [value]="field"
+        >
+          {{ field | titlecase }}
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+  </div>
+</div>
+<div class="footer right">
+  <button mat-raised-button class="mr-2" color="warn" (click)="close()">
+    Cancel
+  </button>
+  <button mat-raised-button class="mr-2" (click)="setDefaultFields()">
+    Reset To Default
+  </button>
+  <button mat-raised-button color="primary" (click)="onApply()">Apply</button>
+</div>

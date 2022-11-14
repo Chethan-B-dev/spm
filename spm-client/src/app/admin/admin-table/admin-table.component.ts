@@ -1,5 +1,3 @@
-import { AdminService } from "./../admin.service";
-import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import {
   animate,
   state,
@@ -7,19 +5,19 @@ import {
   transition,
   trigger,
 } from "@angular/animations";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
 import { BehaviorSubject, Subject } from "rxjs";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
 import { AdminColumns } from "../admin.constants";
-
-/*
-{
-    position: 1,
-    name: "Hydrogen",
-    weight: 1.0079,
-    symbol: "H",
-    description: `Hydrogen is a chemical element`,
-  },
-*/
+import { ColumnSelectorComponent } from "../column-selector/column-selector.component";
+import { Field } from "./../admin.constants";
+import { AdminService } from "./../admin.service";
 
 @Component({
   selector: "app-admin-table",
@@ -37,11 +35,16 @@ import { AdminColumns } from "../admin.constants";
     ]),
   ],
 })
-export class AdminTableComponent implements OnInit {
+export class AdminTableComponent implements OnInit, OnDestroy {
   rows$ = this.adminService.users$;
   readonly emptyValue = "- - - -";
-  readonly columns = AdminColumns;
-  columnsToDisplayWithExpand = [...this.columns, "expand"];
+  private readonly columnsSubject = new BehaviorSubject<string[]>([]);
+  readonly columns$ = this.columnsSubject.asObservable();
+  private readonly columnsToDisplayWithExpandSubject = new BehaviorSubject<
+    string[]
+  >([]);
+  readonly columnsToDisplayWithExpand$ =
+    this.columnsToDisplayWithExpandSubject.asObservable();
   expandedUser: IAppUser | null;
 
   private readonly isLoadingSubject = new BehaviorSubject<boolean>(true);
@@ -49,11 +52,58 @@ export class AdminTableComponent implements OnInit {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly dialog: MatDialog
+  ) {}
 
-  ngOnInit(): void {}
+  // todo: code it such that atleast one visible column is there in column selector
 
-  openFilter(): void {
-    console.log("filter opened");
+  ngOnInit(): void {
+    this.setColumns();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.isLoadingSubject.complete();
+    this.columnsSubject.complete();
+  }
+
+  openColumnSelector() {
+    const dialogRef = this.dialog.open(ColumnSelectorComponent);
+
+    dialogRef.afterClosed().subscribe((visibleColumns: string[]) => {
+      if (visibleColumns) {
+        this.columnsSubject.next(visibleColumns);
+        this.columnsToDisplayWithExpandSubject.next([
+          ...this.columnsSubject.getValue(),
+          "expand",
+        ]);
+      }
+    });
+  }
+
+  setColumns() {
+    const visibleFields = JSON.parse(localStorage.getItem("visibleFields"));
+    if (!visibleFields) {
+      this.setDefaultColumns();
+      return;
+    }
+    this.columnsSubject.next(visibleFields);
+    this.columnsToDisplayWithExpandSubject.next([...visibleFields, "expand"]);
+  }
+
+  setDefaultColumns() {
+    this.columnsSubject.next(
+      AdminColumns.filter((column) => column.fieldType === Field.VISIBLE).map(
+        (column) => column.name
+      )
+    );
+
+    this.columnsToDisplayWithExpandSubject.next([
+      ...this.columnsSubject.getValue(),
+      "expand",
+    ]);
   }
 }
