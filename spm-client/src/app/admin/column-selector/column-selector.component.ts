@@ -9,6 +9,7 @@ import { MatSelectionList } from "@angular/material";
 
 import { MatDialogRef } from "@angular/material/dialog";
 import { BehaviorSubject, Subject } from "rxjs";
+import { distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { AdminColumns, Field } from "../admin.constants";
 
@@ -21,6 +22,9 @@ import { AdminColumns, Field } from "../admin.constants";
 export class ColumnSelectorComponent implements OnInit, OnDestroy {
   availableFieldChanges: string[] = [];
   visibleFieldChanges: string[] = [];
+
+  highlightedAvailableColumns: { [field: string]: boolean } = {};
+  highlightedVisibleColumns: { [field: string]: boolean } = {};
 
   @ViewChild("availableList", { static: false })
   availableList: MatSelectionList;
@@ -36,6 +40,12 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
+  private readonly searchSubject = new BehaviorSubject<{
+    searchTerm: string;
+    field: Field;
+  }>({ searchTerm: "", field: null });
+  readonly search$ = this.searchSubject.asObservable();
+
   constructor(
     private readonly dialogRef: MatDialogRef<ColumnSelectorComponent>,
     private readonly snackBarService: SnackbarService
@@ -43,6 +53,35 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setFields();
+
+    this.search$
+      .pipe(takeUntil(this.destroy$), distinctUntilChanged())
+      .subscribe(({ searchTerm, field }) => {
+        if (!searchTerm || !field) {
+          this.removeHighlighters();
+          return;
+        }
+        if (field === Field.AVAILABLE) {
+          this.highlightedAvailableColumns = this.getHighlightedSearchState(
+            this.availableFieldsSubject.getValue(),
+            searchTerm
+          );
+        } else {
+          this.highlightedVisibleColumns = this.getHighlightedSearchState(
+            this.visibleFieldsSubject.getValue(),
+            searchTerm
+          );
+        }
+      });
+  }
+
+  removeHighlighters() {
+    this.highlightedAvailableColumns = this.getDefaultSearchState(
+      this.availableFieldsSubject.getValue()
+    );
+    this.highlightedVisibleColumns = this.getDefaultSearchState(
+      this.visibleFieldsSubject.getValue()
+    );
   }
 
   ngOnDestroy(): void {
@@ -50,14 +89,21 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     this.availableFieldsSubject.complete();
     this.visibleFieldsSubject.complete();
+    this.searchSubject.complete();
   }
 
   searchAvailableFields(searchTerm: string): void {
-    console.log(searchTerm);
+    this.searchSubject.next({
+      searchTerm: searchTerm.toLowerCase(),
+      field: Field.AVAILABLE,
+    });
   }
 
   searchVisibleFields(searchTerm: string): void {
-    console.log(searchTerm);
+    this.searchSubject.next({
+      searchTerm: searchTerm.toLowerCase(),
+      field: Field.VISIBLE,
+    });
   }
 
   onFirst(): void {
@@ -268,8 +314,10 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
     AdminColumns.forEach((column) => {
       if (column.fieldType === Field.AVAILABLE) {
         availableDefaultFields.push(column.name);
+        this.highlightedAvailableColumns[column.name] = false;
       } else if (column.fieldType === Field.VISIBLE) {
         visibleDefaultFields.push(column.name);
+        this.highlightedVisibleColumns[column.name] = false;
       }
     });
 
@@ -279,14 +327,43 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
   }
 
   private setFields(): void {
-    const availableFields = JSON.parse(localStorage.getItem("availableFields"));
-    const visibleFields = JSON.parse(localStorage.getItem("visibleFields"));
+    const availableFields = JSON.parse(
+      localStorage.getItem("availableFields")
+    ) as string[];
+    const visibleFields = JSON.parse(
+      localStorage.getItem("visibleFields")
+    ) as string[];
+
     if (!availableFields || !visibleFields) {
       this.setDefaultFields();
       return;
     }
+
     this.availableFieldsSubject.next(availableFields);
     this.visibleFieldsSubject.next(visibleFields);
+
+    this.highlightedAvailableColumns =
+      this.getDefaultSearchState(availableFields);
+    this.highlightedVisibleColumns = this.getDefaultSearchState(visibleFields);
+  }
+
+  private getDefaultSearchState(fields: string[]): {
+    [field: string]: boolean;
+  } {
+    return fields.reduce((fields, field) => {
+      fields[field] = false;
+      return fields;
+    }, {} as { [field: string]: boolean });
+  }
+
+  private getHighlightedSearchState(
+    fields: string[],
+    searchTerm: string
+  ): { [field: string]: boolean } {
+    return fields.reduce((fields, field) => {
+      fields[field] = field.toLowerCase().includes(searchTerm);
+      return fields;
+    }, {} as { [field: string]: boolean });
   }
 
   private discardColumnChanges(): void {

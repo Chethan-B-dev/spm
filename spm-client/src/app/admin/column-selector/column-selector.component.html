@@ -34,6 +34,7 @@
       >
         <mat-list-option
           *ngFor="let field of availableFields$ | async"
+          [class.active]="highlightedAvailableColumns[field]"
           [value]="field"
         >
           {{ field | titlecase }}
@@ -93,6 +94,7 @@
         >
           <mat-list-option
             *ngFor="let field of visibleFields$ | async"
+            [class.active]="highlightedVisibleColumns[field]"
             [value]="field"
           >
             {{ field | titlecase }}

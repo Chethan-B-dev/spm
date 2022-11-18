@@ -12,7 +12,7 @@ import {
   OnInit,
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { BehaviorSubject, of, Subject } from "rxjs";
+import { BehaviorSubject, Observable, of, Subject } from "rxjs";
 import { catchError, map, mergeMap, takeUntil, toArray } from "rxjs/operators";
 import { EmployeeService } from "src/app/employee/employee.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
@@ -44,7 +44,6 @@ import { AdminService } from "./../admin.service";
 })
 export class AdminTableComponent implements OnInit, OnDestroy {
   rows$ = this.adminService.users$;
-  dummy = ["first", "second", "third"];
   readonly emptyValue = "- - - -";
   readonly defaultAvatar = AvatarImage;
   private readonly columnsSubject = new BehaviorSubject<string[]>([]);
@@ -89,7 +88,7 @@ export class AdminTableComponent implements OnInit, OnDestroy {
     this.currentUserProjectsSubject.complete();
   }
 
-  fetchProjects(user: IAppUser) {
+  fetchProjects(user: IAppUser): Observable<string[]> {
     switch (user.role) {
       case UserRole.MANAGER:
         return this.managerService.getAllProjectsById(user.id).pipe(
@@ -122,6 +121,7 @@ export class AdminTableComponent implements OnInit, OnDestroy {
         );
         return;
       }
+      this.currentUserProjectsSubject.next([]);
       this.fetchProjects(this.expandedUser).subscribe((projects) => {
         this.currentUserProjectsSubject.next(projects);
         this.userProjectsCache.set(this.expandedUser.id, projects);
