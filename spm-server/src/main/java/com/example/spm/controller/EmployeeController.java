@@ -31,6 +31,17 @@ public class EmployeeController {
         );
     }
 
+    @GetMapping("/projects/{id}")
+    public ResponseEntity<List<Project>> getAllProjectsByEmployeeId (
+            @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,
+            @PathVariable Integer id
+    ) {
+        AppUserService.checkIfUserIsLoggedIn(myAppUserDetails);
+        return new ResponseEntity<>(
+                employeeService.getAllProjectsByEmployeeId(id), HttpStatus.OK
+        );
+    }
+
     @GetMapping("/projects/paged")
     public ResponseEntity<PagedData<Project>> getAllPagedProjectsByEmployee (
             @AuthenticationPrincipal MyAppUserDetails myAppUserDetails,

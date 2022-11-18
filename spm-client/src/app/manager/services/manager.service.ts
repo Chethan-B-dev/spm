@@ -246,6 +246,12 @@ export class ManagerService implements OnDestroy {
       .pipe(shareReplay(1));
   }
 
+  getAllProjectsById(managerId: number): Observable<IProject[]> {
+    return this.http.get<IProject[]>(
+      `${this.managerUrl}/projects/${managerId}`
+    );
+  }
+
   getAllEmployees(projectId: number): Observable<IAppUser[]> {
     return this.http.get<IAppUser[]>(
       `${this.managerUrl}/employees/${projectId}`

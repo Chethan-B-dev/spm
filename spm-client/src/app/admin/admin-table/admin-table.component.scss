@@ -51,7 +51,16 @@ tr.example-element-row:not(.example-expanded-row):active {
   margin: 0 auto;
 }
 
-#user-image {
+.space-between {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.user-details-column {
+  margin-top: 10px;
+  margin-bottom: 10px;
   max-width: 400px !important;
   max-height: 400px !important;
+  overflow-y: auto !important;
 }

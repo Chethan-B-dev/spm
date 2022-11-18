@@ -26,8 +26,15 @@ public class EmployeeService {
     private final TodoService todoService;
     private final IssueService issueService;
 
+    private final AppUserService appUserService;
+
     public List<Project> getAllProjectsByEmployee(final AppUser employee) {
         return projectService.getAllProjectsByEmployeeId(employee);
+    }
+
+    public List<Project> getAllProjectsByEmployeeId(final Integer employeeId) {
+        AppUser user = appUserService.getUserById(employeeId);
+        return projectService.getAllProjectsByEmployeeId(user);
     }
 
     public PagedData<Project> getAllPagedProjectsByEmployee(int pageNumber, int pageSize, AppUser employee) {

@@ -33,10 +33,7 @@
         <button
           mat-icon-button
           aria-label="expand row"
-          (click)="
-            expandedUser = expandedUser === user ? null : user;
-            $event.stopPropagation()
-          "
+          (click)="onExpandClick($event, user)"
         >
           <mat-icon *ngIf="expandedUser !== user">keyboard_arrow_down</mat-icon>
           <mat-icon *ngIf="expandedUser === user">keyboard_arrow_up</mat-icon>
@@ -44,7 +41,6 @@
       </td>
     </ng-container>
 
-    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
     <ng-container
       *ngIf="columnsToDisplayWithExpand$ | async as columnsToDisplayWithExpand"
     >
@@ -55,16 +51,28 @@
           [attr.colspan]="columnsToDisplayWithExpand.length"
         >
           <div
-            class="example-element-detail center"
+            class="example-element-detail space-between"
             [@detailExpand]="user == expandedUser ? 'expanded' : 'collapsed'"
           >
-            <div class="example-element-description">
-              <!-- todo: add image and more details here -->
-              <img
-                id="user-image"
-                [src]="user.image || defaultAvatar"
-                [alt]="user.image"
-              />
+            <div
+              class="example-element-description"
+              class="user-details-column"
+            >
+              <img [src]="user.image || defaultAvatar" [alt]="user.image" />
+            </div>
+            <div class="user-details-column">
+              <mat-list role="list">
+                <mat-list-item class="font-bold">
+                  Projects&nbsp;
+                  <span *ngIf="user.role === 'MANAGER'">Handled</span>
+                  <span *ngIf="user.role === 'EMPLOYEE'">Part of</span>
+                </mat-list-item>
+                <mat-list-item
+                  role="listitem"
+                  *ngFor="let project of currentUserProjects$ | async"
+                  >{{ project }}</mat-list-item
+                >
+              </mat-list>
             </div>
           </div>
         </td>

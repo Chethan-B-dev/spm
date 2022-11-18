@@ -12,10 +12,14 @@ import {
   OnInit,
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject, of, Subject } from "rxjs";
+import { catchError, map, mergeMap, takeUntil, toArray } from "rxjs/operators";
+import { EmployeeService } from "src/app/employee/employee.service";
+import { ManagerService } from "src/app/manager/services/manager.service";
 import {
   AvatarImage,
   IAppUser,
+  UserRole,
 } from "src/app/shared/interfaces/user.interface";
 import { AdminColumns } from "../admin.constants";
 import { ColumnSelectorComponent } from "../column-selector/column-selector.component";
@@ -40,6 +44,7 @@ import { AdminService } from "./../admin.service";
 })
 export class AdminTableComponent implements OnInit, OnDestroy {
   rows$ = this.adminService.users$;
+  dummy = ["first", "second", "third"];
   readonly emptyValue = "- - - -";
   readonly defaultAvatar = AvatarImage;
   private readonly columnsSubject = new BehaviorSubject<string[]>([]);
@@ -49,7 +54,15 @@ export class AdminTableComponent implements OnInit, OnDestroy {
   >([]);
   readonly columnsToDisplayWithExpand$ =
     this.columnsToDisplayWithExpandSubject.asObservable();
+
+  private readonly currentUserProjectsSubject = new BehaviorSubject<string[]>(
+    []
+  );
+  readonly currentUserProjects$ =
+    this.currentUserProjectsSubject.asObservable();
   expandedUser: IAppUser | null;
+
+  private readonly userProjectsCache = new Map<number, string[]>();
 
   private readonly isLoadingSubject = new BehaviorSubject<boolean>(true);
   readonly isLoading$ = this.isLoadingSubject.asObservable();
@@ -58,7 +71,9 @@ export class AdminTableComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly adminService: AdminService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly managerService: ManagerService,
+    private readonly employeeService: EmployeeService
   ) {}
 
   ngOnInit(): void {
@@ -71,11 +86,51 @@ export class AdminTableComponent implements OnInit, OnDestroy {
     this.isLoadingSubject.complete();
     this.columnsSubject.complete();
     this.columnsToDisplayWithExpandSubject.complete();
+    this.currentUserProjectsSubject.complete();
+  }
+
+  fetchProjects(user: IAppUser) {
+    switch (user.role) {
+      case UserRole.MANAGER:
+        return this.managerService.getAllProjectsById(user.id).pipe(
+          takeUntil(this.destroy$),
+          mergeMap((projects) => projects),
+          map((project) => project.name),
+          toArray(),
+          catchError(() => of([]))
+        );
+      case UserRole.EMPLOYEE:
+        return this.employeeService.getAllProjectsById(user.id).pipe(
+          takeUntil(this.destroy$),
+          mergeMap((projects) => projects),
+          map((project) => project.name),
+          toArray(),
+          catchError(() => of([]))
+        );
+      default:
+        return of([]);
+    }
+  }
+
+  onExpandClick(event: MouseEvent, user: IAppUser) {
+    this.expandedUser = this.expandedUser === user ? null : user;
+    event.stopPropagation();
+    if (this.expandedUser) {
+      if (this.userProjectsCache.has(this.expandedUser.id)) {
+        this.currentUserProjectsSubject.next(
+          this.userProjectsCache.get(this.expandedUser.id)
+        );
+        return;
+      }
+      this.fetchProjects(this.expandedUser).subscribe((projects) => {
+        this.currentUserProjectsSubject.next(projects);
+        this.userProjectsCache.set(this.expandedUser.id, projects);
+      });
+    }
   }
 
   openColumnSelector() {
     const dialogRef = this.dialog.open(ColumnSelectorComponent);
-
     dialogRef.afterClosed().subscribe((visibleColumns: string[]) => {
       if (visibleColumns) {
         this.setTableColumns(visibleColumns);

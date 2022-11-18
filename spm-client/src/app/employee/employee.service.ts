@@ -150,6 +150,12 @@ export class EmployeeService implements OnDestroy {
       .pipe(shareReplay(1));
   }
 
+  getAllProjectsById(employeeId: number): Observable<IProject[]> {
+    return this.http.get<IProject[]>(
+      `${this.employeeUrl}/projects/${employeeId}`
+    );
+  }
+
   getPagedProjects(pageNumber: number): Observable<IPagedData<IProject>> {
     const params = new HttpParams().set("pageNumber", pageNumber.toString());
     return this.http.get<IPagedData<IProject>>(
