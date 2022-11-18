@@ -50,3 +50,8 @@ tr.example-element-row:not(.example-expanded-row):active {
   margin-top: 50px !important;
   margin: 0 auto;
 }
+
+#user-image {
+  max-width: 400px !important;
+  max-height: 400px !important;
+}

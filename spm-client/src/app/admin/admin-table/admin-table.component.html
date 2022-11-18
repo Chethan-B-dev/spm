@@ -1,12 +1,14 @@
 <div class="container">
   <div class="right">
     <button
+      matTooltip="Open Column Selector"
+      matTooltipPosition="above"
       mat-icon-button
       color="warn"
       aria-label="Example icon button with a heart icon"
       (click)="openColumnSelector()"
     >
-      <mat-icon>filter_list</mat-icon>
+      <mat-icon>view_column</mat-icon>
     </button>
   </div>
   <table
@@ -53,12 +55,16 @@
           [attr.colspan]="columnsToDisplayWithExpand.length"
         >
           <div
-            class="example-element-detail"
+            class="example-element-detail center"
             [@detailExpand]="user == expandedUser ? 'expanded' : 'collapsed'"
           >
             <div class="example-element-description">
               <!-- todo: add image and more details here -->
-              {{ user.image | json }}
+              <img
+                id="user-image"
+                [src]="user.image || defaultAvatar"
+                [alt]="user.image"
+              />
             </div>
           </div>
         </td>

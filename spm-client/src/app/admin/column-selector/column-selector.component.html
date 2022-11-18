@@ -14,9 +14,9 @@
   </button>
 </div>
 
-<div class="container">
+<div class="container selector-container">
   <div class="row">
-    <div class="col-md-5 fields-column">
+    <div class="col-md-5 col-xs-12">
       <p>Available Fields</p>
       <mat-form-field class="example-full-width mr-4 search" appearance="fill">
         <mat-label>Search</mat-label>
@@ -29,7 +29,7 @@
       </mat-form-field>
       <mat-selection-list
         class="field-list"
-        #shoes
+        #availableList
         (selectionChange)="onSelect($event.source._value, 'AVAILABLE')"
       >
         <mat-list-option
@@ -41,49 +41,111 @@
       </mat-selection-list>
       <!-- <p>Option selected: {{ log(shoes.selectedOptions.selected) }}</p> -->
     </div>
-    <div class="col-md-2 transform-column">
-      <button
-        mat-icon-button
-        (click)="onRight()"
-        aria-label="Example icon button with a open in new tab icon"
+    <div class="col-md-1 col-xs-12 transform-column">
+      <div
+        matTooltip="Please select available fields to move"
+        matTooltipPosition="above"
+        [matTooltipDisabled]="availableFieldChanges.length > 0"
       >
-        <mat-icon>keyboard_arrow_right</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        (click)="onLeft()"
-        aria-label="Example icon button with a open in new tab icon"
-      >
-        <mat-icon>keyboard_arrow_left</mat-icon>
-      </button>
-    </div>
-    <div class="col-md-5 fields-column">
-      <p>Visible Fields</p>
-      <mat-form-field class="example-full-width mr-4 search" appearance="fill">
-        <mat-label>Search</mat-label>
-        <input
-          type="search"
-          matInput
-          placeholder="Search"
-          (input)="searchVisibleFields($event.target.value)"
-        />
-      </mat-form-field>
-      <mat-selection-list
-        class="field-list"
-        #shoes
-        (selectionChange)="onSelect($event.source._value, 'VISIBLE')"
-      >
-        <mat-list-option
-          *ngFor="let field of visibleFields$ | async"
-          [value]="field"
+        <button
+          mat-icon-button
+          (click)="onRight()"
+          [disabled]="!availableFieldChanges.length"
+          aria-label="Example icon button with a open in new tab icon"
         >
-          {{ field | titlecase }}
-        </mat-list-option>
-      </mat-selection-list>
+          <mat-icon>keyboard_arrow_right</mat-icon>
+        </button>
+      </div>
+      <div
+        matTooltip="Please select visible fields to move"
+        matTooltipPosition="below"
+        [matTooltipDisabled]="visibleFieldChanges.length > 0"
+      >
+        <button
+          mat-icon-button
+          (click)="onLeft()"
+          [disabled]="!visibleFieldChanges.length"
+          aria-label="Example icon button with a open in new tab icon"
+        >
+          <mat-icon>keyboard_arrow_left</mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="col-md-5 col-xs-12">
+      <div class="visible-left">
+        <p>Visible Fields</p>
+        <mat-form-field
+          class="example-full-width mr-4 search"
+          appearance="fill"
+        >
+          <mat-label>Search</mat-label>
+          <input
+            type="search"
+            matInput
+            placeholder="Search"
+            (input)="searchVisibleFields($event.target.value)"
+          />
+        </mat-form-field>
+        <mat-selection-list
+          class="field-list"
+          #visibleList
+          (selectionChange)="onSelect($event.source._value, 'VISIBLE')"
+        >
+          <mat-list-option
+            *ngFor="let field of visibleFields$ | async"
+            [value]="field"
+          >
+            {{ field | titlecase }}
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </div>
+
+    <div class="col-md-1 visible-right transform-column">
+      <button
+        mat-icon-button
+        (click)="onFirst()"
+        [disabled]="
+          !visibleFieldChanges.length || visibleFieldChanges.length > 1
+        "
+        aria-label="Example icon button with a open in new tab icon"
+      >
+        <mat-icon>arrow_upward</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="onUp()"
+        [disabled]="
+          !visibleFieldChanges.length || visibleFieldChanges.length > 1
+        "
+        aria-label="Example icon button with a open in new tab icon"
+      >
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="onDown()"
+        [disabled]="
+          !visibleFieldChanges.length || visibleFieldChanges.length > 1
+        "
+        aria-label="Example icon button with a open in new tab icon"
+      >
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        (click)="onLast()"
+        [disabled]="
+          !visibleFieldChanges.length || visibleFieldChanges.length > 1
+        "
+        aria-label="Example icon button with a open in new tab icon"
+      >
+        <mat-icon>arrow_downward</mat-icon>
+      </button>
     </div>
   </div>
 </div>
-<div class="footer right">
+<div class="footer right mt-2">
   <button mat-raised-button class="mr-2" color="warn" (click)="close()">
     Cancel
   </button>

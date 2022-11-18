@@ -13,7 +13,10 @@ import {
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { BehaviorSubject, Subject } from "rxjs";
-import { IAppUser } from "src/app/shared/interfaces/user.interface";
+import {
+  AvatarImage,
+  IAppUser,
+} from "src/app/shared/interfaces/user.interface";
 import { AdminColumns } from "../admin.constants";
 import { ColumnSelectorComponent } from "../column-selector/column-selector.component";
 import { Field } from "./../admin.constants";
@@ -38,6 +41,7 @@ import { AdminService } from "./../admin.service";
 export class AdminTableComponent implements OnInit, OnDestroy {
   rows$ = this.adminService.users$;
   readonly emptyValue = "- - - -";
+  readonly defaultAvatar = AvatarImage;
   private readonly columnsSubject = new BehaviorSubject<string[]>([]);
   readonly columns$ = this.columnsSubject.asObservable();
   private readonly columnsToDisplayWithExpandSubject = new BehaviorSubject<
@@ -57,8 +61,6 @@ export class AdminTableComponent implements OnInit, OnDestroy {
     private readonly dialog: MatDialog
   ) {}
 
-  // todo: code it such that atleast one visible column is there in column selector
-
   ngOnInit(): void {
     this.setColumns();
   }
@@ -68,6 +70,7 @@ export class AdminTableComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     this.isLoadingSubject.complete();
     this.columnsSubject.complete();
+    this.columnsToDisplayWithExpandSubject.complete();
   }
 
   openColumnSelector() {
@@ -75,11 +78,7 @@ export class AdminTableComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((visibleColumns: string[]) => {
       if (visibleColumns) {
-        this.columnsSubject.next(visibleColumns);
-        this.columnsToDisplayWithExpandSubject.next([
-          ...this.columnsSubject.getValue(),
-          "expand",
-        ]);
+        this.setTableColumns(visibleColumns);
       }
     });
   }
@@ -90,20 +89,22 @@ export class AdminTableComponent implements OnInit, OnDestroy {
       this.setDefaultColumns();
       return;
     }
-    this.columnsSubject.next(visibleFields);
-    this.columnsToDisplayWithExpandSubject.next([...visibleFields, "expand"]);
+    this.setTableColumns(visibleFields);
   }
 
   setDefaultColumns() {
-    this.columnsSubject.next(
-      AdminColumns.filter((column) => column.fieldType === Field.VISIBLE).map(
-        (column) => column.name
-      )
-    );
+    const visibleDefaultColumns = AdminColumns.reduce((columns, column) => {
+      if (column.fieldType === Field.VISIBLE) {
+        columns.push(column.name);
+      }
+      return columns;
+    }, []);
 
-    this.columnsToDisplayWithExpandSubject.next([
-      ...this.columnsSubject.getValue(),
-      "expand",
-    ]);
+    this.setTableColumns(visibleDefaultColumns);
+  }
+
+  private setTableColumns(columns: string[]): void {
+    this.columnsSubject.next(columns);
+    this.columnsToDisplayWithExpandSubject.next([...columns, "expand"]);
   }
 }

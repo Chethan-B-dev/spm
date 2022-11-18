@@ -11,6 +11,10 @@
 
 .field-list{
   height: 25vh !important;
-  overflow: auto;
+  overflow-y: auto;
 }
 
+
+.selector-container {
+  overflow: hidden !important;
+}
