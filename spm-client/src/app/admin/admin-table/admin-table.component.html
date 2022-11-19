@@ -1,5 +1,6 @@
-<div class="container">
-  <div class="right">
+<div class="container-table">
+  <div class="left-and-right">
+    <h6>Admin Table View</h6>
     <button
       matTooltip="Open Column Selector"
       matTooltipPosition="above"
@@ -23,7 +24,11 @@
     >
       <th mat-header-cell *matHeaderCellDef>{{ column | titlecase }}</th>
       <td mat-cell *matCellDef="let user">
-        {{ user[column] || emptyValue }}
+        {{
+          column === "role" || column === "status"
+            ? (user[column] | titlecase)
+            : user[column] || emptyValue
+        }}
       </td>
     </ng-container>
 
@@ -58,7 +63,11 @@
               class="example-element-description"
               class="user-details-column"
             >
-              <img [src]="user.image || defaultAvatar" [alt]="user.image" />
+              <img
+                class="rounded-circle"
+                [src]="user.image || defaultAvatar"
+                [alt]="user.image"
+              />
             </div>
             <div class="user-details-column">
               <mat-list role="list">
@@ -84,7 +93,7 @@
         *matRowDef="let user; columns: columnsToDisplayWithExpand"
         class="example-element-row"
         [class.example-expanded-row]="expandedUser === user"
-        (click)="expandedUser = expandedUser === user ? null : user"
+        (click)="onExpandClick($event, user)"
       ></tr>
       <tr
         mat-row

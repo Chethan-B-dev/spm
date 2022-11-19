@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -11,7 +12,8 @@ import { MatDialogRef } from "@angular/material/dialog";
 import { BehaviorSubject, Subject } from "rxjs";
 import { distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
-import { AdminColumns, Field } from "../admin.constants";
+import { IStringMap } from "src/app/shared/utility/common";
+import { AdminColumns, ColumnData, Field } from "../admin.constants";
 
 @Component({
   selector: "app-column-selector",
@@ -23,8 +25,8 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
   availableFieldChanges: string[] = [];
   visibleFieldChanges: string[] = [];
 
-  highlightedAvailableColumns: { [field: string]: boolean } = {};
-  highlightedVisibleColumns: { [field: string]: boolean } = {};
+  highlightedAvailableColumns: IStringMap<boolean> = {};
+  highlightedVisibleColumns: IStringMap<boolean> = {};
 
   @ViewChild("availableList", { static: false })
   availableList: MatSelectionList;
@@ -32,19 +34,25 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
   @ViewChild("visibleList", { static: false })
   visibleList: MatSelectionList;
 
+  @ViewChild("availableSearch", { static: false })
+  availableSearch: ElementRef;
+
+  @ViewChild("visibleSearch", { static: false })
+  visibleSearch: ElementRef;
+
   private readonly availableFieldsSubject = new BehaviorSubject<string[]>([]);
   readonly availableFields$ = this.availableFieldsSubject.asObservable();
 
   private readonly visibleFieldsSubject = new BehaviorSubject<string[]>([]);
   readonly visibleFields$ = this.visibleFieldsSubject.asObservable();
 
-  private readonly destroy$ = new Subject<void>();
-
   private readonly searchSubject = new BehaviorSubject<{
     searchTerm: string;
     field: Field;
   }>({ searchTerm: "", field: null });
   readonly search$ = this.searchSubject.asObservable();
+
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private readonly dialogRef: MatDialogRef<ColumnSelectorComponent>,
@@ -75,7 +83,7 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
       });
   }
 
-  removeHighlighters() {
+  removeHighlighters(): void {
     this.highlightedAvailableColumns = this.getDefaultSearchState(
       this.availableFieldsSubject.getValue()
     );
@@ -311,7 +319,7 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
     const availableDefaultFields: string[] = [];
     const visibleDefaultFields: string[] = [];
 
-    AdminColumns.forEach((column) => {
+    AdminColumns.forEach((column: ColumnData) => {
       if (column.fieldType === Field.AVAILABLE) {
         availableDefaultFields.push(column.name);
         this.highlightedAvailableColumns[column.name] = false;
@@ -330,6 +338,7 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
     const availableFields = JSON.parse(
       localStorage.getItem("availableFields")
     ) as string[];
+
     const visibleFields = JSON.parse(
       localStorage.getItem("visibleFields")
     ) as string[];
@@ -347,23 +356,24 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
     this.highlightedVisibleColumns = this.getDefaultSearchState(visibleFields);
   }
 
-  private getDefaultSearchState(fields: string[]): {
-    [field: string]: boolean;
-  } {
+  private getDefaultSearchState(
+    fields: string[],
+    defaultValue?: boolean
+  ): IStringMap<boolean> {
     return fields.reduce((fields, field) => {
-      fields[field] = false;
+      fields[field] = defaultValue || false;
       return fields;
-    }, {} as { [field: string]: boolean });
+    }, {} as IStringMap<boolean>);
   }
 
   private getHighlightedSearchState(
     fields: string[],
     searchTerm: string
-  ): { [field: string]: boolean } {
+  ): IStringMap<boolean> {
     return fields.reduce((fields, field) => {
       fields[field] = field.toLowerCase().includes(searchTerm);
       return fields;
-    }, {} as { [field: string]: boolean });
+    }, {} as IStringMap<boolean>);
   }
 
   private discardColumnChanges(): void {
@@ -372,6 +382,10 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
       this.visibleList.selectedOptions.clear();
       this.availableFieldChanges = [];
       this.visibleFieldChanges = [];
+    }
+    if (this.availableSearch && this.visibleSearch) {
+      (this.availableSearch.nativeElement as HTMLInputElement).value = "";
+      (this.visibleSearch.nativeElement as HTMLInputElement).value = "";
     }
   }
 

@@ -21,6 +21,7 @@ import {
   IAppUser,
   UserRole,
 } from "src/app/shared/interfaces/user.interface";
+import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { AdminColumns } from "../admin.constants";
 import { ColumnSelectorComponent } from "../column-selector/column-selector.component";
 import { Field } from "./../admin.constants";
@@ -72,7 +73,8 @@ export class AdminTableComponent implements OnInit, OnDestroy {
     private readonly adminService: AdminService,
     private readonly dialog: MatDialog,
     private readonly managerService: ManagerService,
-    private readonly employeeService: EmployeeService
+    private readonly employeeService: EmployeeService,
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -131,11 +133,17 @@ export class AdminTableComponent implements OnInit, OnDestroy {
 
   openColumnSelector() {
     const dialogRef = this.dialog.open(ColumnSelectorComponent);
-    dialogRef.afterClosed().subscribe((visibleColumns: string[]) => {
-      if (visibleColumns) {
-        this.setTableColumns(visibleColumns);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(() => of(null))
+      )
+      .subscribe((visibleColumns: string[]) => {
+        if (visibleColumns) {
+          this.setTableColumns(visibleColumns);
+        }
+      });
   }
 
   setColumns() {
@@ -145,6 +153,10 @@ export class AdminTableComponent implements OnInit, OnDestroy {
       return;
     }
     this.setTableColumns(visibleFields);
+    this.snackbarService.showSnackBar(
+      "Previously selected columns applied",
+      1500
+    );
   }
 
   setDefaultColumns() {

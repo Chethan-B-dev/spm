@@ -23,6 +23,7 @@
         <input
           type="search"
           matInput
+          #availableSearch
           placeholder="Search"
           (input)="searchAvailableFields($event.target.value)"
         />
@@ -83,6 +84,7 @@
           <input
             type="search"
             matInput
+            #visibleSearch
             placeholder="Search"
             (input)="searchVisibleFields($event.target.value)"
           />

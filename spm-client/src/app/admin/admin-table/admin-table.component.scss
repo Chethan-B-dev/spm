@@ -46,8 +46,10 @@ tr.example-element-row:not(.example-expanded-row):active {
   opacity: 0.5;
 }
 
-.container{
+.container-table{
   margin-top: 50px !important;
+  padding-left: 20px;
+  padding-right: 20px;
   margin: 0 auto;
 }
 
@@ -63,4 +65,8 @@ tr.example-element-row:not(.example-expanded-row):active {
   max-width: 400px !important;
   max-height: 400px !important;
   overflow-y: auto !important;
+}
+
+.rounded-circle {
+  border-radius: 50%;
 }
