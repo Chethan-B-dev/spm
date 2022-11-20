@@ -29,16 +29,16 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
   highlightedVisibleColumns: IStringMap<boolean> = {};
 
   @ViewChild("availableList", { static: false })
-  availableList: MatSelectionList;
+  private readonly availableList: MatSelectionList;
 
   @ViewChild("visibleList", { static: false })
-  visibleList: MatSelectionList;
+  private readonly visibleList: MatSelectionList;
 
   @ViewChild("availableSearch", { static: false })
-  availableSearch: ElementRef;
+  private readonly availableSearch: ElementRef;
 
   @ViewChild("visibleSearch", { static: false })
-  visibleSearch: ElementRef;
+  private readonly visibleSearch: ElementRef;
 
   private readonly availableFieldsSubject = new BehaviorSubject<string[]>([]);
   readonly availableFields$ = this.availableFieldsSubject.asObservable();
@@ -102,14 +102,14 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
 
   searchAvailableFields(searchTerm: string): void {
     this.searchSubject.next({
-      searchTerm: searchTerm.toLowerCase(),
+      searchTerm: searchTerm.trim().toLowerCase(),
       field: Field.AVAILABLE,
     });
   }
 
   searchVisibleFields(searchTerm: string): void {
     this.searchSubject.next({
-      searchTerm: searchTerm.toLowerCase(),
+      searchTerm: searchTerm.trim().toLowerCase(),
       field: Field.VISIBLE,
     });
   }

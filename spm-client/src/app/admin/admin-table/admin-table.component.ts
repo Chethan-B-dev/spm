@@ -44,7 +44,8 @@ import { AdminService } from "./../admin.service";
   ],
 })
 export class AdminTableComponent implements OnInit, OnDestroy {
-  rows$ = this.adminService.users$;
+  rows$: Observable<IAppUser[]>;
+  expandedUser: IAppUser | null;
   readonly emptyValue = "- - - -";
   readonly defaultAvatar = AvatarImage;
   private readonly columnsSubject = new BehaviorSubject<string[]>([]);
@@ -60,7 +61,6 @@ export class AdminTableComponent implements OnInit, OnDestroy {
   );
   readonly currentUserProjects$ =
     this.currentUserProjectsSubject.asObservable();
-  expandedUser: IAppUser | null;
 
   private readonly userProjectsCache = new Map<number, string[]>();
 
@@ -70,14 +70,19 @@ export class AdminTableComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private readonly adminService: AdminService,
     private readonly dialog: MatDialog,
+    private readonly adminService: AdminService,
     private readonly managerService: ManagerService,
     private readonly employeeService: EmployeeService,
     private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
+    this.rows$ = this.adminService.users$.pipe(
+      takeUntil(this.destroy$),
+      catchError(() => of([]))
+    );
+
     this.setColumns();
   }
 
@@ -113,7 +118,7 @@ export class AdminTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  onExpandClick(event: MouseEvent, user: IAppUser) {
+  onExpandClick(event: MouseEvent, user: IAppUser): void {
     this.expandedUser = this.expandedUser === user ? null : user;
     event.stopPropagation();
     if (this.expandedUser) {
@@ -131,7 +136,7 @@ export class AdminTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  openColumnSelector() {
+  openColumnSelector(): void {
     const dialogRef = this.dialog.open(ColumnSelectorComponent);
     dialogRef
       .afterClosed()
@@ -146,7 +151,7 @@ export class AdminTableComponent implements OnInit, OnDestroy {
       });
   }
 
-  setColumns() {
+  setColumns(): void {
     const visibleFields = JSON.parse(localStorage.getItem("visibleFields"));
     if (!visibleFields) {
       this.setDefaultColumns();
@@ -159,13 +164,13 @@ export class AdminTableComponent implements OnInit, OnDestroy {
     );
   }
 
-  setDefaultColumns() {
+  private setDefaultColumns(): void {
     const visibleDefaultColumns = AdminColumns.reduce((columns, column) => {
       if (column.fieldType === Field.VISIBLE) {
         columns.push(column.name);
       }
       return columns;
-    }, []);
+    }, [] as string[]);
 
     this.setTableColumns(visibleDefaultColumns);
   }

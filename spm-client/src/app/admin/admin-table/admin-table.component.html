@@ -12,94 +12,111 @@
       <mat-icon>view_column</mat-icon>
     </button>
   </div>
-  <table
-    mat-table
-    [dataSource]="rows$ | async"
-    multiTemplateDataRows
-    class="mat-elevation-z8"
-  >
-    <ng-container
-      *ngFor="let column of columns$ | async"
-      matColumnDef="{{ column }}"
+  <ng-container *ngIf="rows$ | async as rows; else loading">
+    <table
+      *ngIf="rows.length"
+      mat-table
+      [dataSource]="rows"
+      multiTemplateDataRows
+      class="mat-elevation-z8"
     >
-      <th mat-header-cell *matHeaderCellDef>{{ column | titlecase }}</th>
-      <td mat-cell *matCellDef="let user">
-        {{
-          column === "role" || column === "status"
-            ? (user[column] | titlecase)
-            : user[column] || emptyValue
-        }}
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="expand">
-      <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
-      <td mat-cell *matCellDef="let user">
-        <button
-          mat-icon-button
-          aria-label="expand row"
-          (click)="onExpandClick($event, user)"
-        >
-          <mat-icon *ngIf="expandedUser !== user">keyboard_arrow_down</mat-icon>
-          <mat-icon *ngIf="expandedUser === user">keyboard_arrow_up</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-    <ng-container
-      *ngIf="columnsToDisplayWithExpand$ | async as columnsToDisplayWithExpand"
-    >
-      <ng-container matColumnDef="expandedDetail">
-        <td
-          mat-cell
-          *matCellDef="let user"
-          [attr.colspan]="columnsToDisplayWithExpand.length"
-        >
-          <div
-            class="example-element-detail space-between"
-            [@detailExpand]="user == expandedUser ? 'expanded' : 'collapsed'"
-          >
-            <div
-              class="example-element-description"
-              class="user-details-column"
-            >
-              <img
-                class="rounded-circle"
-                [src]="user.image || defaultAvatar"
-                [alt]="user.image"
-              />
-            </div>
-            <div class="user-details-column">
-              <mat-list role="list">
-                <mat-list-item class="font-bold">
-                  Projects&nbsp;
-                  <span *ngIf="user.role === 'MANAGER'">Handled</span>
-                  <span *ngIf="user.role === 'EMPLOYEE'">Part of</span>
-                </mat-list-item>
-                <mat-list-item
-                  role="listitem"
-                  *ngFor="let project of currentUserProjects$ | async"
-                  >{{ project }}</mat-list-item
-                >
-              </mat-list>
-            </div>
-          </div>
+      <ng-container
+        *ngFor="let column of columns$ | async"
+        matColumnDef="{{ column }}"
+      >
+        <th mat-header-cell *matHeaderCellDef>{{ column | titlecase }}</th>
+        <td mat-cell *matCellDef="let user">
+          {{
+            column === "role" || column === "status"
+              ? (user[column] | titlecase)
+              : user[column] || emptyValue
+          }}
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
-      <tr
-        mat-row
-        *matRowDef="let user; columns: columnsToDisplayWithExpand"
-        class="example-element-row"
-        [class.example-expanded-row]="expandedUser === user"
-        (click)="onExpandClick($event, user)"
-      ></tr>
-      <tr
-        mat-row
-        *matRowDef="let row; columns: ['expandedDetail']"
-        class="example-detail-row"
-      ></tr>
-    </ng-container>
-  </table>
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef aria-label="row actions">
+          &nbsp;
+        </th>
+        <td mat-cell *matCellDef="let user">
+          <button
+            mat-icon-button
+            aria-label="expand row"
+            (click)="onExpandClick($event, user)"
+          >
+            <mat-icon *ngIf="expandedUser !== user"
+              >keyboard_arrow_down</mat-icon
+            >
+            <mat-icon *ngIf="expandedUser === user">keyboard_arrow_up</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container
+        *ngIf="
+          columnsToDisplayWithExpand$ | async as columnsToDisplayWithExpand
+        "
+      >
+        <ng-container matColumnDef="expandedDetail">
+          <td
+            mat-cell
+            *matCellDef="let user"
+            [attr.colspan]="columnsToDisplayWithExpand.length"
+          >
+            <div
+              class="example-element-detail space-between"
+              [@detailExpand]="user == expandedUser ? 'expanded' : 'collapsed'"
+            >
+              <div
+                class="example-element-description"
+                class="user-details-column"
+              >
+                <img
+                  class="rounded-circle"
+                  [src]="user.image || defaultAvatar"
+                  [alt]="user.image"
+                />
+              </div>
+              <div class="user-details-column">
+                <mat-list role="list">
+                  <mat-list-item class="font-bold">
+                    Projects&nbsp;
+                    <span *ngIf="user.role === 'MANAGER'">Handled</span>
+                    <span *ngIf="user.role === 'EMPLOYEE'">Part of</span>
+                  </mat-list-item>
+                  <mat-list-item
+                    role="listitem"
+                    *ngFor="let project of currentUserProjects$ | async"
+                    >{{ project }}</mat-list-item
+                  >
+                </mat-list>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+        <tr
+          mat-row
+          *matRowDef="let user; columns: columnsToDisplayWithExpand"
+          class="example-element-row"
+          [class.example-expanded-row]="expandedUser === user"
+          (click)="onExpandClick($event, user)"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: ['expandedDetail']"
+          class="example-detail-row"
+        ></tr>
+      </ng-container>
+    </table>
+    <div *ngIf="!rows.length">
+      <mat-card>No users to display</mat-card>
+    </div>
+  </ng-container>
+  <ng-template #loading>
+    <div class="center loading-screen">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+  </ng-template>
 </div>
