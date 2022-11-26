@@ -297,7 +297,7 @@ export class ManagerService implements OnDestroy {
       toDate: new Date(projectDeadLine + "Z").toISOString().substring(0, 10),
     };
     return this.http
-      .post<IProject>(`${this.managerUrl}/create-project1`, requestBody)
+      .post<IProject>(`${this.managerUrl}/create-project`, requestBody)
       .pipe(tap((project) => this.addProjectAction(project)));
   }
 
