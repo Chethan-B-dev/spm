@@ -6,6 +6,10 @@ import { ITask } from "../interfaces/task.interface";
 import { ITodo } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
 
+export interface IStringMap<T> {
+  [key: string]: T;
+}
+
 export enum DataType {
   TODO = "TODO",
   USER = "USER",

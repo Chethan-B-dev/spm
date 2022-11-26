@@ -9,7 +9,6 @@ import { EMPTY, Observable, Subject } from "rxjs";
 import { catchError, switchMap, takeUntil } from "rxjs/operators";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
-import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { goBack } from "src/app/shared/utility/common";
 
 @Component({
@@ -24,9 +23,8 @@ export class EmpReportListComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   constructor(
     private readonly managerService: ManagerService,
-    private readonly snackbarService: SnackbarService,
-    private router: Router,
-    private route: ActivatedRoute
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {}
 
   goBack(): void {

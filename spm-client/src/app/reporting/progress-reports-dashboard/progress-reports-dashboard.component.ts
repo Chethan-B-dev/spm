@@ -25,7 +25,7 @@ import { goBack } from "src/app/shared/utility/common";
 export class ProgressReportsDashboardComponent implements OnInit, OnDestroy {
   currentUser: IAppUser;
   projects$: Observable<IProject[]>;
-  private readonly errorSubject = new BehaviorSubject<String>(null);
+  private readonly errorSubject = new BehaviorSubject<string>(null);
   readonly error$ = this.errorSubject.asObservable();
   private readonly destroy$ = new Subject<void>();
   constructor(

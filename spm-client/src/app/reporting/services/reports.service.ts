@@ -1,5 +1,8 @@
+import {
+  TaskPriorityOptions,
+  TaskStatusOptions,
+} from "./../../shared/interfaces/task.interface";
 // angular
-import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 // rxjs
 // interfaces
@@ -7,7 +10,6 @@ import { IProject } from "src/app/shared/interfaces/project.interface";
 import {
   isBacklogTask,
   ITask,
-  TaskPriority,
   TaskPriorityStatistics,
   TaskStatistics,
   TaskStatus,
@@ -20,6 +22,7 @@ import {
   IAppUser,
   UserDesignation,
   UserDesignationNameStatistics,
+  UserDesignations,
   UserDesignationStatistics,
   UserDesignationStatisticsCount,
 } from "src/app/shared/interfaces/user.interface";
@@ -29,55 +32,50 @@ import { differenceBetweenTwoDays } from "src/app/shared/utility/common";
   providedIn: "root",
 })
 export class ReportsService {
-  constructor(private http: HttpClient) {}
-
   getTasksPriorityDetails(tasks: ITask[]) {
-    const taskPriorityStatistics: TaskPriorityStatistics = {
-      [TaskPriority.LOW]: 0,
-      [TaskPriority.MEDIUM]: 0,
-      [TaskPriority.HIGH]: 0,
-    };
+    const taskPriorityStatistics = TaskPriorityOptions.reduce(
+      (stats, priority) => {
+        stats[priority] = 0;
+        return stats;
+      },
+      {} as TaskPriorityStatistics
+    );
 
     tasks.forEach((task) => (taskPriorityStatistics[task.priority] += 1));
     return taskPriorityStatistics;
   }
 
   getProjectTaskStatistics(tasks: ITask[]): TaskStatistics {
-    const TaskStatistics: TaskStatistics = {
-      [TaskStatus.IN_PROGRESS]: 0,
-      [TaskStatus.COMPLETED]: 0,
-    };
-    tasks.forEach((task) => (TaskStatistics[task.status] += 1));
-    return TaskStatistics;
+    const taskStatistics = TaskStatusOptions.reduce((stats, status) => {
+      stats[status] = 0;
+      return stats;
+    }, {} as TaskStatistics);
+
+    tasks.forEach((task) => (taskStatistics[task.status] += 1));
+    return taskStatistics;
   }
 
   getAllTasksAreaProgress(project: IProject): any[] {
-    const res = [];
+    const result: { x: string; y: number }[] = [];
     const fromDate = project.fromDate;
     const toDate = new Date(this.getToDate(project));
     var loop = new Date(fromDate);
     while (loop <= toDate) {
-      let no_of_Tasks = 0;
-      project.tasks.forEach((task) => {
+      const numberOfTasks = project.tasks.reduce((count, task) => {
         if (
           new Date(task.completedDate).toLocaleDateString() ===
           loop.toLocaleDateString()
-        )
-          no_of_Tasks += 1;
-      });
-      res.push({ x: loop.toDateString(), y: no_of_Tasks });
+        ) {
+          return count + 1;
+        }
+        return count;
+      }, 0);
+
+      result.push({ x: loop.toDateString(), y: numberOfTasks });
       var newDate = loop.setDate(loop.getDate() + 1);
       loop = new Date(newDate);
     }
-    return res;
-  }
-
-  private getToDate(project: IProject): Date {
-    let toDate = project.toDate;
-    project.tasks.forEach((task) => {
-      if (task.completedDate > toDate) toDate = task.completedDate;
-    });
-    return toDate;
+    return result;
   }
 
   getIdealBurn(project: IProject) {
@@ -85,26 +83,26 @@ export class ReportsService {
   }
 
   getIdealBurnData(project: IProject) {
-    let countOfTasks = project.tasks.length;
+    const countOfTasks = project.tasks.length;
     const days = differenceBetweenTwoDays(project.fromDate, project.toDate);
     const diff = countOfTasks / days;
     let actual = countOfTasks;
     const result = [actual];
     for (let i = 0; i < days; i++) {
-      actual = actual - diff;
+      actual -= diff;
       result.push(actual);
     }
     return result;
   }
 
   getIdealBurnDataProject(project: IProject) {
-    let totalCount = project.tasks.length + project.issues.length;
+    const totalCount = project.tasks.length + project.issues.length;
     const days = differenceBetweenTwoDays(project.fromDate, project.toDate);
     const diff = totalCount / days;
     let actual = totalCount;
     const result = [actual];
     for (let i = 0; i < days; i++) {
-      actual = actual - diff;
+      actual -= diff;
       result.push(actual);
     }
     return result;
@@ -117,16 +115,16 @@ export class ReportsService {
     var loop = new Date(fromDate);
     const res = [];
     while (loop <= toDate) {
-      let no_of_Tasks = 0;
-      project.tasks.forEach((task) => {
+      const no_of_tasks = project.tasks.reduce((count, task) => {
         if (
           new Date(task.completedDate).toLocaleDateString() ===
           loop.toLocaleDateString()
         ) {
-          no_of_Tasks += 1;
+          return count + 1;
         }
-      });
-      actual = actual - no_of_Tasks;
+        return count;
+      }, 0);
+      actual -= no_of_tasks;
       res.push({ x: loop.toDateString(), y: actual });
       var newDate = loop.setDate(loop.getDate() + 1);
       loop = new Date(newDate);
@@ -156,7 +154,7 @@ export class ReportsService {
         )
           no_of_Tasks += 1;
       });
-      actual = actual - no_of_Tasks;
+      actual -= no_of_Tasks;
       res.push({ x: loop.toDateString(), y: actual });
       var newDate = loop.setDate(loop.getDate() + 1);
       loop = new Date(newDate);
@@ -171,15 +169,16 @@ export class ReportsService {
     var loop = new Date(fromDate);
     const res = [];
     while (loop <= toDate) {
-      let no_of_Tasks = 0;
-      project.issues.forEach((issue) => {
+      const numberOfTasks = project.issues.reduce((numberOfTasks, issue) => {
         if (
           new Date(issue.resolvedDate).toLocaleDateString() ===
           loop.toLocaleDateString()
-        )
-          no_of_Tasks += 1;
-      });
-      actual = actual - no_of_Tasks;
+        ) {
+          return numberOfTasks + 1;
+        }
+        return numberOfTasks;
+      }, 0);
+      actual -= numberOfTasks;
       res.push({ x: loop.toDateString(), y: actual });
       var newDate = loop.setDate(loop.getDate() + 1);
       loop = new Date(newDate);
@@ -188,7 +187,6 @@ export class ReportsService {
   }
 
   getAllTaskStatusCount(project: IProject): any {
-    const result = [];
     const todo = [];
     const in_progress = [];
     const done = [];
@@ -219,38 +217,58 @@ export class ReportsService {
   }
 
   getTotalTodosOfUser(project: IProject, user: IAppUser): number {
-    return project.tasks.reduce((acc, curr: ITask) => {
-      if (curr.user.id === user.id) acc += curr.todos.length;
-      return acc;
+    return project.tasks.reduce((totalTodos, task) => {
+      if (task.user.id === user.id) return totalTodos + task.todos.length;
+      return totalTodos;
     }, 0);
   }
 
   getEmployeeRank(project: IProject, user: IAppUser): number {
     const userRankings = project.users.sort((userA, userB) => {
-      const tasksCompletedA = project.tasks.filter(
-        (task) =>
-          task.user.id === userA.id && task.status === TaskStatus.COMPLETED
-      ).length;
+      let completedTasksOfA = 0;
+      let completedTasksOfB = 0;
 
-      const tasksCompletedB = project.tasks.filter(
-        (task) =>
-          task.user.id === userB.id && task.status === TaskStatus.COMPLETED
-      ).length;
+      let daysTakenByA = 0;
+      let daysTakenByB = 0;
 
-      if (tasksCompletedA === tasksCompletedB) {
+      let countOfTodosOfA = 0;
+      let countOfTodosOfB = 0;
+
+      project.tasks.forEach((task: ITask) => {
+        if (task.user.id === userA.id) {
+          if (task.status === TaskStatus.COMPLETED) {
+            completedTasksOfA++;
+            daysTakenByA += differenceBetweenTwoDays(
+              task.createdDate,
+              task.completedDate
+            );
+          }
+          countOfTodosOfA += task.todos.length;
+        }
+
+        if (task.user.id === userB.id) {
+          if (task.status === TaskStatus.COMPLETED) {
+            completedTasksOfB++;
+            daysTakenByB += differenceBetweenTwoDays(
+              task.createdDate,
+              task.completedDate
+            );
+          }
+          countOfTodosOfB += task.todos.length;
+        }
+      });
+
+      if (completedTasksOfA === completedTasksOfB) {
         // rank them based on the total todos he was assigned
-        const totalTodosA = project.tasks
-          .filter((task) => task.user.id === userA.id)
-          .reduce((total, task) => total + task.todos.length, 0);
-
-        const totalTodosB = project.tasks
-          .filter((task) => task.user.id === userB.id)
-          .reduce((total, task) => total + task.todos.length, 0);
-
-        return totalTodosB - totalTodosA;
+        if (countOfTodosOfA === countOfTodosOfB) {
+          // rank them based on number of days taken to complete tasks
+          return daysTakenByB - daysTakenByA;
+        }
+        return countOfTodosOfB - countOfTodosOfA;
       }
 
-      return tasksCompletedB - tasksCompletedA;
+      // rank them based on number of tasks completed
+      return completedTasksOfB - completedTasksOfA;
     });
     return userRankings.findIndex((u) => u.id === user.id) + 1;
   }
@@ -280,36 +298,36 @@ export class ReportsService {
   }
 
   getProjectOrgChart(project: IProject): UserDesignationStatistics {
-    const userDesgStats: UserDesignationStatistics = {
+    const userDesignationStats: UserDesignationStatistics = {
       [UserDesignation.TESTER]: [],
       [UserDesignation.DEVELOPER]: [],
       [UserDesignation.DEVOPS]: [],
     };
     project.users.forEach(({ username, email, designation }) => {
-      userDesgStats[designation].push({ username, email });
+      userDesignationStats[designation].push({ username, email });
     });
-    return userDesgStats;
+    return userDesignationStats;
   }
 
   getOrgChartData(project: IProject): Array<Object[]> {
     const result = [] as Array<Object[]>;
-    const userDesgStats: UserDesignationNameStatistics = {
+    const userDesignationStats: UserDesignationNameStatistics = {
       [UserDesignation.TESTER]: [],
       [UserDesignation.DEVELOPER]: [],
       [UserDesignation.DEVOPS]: [],
     };
     project.users.forEach(({ username, designation }) => {
-      userDesgStats[designation].push(username);
+      userDesignationStats[designation].push(username);
     });
-    const developers = userDesgStats[UserDesignation.DEVELOPER];
+    const developers = userDesignationStats[UserDesignation.DEVELOPER];
     for (let i = 0; i < developers.length - 1; i++) {
       result.push([developers[i], developers[i + 1]]);
     }
-    const testers = userDesgStats[UserDesignation.TESTER];
+    const testers = userDesignationStats[UserDesignation.TESTER];
     for (let i = 0; i < testers.length - 1; i++) {
       result.push([testers[i], testers[i + 1]]);
     }
-    const devops = userDesgStats[UserDesignation.DEVOPS];
+    const devops = userDesignationStats[UserDesignation.DEVOPS];
     for (let i = 0; i < devops.length - 1; i++) {
       result.push([devops[i], devops[i + 1]]);
     }
@@ -319,14 +337,26 @@ export class ReportsService {
   getProjectUserDesignationCount(
     project: IProject
   ): UserDesignationStatisticsCount {
-    const userDesignationCount: UserDesignationStatisticsCount = {
-      [UserDesignation.TESTER]: 0,
-      [UserDesignation.DEVELOPER]: 0,
-      [UserDesignation.DEVOPS]: 0,
-    };
-    project.users.forEach(
-      (user) => (userDesignationCount[user.designation] += 1)
+    const userDesignationCount = UserDesignations.reduce(
+      (stats, designation) => {
+        stats[designation] = 0;
+        return stats;
+      },
+      {} as UserDesignationStatisticsCount
     );
+    project.users.forEach((user) => {
+      userDesignationCount[user.designation] += 1;
+    });
     return userDesignationCount;
+  }
+
+  private getToDate(project: IProject): Date {
+    let toDate = project.toDate;
+    project.tasks.forEach((task) => {
+      if (task.completedDate > toDate) {
+        toDate = task.completedDate;
+      }
+    });
+    return toDate;
   }
 }

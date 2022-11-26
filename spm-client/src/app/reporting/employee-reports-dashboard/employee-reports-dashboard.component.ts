@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { EMPTY, Observable } from "rxjs";
 import { catchError } from "rxjs/operators";
@@ -6,7 +6,6 @@ import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { TaskStatistics } from "src/app/shared/interfaces/task.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
-import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/shared.service";
 import { goBack } from "src/app/shared/utility/common";
 import { ReportsService } from "../services/reports.service";
@@ -16,14 +15,14 @@ declare let Highcharts: any;
   selector: "app-employee-reports-dashboard",
   templateUrl: "./employee-reports-dashboard.component.html",
   styleUrls: ["./employee-reports-dashboard.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeReportsDashboardComponent implements OnInit {
   constructor(
     private readonly reportService: ReportsService,
     private readonly route: ActivatedRoute,
     private readonly managerService: ManagerService,
-    private readonly sharedService: SharedService,
-    private readonly snackbarService: SnackbarService
+    private readonly sharedService: SharedService
   ) {}
   project: IProject;
   user: IAppUser;

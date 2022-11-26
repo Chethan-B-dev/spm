@@ -1,13 +1,13 @@
+import { ChangeDetectionStrategy } from "@angular/core";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { EMPTY, Subject, Subscription } from "rxjs";
+import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { EmployeeService } from "src/app/employee/employee.service";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { UserRole } from "src/app/shared/interfaces/user.interface";
-import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { goBack } from "src/app/shared/utility/common";
 import { ReportsService } from "../services/reports.service";
 declare let Highcharts: any;
@@ -16,19 +16,18 @@ declare let Highcharts: any;
   selector: "app-burn-down-chart-dashboard",
   templateUrl: "./burn-down-chart-dashboard.component.html",
   styleUrls: ["./burn-down-chart-dashboard.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
   project: IProject;
   projectId: number;
   currentUser = this.authService.currentUser;
-  private readonly subscriptions = [] as Subscription[];
   private readonly destroy$ = new Subject<void>();
   constructor(
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
     private readonly reportsService: ReportsService,
     private readonly authService: AuthService,
     private readonly managerService: ManagerService,
-    private readonly snackbarService: SnackbarService,
     private readonly employeeService: EmployeeService
   ) {}
 
@@ -37,18 +36,17 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
       this.projectId = +paramMap.get("projectId");
     });
 
-    const projectObservable =
+    const project$ =
       this.currentUser.role === UserRole.MANAGER
         ? this.managerService.getProjectById(this.projectId)
         : this.employeeService.getProjectById(this.projectId);
 
-    const projectSubscription = projectObservable
+    project$
       .pipe(
         takeUntil(this.destroy$),
         catchError(() => EMPTY)
       )
       .subscribe((project) => {
-        // !if burn-down chart does not work change this below line to -> this.project = mockProject
         this.project = project;
         const ideal = this.reportsService.getIdealBurn(this.project);
         const idealProject = this.reportsService.getIdealBurnDataProject(
@@ -228,14 +226,6 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
                 ? [...Object.values(actualIssues).map(({ y }) => y)]
                 : [],
             },
-            // {
-            //   name: "Completed Burn",
-            //   color: "blue",
-            //   marker: {
-            //     radius: 6,
-            //   },
-            //   data: [90, 95, 25, 50, 64, 76, 67, 43, 95, 66, 57, 20],
-            // },
           ],
         });
 
@@ -313,14 +303,11 @@ export class BurnDownChartDashboardComponent implements OnInit, OnDestroy {
           ],
         });
       });
-
-    this.subscriptions.push(projectSubscription);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   goBack(): void {

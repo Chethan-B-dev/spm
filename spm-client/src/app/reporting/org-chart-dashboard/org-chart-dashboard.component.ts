@@ -6,7 +6,7 @@ import {
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import OrgChart from "@balkangraph/orgchart.js";
-import { EMPTY, Subject, Subscription } from "rxjs";
+import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
 import { EmployeeService } from "src/app/employee/employee.service";
@@ -17,7 +17,6 @@ import {
   AvatarImage,
   UserRole,
 } from "src/app/shared/interfaces/user.interface";
-import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { goBack, myTitleCase } from "src/app/shared/utility/common";
 import { ReportsService } from "../services/reports.service";
 @Component({
@@ -35,7 +34,6 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
     private readonly reportService: ReportsService,
     private readonly managerService: ManagerService,
     private readonly employeeService: EmployeeService,
-    private readonly snackbarService: SnackbarService,
     private readonly authService: AuthService,
     private readonly route: ActivatedRoute
   ) {}
@@ -94,13 +92,16 @@ export class OrgChartDashboardComponent implements OnInit, OnDestroy {
         name: user.username,
         title: myTitleCase(user.designation || user.role),
         img: user.image || AvatarImage,
-        Tasks_Assigned: project.tasks.filter((task) => task.user.id === user.id)
-          .length,
-        Rank: this.reportService.getEmployeeRank(project, user),
-        Total_SubTasks: this.reportService.getTotalTodosOfUser(project, user),
-        In_Progress_Tasks: taskStatistics[TaskStatus.IN_PROGRESS],
-        Completed_Tasks: taskStatistics[TaskStatus.COMPLETED],
-        Issues_Raised: project.issues.filter(
+        "Tasks Assigned": project.tasks.filter(
+          (task) => task.user.id === user.id
+        ).length,
+        "User Rank": this.reportService.getEmployeeRank(project, user),
+        "Total SubTasks Assigned To User":
+          this.reportService.getTotalTodosOfUser(project, user),
+        "Total Tasks that are In Progress":
+          taskStatistics[TaskStatus.IN_PROGRESS],
+        "Total Tasks Completed By User": taskStatistics[TaskStatus.COMPLETED],
+        "Total Issues Raised By User": project.issues.filter(
           (issue) => issue.user.id === user.id
         ).length,
       });

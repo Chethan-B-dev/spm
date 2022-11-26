@@ -1,4 +1,9 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
@@ -21,13 +26,14 @@ try {
   require("highcharts/modules/export-data")(Highcharts);
   require("highcharts/modules/annotations")(Highcharts);
 } catch (err) {
-  console.error(err);
+  // console.error(err);
 }
 
 @Component({
   selector: "app-each-project-progress-board",
   templateUrl: "./each-project-progress-board.component.html",
   styleUrls: ["./each-project-progress-board.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
   project: IProject;
@@ -41,7 +47,7 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
     private readonly reportService: ReportsService,
     private readonly managerService: ManagerService,
     private readonly employeeService: EmployeeService,
-    private route: ActivatedRoute,
+    private readonly route: ActivatedRoute,
     private readonly authService: AuthService
   ) {}
 
@@ -54,17 +60,19 @@ export class EachProjectProgressBoardComponent implements OnInit, OnDestroy {
     goBack();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe((user) => (this.currentUser = user));
 
     this.route.paramMap.subscribe((paramMap) => {
       const projectId = +paramMap.get("projectId");
+
       const userProjects$ =
         this.currentUser.role === UserRole.MANAGER
           ? this.managerService.getProjectById(projectId)
           : this.employeeService.getProjectById(projectId);
+
       userProjects$.pipe(takeUntil(this.destroy$)).subscribe((project) => {
         this.project = project || mockProject;
         this.taskPriorityStatistics =

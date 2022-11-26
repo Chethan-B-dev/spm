@@ -51,8 +51,11 @@
               />
             </div>
             <div class="media-body px-2">
-              <h4>Employee Name: {{ user.username }}</h4>
-              <span>Employee Role: {{ user.designation || "NA" }}</span>
+              <h4>Employee Name: {{ user.username | titlecase }}</h4>
+              <span
+                >Employee Role:
+                {{ user.designation || user.role | titlecase }}</span
+              >
               <span class="ml-2">|</span>
               <span class="p-2">Status: {{ user.status | titlecase }}</span>
             </div>
