@@ -8,7 +8,7 @@ import {
 import { INotification } from "../interfaces/notification.interface";
 import { ITask } from "../interfaces/task.interface";
 import { ITodo } from "../interfaces/todo.interface";
-import { NotificationService } from "../notification.service";
+import { NotificationService } from "../services/notification.service";
 import { DataType, goBack, PieData } from "../utility/common";
 
 @Component({

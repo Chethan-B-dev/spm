@@ -5,9 +5,9 @@ import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { ISignUpRequest } from "src/app/shared/interfaces/user.interface";
-import { NotificationService } from "src/app/shared/notification.service";
+import { NotificationService } from "src/app/shared/services/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
-import { SharedService } from "src/app/shared/shared.service";
+import { SharedService } from "src/app/shared/services/shared.service";
 import { myTitleCase } from "src/app/shared/utility/common";
 import { AuthService } from "../auth.service";
 

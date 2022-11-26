@@ -22,7 +22,7 @@ import { ImageSliderComponent } from "../dialogs/image-slider/image-slider.compo
 
 // services
 import { ManagerService } from "src/app/manager/services/manager.service";
-import { NotificationService } from "../notification.service";
+import { NotificationService } from "../services/notification.service";
 import { SnackbarService } from "../services/snackbar.service";
 
 // interfaces

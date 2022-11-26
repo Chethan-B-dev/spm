@@ -18,9 +18,9 @@ import {
   TodoStatus,
 } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
-import { NotificationService } from "src/app/shared/notification.service";
+import { NotificationService } from "src/app/shared/services/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
-import { SharedService } from "src/app/shared/shared.service";
+import { SharedService } from "src/app/shared/services/shared.service";
 import { EmployeeService } from "../employee.service";
 
 @Component({

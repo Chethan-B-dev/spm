@@ -6,7 +6,7 @@ import { ManagerService } from "src/app/manager/services/manager.service";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { TaskStatistics } from "src/app/shared/interfaces/task.interface";
 import { IAppUser } from "src/app/shared/interfaces/user.interface";
-import { SharedService } from "src/app/shared/shared.service";
+import { SharedService } from "src/app/shared/services/shared.service";
 import { goBack } from "src/app/shared/utility/common";
 import { ReportsService } from "../services/reports.service";
 declare let Highcharts: any;

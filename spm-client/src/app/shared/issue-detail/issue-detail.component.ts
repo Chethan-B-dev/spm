@@ -26,9 +26,9 @@ import {
 } from "src/app/shared/interfaces/issue.interface";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { UserRole } from "src/app/shared/interfaces/user.interface";
-import { NotificationService } from "src/app/shared/notification.service";
+import { NotificationService } from "src/app/shared/services/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
-import { SharedService } from "src/app/shared/shared.service";
+import { SharedService } from "src/app/shared/services/shared.service";
 import { DataType, DeleteData, goBack } from "src/app/shared/utility/common";
 
 @Component({

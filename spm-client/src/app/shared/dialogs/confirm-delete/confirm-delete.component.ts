@@ -9,7 +9,7 @@ import { EMPTY, Subject } from "rxjs";
 import { catchError, takeUntil } from "rxjs/operators";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { SnackbarService } from "../../services/snackbar.service";
-import { SharedService } from "../../shared.service";
+import { SharedService } from "../../services/shared.service";
 import { DataType, DeleteData } from "../../utility/common";
 
 @Component({

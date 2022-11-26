@@ -24,13 +24,13 @@ import {
   tap,
 } from "rxjs/operators";
 import { AuthService } from "src/app/auth/auth.service";
-import { ConnectionService } from "src/app/connection.service";
 import { EmployeeService } from "src/app/employee/employee.service";
 import { AddProjectComponent } from "src/app/manager/dialogs/add-project/add-project.component";
 import { ManagerService } from "src/app/manager/services/manager.service";
 import { INotification } from "../interfaces/notification.interface";
 import { IAppUser, UserRole } from "../interfaces/user.interface";
-import { NotificationService } from "../notification.service";
+import { NotificationService } from "../services/notification.service";
+import { ConnectionService } from "../services/connection.service";
 import { SnackbarService } from "../services/snackbar.service";
 import { DataType, ISearchData, ISearchGroup } from "../utility/common";
 

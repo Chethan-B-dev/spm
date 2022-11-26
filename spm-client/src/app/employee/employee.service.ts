@@ -28,7 +28,7 @@ import { IProject } from "../shared/interfaces/project.interface";
 import { ITask } from "../shared/interfaces/task.interface";
 import { ITodo, IUpdateTodoDTO } from "../shared/interfaces/todo.interface";
 import { IAppUser, UserRole } from "../shared/interfaces/user.interface";
-import { NotificationService } from "../shared/notification.service";
+import { NotificationService } from "../shared/services/notification.service";
 import { SnackbarService } from "../shared/services/snackbar.service";
 import {
   ISearchGroup,

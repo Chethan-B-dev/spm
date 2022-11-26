@@ -3,9 +3,9 @@ import { Injectable, OnDestroy } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 import { environment } from "src/environments/environment";
-import { IComment, IIssue } from "./interfaces/issue.interface";
-import { IProject } from "./interfaces/project.interface";
-import { IAppUser } from "./interfaces/user.interface";
+import { IComment, IIssue } from "../interfaces/issue.interface";
+import { IProject } from "../interfaces/project.interface";
+import { IAppUser } from "../interfaces/user.interface";
 
 @Injectable({
   providedIn: "root",

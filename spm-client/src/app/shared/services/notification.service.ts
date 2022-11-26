@@ -2,9 +2,9 @@ import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { from, Observable } from "rxjs";
 import { catchError, map } from "rxjs/operators";
-import { INotification } from "./interfaces/notification.interface";
-import { SnackbarService } from "./services/snackbar.service";
-import { handleError } from "./utility/error";
+import { INotification } from "../interfaces/notification.interface";
+import { SnackbarService } from "./snackbar.service";
+import { handleError } from "../utility/error";
 @Injectable({
   providedIn: "root",
 })

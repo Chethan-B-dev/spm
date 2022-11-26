@@ -12,7 +12,7 @@ import { catchError, takeUntil } from "rxjs/operators";
 import { INotification } from "src/app/shared/interfaces/notification.interface";
 import { IProject } from "src/app/shared/interfaces/project.interface";
 import { ITaskRequestDTO } from "src/app/shared/interfaces/task.interface";
-import { NotificationService } from "src/app/shared/notification.service";
+import { NotificationService } from "src/app/shared/services/notification.service";
 import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { ManagerService } from "../../services/manager.service";
 
