@@ -27,6 +27,8 @@ import javax.validation.ValidationException;
 import java.util.List;
 import java.util.Objects;
 
+import static java.util.Objects.isNull;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class AppUserService {
     private final PasswordEncoder passwordEncoder;
 
     public static MyAppUserDetails checkIfUserIsLoggedIn(MyAppUserDetails myAppUserDetails) {
-        if (Objects.isNull(myAppUserDetails))
+        if (isNull(myAppUserDetails))
             throw new UserNotLoggedInException("Please Log in");
         return myAppUserDetails;
     }
@@ -54,7 +56,7 @@ public class AppUserService {
 
     public AppUser saveUser(UserRegisterDTO userRegisterDTO) {
 
-        if (!Objects.isNull(userRegisterDTO.getUserRole()) && userRegisterDTO.getUserRole().equals(UserRole.ADMIN))
+        if (!isNull(userRegisterDTO.getUserRole()) && userRegisterDTO.getUserRole().equals(UserRole.ADMIN))
             throw new ActionNotAllowedException("Cannot register as an admin");
 
         checkIfEmailAlreadyExists(userRegisterDTO.getEmail());
@@ -110,8 +112,8 @@ public class AppUserService {
     }
 
     public PagedData<AppUser> getPagedVerifiedEmployees(int pageNumber, int pageSize) {
-        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by("id").ascending());
-        Page<AppUser> employees = appUserRepository.findAllByStatusAndRole(UserStatus.VERIFIED, UserRole.EMPLOYEE, paging);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("id").ascending());
+        Page<AppUser> employees = appUserRepository.findAllByStatusAndRole(UserStatus.VERIFIED, UserRole.EMPLOYEE, pageable);
         return PagedData
                 .<AppUser>builder()
                 .data(employees.getContent())
@@ -130,15 +132,15 @@ public class AppUserService {
         final AppUser user = loggedInUser.getUser();
 
         // if a user with the same name exists throw an error
-        final boolean hasChangedUsername = !user.getUsername().equalsIgnoreCase(editProfileDTO.getUsername());
+        final boolean hasChangedUsername = !user.getUsername().equals(editProfileDTO.getUsername());
         if (hasChangedUsername && appUserRepository.existsByUsername(editProfileDTO.getUsername())) {
             throw new ActionNotAllowedException("A user with the username '" + editProfileDTO.getUsername() + "' already exists.");
         }
 
         user.setUsername(editProfileDTO.getUsername());
 
-        // if phone number has changed and phone number validation should be 10 digits
-        if (!user.getPhone().equals(editProfileDTO.getPhone())) {
+        // if phone number has changed, new phone number validation should be 10 digits
+        if (!isNull(editProfileDTO.getPhone()) && !user.getPhone().equals(editProfileDTO.getPhone())) {
             if (editProfileDTO.getPhone().length() == 10) {
                 user.setPhone(editProfileDTO.getPhone());
             } else {
@@ -146,7 +148,7 @@ public class AppUserService {
             }
         }
 
-        if (!Objects.isNull(editProfileDTO.getImage())) {
+        if (!isNull(editProfileDTO.getImage())) {
             user.setImage(editProfileDTO.getImage());
         }
         user.setDesignation(editProfileDTO.getDesignation());
