@@ -1,5 +1,4 @@
 import { NgModule } from "@angular/core";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { SharedModule } from "../shared/shared.module";
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { CreateTaskComponent } from "./dialogs/create-task/create-task.component";
@@ -35,11 +34,6 @@ import { ManagerTaskDetailComponent } from "./manager-task-detail/manager-task-d
     SetDesignationComponent,
     EditProjectComponent,
   ],
-  imports: [
-    ReactiveFormsModule,
-    FormsModule,
-    ManagerRoutingModule,
-    SharedModule,
-  ],
+  imports: [ManagerRoutingModule, SharedModule],
 })
 export class ManagerModule {}

@@ -49,7 +49,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   ).pipe(
     takeUntil(this.destroy$),
     tap(() => startLoading(this.isLoadingSubject)),
-    map(([users, status, searchTerm]) => {
+    map(([users, status, searchTerm]: [IAppUser[], UserStatus, string]) => {
       // if status is all and search term is empty return all the users
       if (status === UserStatus.ALL && !searchTerm) {
         return users;
@@ -116,7 +116,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       .subscribe((user: IAppUser) => {
         this.setUser(user);
         this.snackbarService.showSnackBar(
-          `user has been ${adminDecision.toLowerCase()}ed`
+          `${user.username} has been ${adminDecision.toLowerCase()}ed`
         );
       });
   }

@@ -74,6 +74,8 @@ import { MatCarouselModule } from "@ngmodule/material-carousel";
     ImageSliderComponent,
     MaterialModule,
     CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
 })
 export class SharedModule {}
