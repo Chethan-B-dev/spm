@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 import { AdminGuard } from "./admin/admin.guard";
 import { AuthGuard } from "./auth/auth.guard";
 import { LoggedInGuard } from "./auth/isloggedin.guard";
@@ -9,6 +9,7 @@ import { EmployeeGuard } from "./employee/employee.guard";
 import { ManagerGuard } from "./manager/manager.guard";
 import { EditProfileComponent } from "./shared/dialogs/edit-profile/edit-profile.component";
 import { IssueDetailComponent } from "./shared/issue-detail/issue-detail.component";
+import { CustomPreloadingStrategy } from "./shared/services/custom-preload-strategy.service";
 
 const routes: Routes = [
   { path: "", component: LoginComponent, canActivate: [AuthGuard] },
@@ -32,12 +33,14 @@ const routes: Routes = [
     loadChildren: () =>
       import("./manager/manager.module").then((m) => m.ManagerModule),
     canActivate: [ManagerGuard],
+    data: { preload: true },
   },
   {
     path: "employee",
     loadChildren: () =>
       import("./employee/employee.module").then((m) => m.EmployeeModule),
     canActivate: [EmployeeGuard],
+    data: { preload: true },
   },
   {
     path: "reporting",
@@ -51,8 +54,11 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: CustomPreloadingStrategy,
+    }),
   ],
   exports: [RouterModule],
+  providers: [CustomPreloadingStrategy],
 })
 export class AppRoutingModule {}
