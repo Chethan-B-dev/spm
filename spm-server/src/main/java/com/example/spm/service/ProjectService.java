@@ -23,7 +23,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 
 @Service
@@ -68,6 +71,11 @@ public class ProjectService {
     }
 
     public Project createProject(CreateProjectDTO createProjectDTO, MyAppUserDetails myAppUserDetails) {
+
+        if (!myAppUserDetails.getUser().getRole().equals(UserRole.MANAGER)) {
+            throw new ActionNotAllowedException("Only manager can create a project");
+        }
+
         Project project = Project
                 .builder()
                 .description(createProjectDTO.getDescription())
@@ -76,7 +84,7 @@ public class ProjectService {
                 .fromDate(LocalDate.now())
                 .toDate(createProjectDTO.getToDate())
                 .status(ProjectStatus.IN_PROGRESS)
-                .files(createProjectDTO.getFiles() != null ? createProjectDTO.getFiles() : "[]")
+                .files(ofNullable(createProjectDTO.getFiles()).orElse("[]"))
                 .build();
 
         return projectRepository.save(project);

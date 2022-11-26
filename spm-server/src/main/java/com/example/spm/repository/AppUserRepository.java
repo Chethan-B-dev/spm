@@ -6,8 +6,10 @@ import com.example.spm.model.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +17,8 @@ public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
     AppUser findByEmailOrUsername (String email, String username);
 
     boolean existsByUsername (String username);
+    @Transactional
+    @Modifying
     Integer deleteByEmail (String email);
     List<AppUser> findAllByStatus (UserStatus userStatus);
 
@@ -36,6 +40,4 @@ public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
             value = "SELECT * FROM app_user a WHERE LOWER(a.username) LIKE '%admin%' LIMIT 1",
             nativeQuery = true)
     Optional<AppUser> getAdmin();
-
-//    List<AppUser> findAllByUsernameContaining(String searchKey);
 }

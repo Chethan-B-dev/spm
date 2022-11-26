@@ -40,7 +40,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         try {
-            System.out.println("coming inside to filter");
             final String requestTokenHeader = request.getHeader("Authorization");
 
             String email = null;

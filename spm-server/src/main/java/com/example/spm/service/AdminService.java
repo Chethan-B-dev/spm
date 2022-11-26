@@ -50,7 +50,7 @@ public class AdminService {
             throw new ActionNotAllowedException("that action is not allowed");
         }
         appUser.setStatus(UserStatus.UNVERIFIED);
-        return appUserRepository.save(appUser);
+        return appUser;
     }
 
     @Transactional
@@ -62,7 +62,7 @@ public class AdminService {
         } else {
             appUser.setStatus(UserStatus.DISABLED);
         }
-        return appUserRepository.save(appUser);
+        return appUser;
     }
 
     public AppUser checkIfUserExists (Integer userId) {
