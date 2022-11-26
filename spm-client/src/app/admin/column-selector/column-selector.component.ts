@@ -303,7 +303,7 @@ export class ColumnSelectorComponent implements OnInit, OnDestroy {
     this.close(this.visibleFieldsSubject.getValue());
   }
 
-  onSelect(fields: string[], fieldType: Field): void {
+  onSelect(fields: string[], fieldType: string): void {
     if (fieldType === Field.AVAILABLE) {
       this.availableFieldChanges = fields;
     } else {

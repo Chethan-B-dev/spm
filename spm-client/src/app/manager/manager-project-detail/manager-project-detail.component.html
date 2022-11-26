@@ -185,6 +185,9 @@
             <mat-chip color="warn" selected
               >Deadline - {{ task.deadLine | date }}</mat-chip
             >
+            <mat-chip color="accent" selected
+              >Todos - {{ task.todos.length }}</mat-chip
+            >
           </mat-chip-list>
           <mat-card-subtitle class="my-2">{{
             task.description

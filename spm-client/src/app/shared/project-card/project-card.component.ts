@@ -37,8 +37,8 @@ import { getProjectProgress } from "../interfaces/todo.interface";
 import { IAppUser } from "../interfaces/user.interface";
 
 // utility
-import { DataType, goBack, PieData } from "../utility/common";
 import { Router } from "@angular/router";
+import { DataType, PieData } from "../utility/common";
 
 @Component({
   selector: "app-project-card",

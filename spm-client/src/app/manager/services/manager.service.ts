@@ -270,7 +270,12 @@ export class ManagerService implements OnDestroy {
       .put<IProject>(`${this.managerUrl}/assign-user/${projectId}`, {
         userIds,
       })
-      .pipe(tap(() => this.refresh()));
+      .pipe(
+        tap((project) => {
+          this.editProjectAction(project);
+          this.refresh();
+        })
+      );
   }
 
   setEmployeeDesignation(employee: IAppUser): Observable<IAppUser> {
