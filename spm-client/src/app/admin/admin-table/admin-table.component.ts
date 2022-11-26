@@ -78,7 +78,7 @@ export class AdminTableComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.rows$ = this.adminService.users$.pipe(
+    this.rows$ = this.adminService.getAllUsers().pipe(
       takeUntil(this.destroy$),
       catchError(() => of([]))
     );

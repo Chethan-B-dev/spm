@@ -5,7 +5,7 @@
   crossorigin="anonymous"
 />
 
-<div class="container py-3">
+<div class="container py-3" *ngIf="vm$ | async as vm; else loading">
   <div class="left-and-right">
     <div>
       <h4 class="inline-block" style="display: inline-block; padding: 15px">
@@ -14,7 +14,7 @@
       <mat-form-field>
         <mat-label>Select User Status</mat-label>
         <mat-select
-          [value]="defaultUserCategory"
+          [value]="userCategory"
           (selectionChange)="onUserCategoryChange($event.value)"
         >
           <mat-option value="UNVERIFIED" selected>Pending Users</mat-option>
@@ -32,15 +32,17 @@
       <mat-label>Search User By username or email or role</mat-label>
       <input
         type="search"
+        autofocus
         matInput
         placeholder="Search users"
+        [value]="searchTerm"
         (input)="searchUser($event.target.value)"
       />
     </mat-form-field>
   </div>
 
-  <div class="row" *ngIf="users$ | async as users">
-    <div class="col-md-4 col-sm-6 col-xs-12" *ngFor="let user of users">
+  <div class="row" *ngIf="!vm.isLoading">
+    <div class="col-md-4 col-sm-6 col-xs-12" *ngFor="let user of vm.users">
       <mat-card class="example-card">
         <div class="intro-header">
           <div class="inner-header">
@@ -103,12 +105,18 @@
       </mat-card>
     </div>
 
-    <div *ngIf="users.length === 0">
+    <div *ngIf="vm.users.length === 0">
       <mat-card>No users to display</mat-card>
     </div>
   </div>
 
-  <div class="center loading-screen" *ngIf="isLoading$ | async">
+  <div class="center loading-screen" *ngIf="vm.isLoading">
     <app-loading-spinner color="accent"></app-loading-spinner>
   </div>
 </div>
+
+<ng-template #loading>
+  <div class="center loading-screen">
+    <app-loading-spinner color="primary"></app-loading-spinner>
+  </div>
+</ng-template>

@@ -4,11 +4,12 @@ import {
   OnDestroy,
   OnInit,
 } from "@angular/core";
-import { BehaviorSubject, combineLatest, EMPTY, Subject } from "rxjs";
+import { BehaviorSubject, combineLatest, EMPTY, of, Subject } from "rxjs";
 import {
   catchError,
   debounceTime,
   distinctUntilChanged,
+  finalize,
   map,
   takeUntil,
   tap,
@@ -26,49 +27,59 @@ import { AdminService } from "./admin.service";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminComponent implements OnInit, OnDestroy {
-  defaultUserCategory = UserStatus.UNVERIFIED;
-
-  private readonly searchTermSubject = new BehaviorSubject<string>("");
-  readonly searchTerm$ = this.searchTermSubject.asObservable();
+  readonly userCategory = this.adminService.getUserCategory();
+  readonly searchTerm = this.adminService.getSearchTerm();
 
   private readonly isLoadingSubject = new BehaviorSubject<boolean>(true);
   readonly isLoading$ = this.isLoadingSubject.asObservable();
 
+  private readonly usersSubject = new BehaviorSubject<IAppUser[]>([]);
+  readonly usersAction$ = this.usersSubject.asObservable();
+
   private readonly destroy$ = new Subject<void>();
 
-  users$ = combineLatest([
-    this.adminService.usersWithAction$,
+  users$ = combineLatest(
+    this.usersAction$,
     this.adminService.userCategorySelectedAction$,
-    this.searchTerm$.pipe(
+    this.adminService.searchTerm$.pipe(
       debounceTime(500),
       distinctUntilChanged(),
       takeUntil(this.destroy$)
-    ),
-  ]).pipe(
+    )
+  ).pipe(
     takeUntil(this.destroy$),
     tap(() => startLoading(this.isLoadingSubject)),
-    map(([users, userSelectedCategory, searchTerm]) => {
-      if (userSelectedCategory === UserStatus.ALL && !searchTerm) {
+    map(([users, status, searchTerm]) => {
+      // if status is all and search term is empty return all the users
+      if (status === UserStatus.ALL && !searchTerm) {
         return users;
       }
-      return users.filter((user) => {
-        if (
-          (userSelectedCategory === UserStatus.ALL &&
-            this.filterUserBySearchTerm(user, searchTerm)) ||
-          (userSelectedCategory === user.status &&
-            this.filterUserBySearchTerm(user, searchTerm))
-        ) {
-          return true;
-        }
-        return false;
+      // if status is not all and search term is empty filter users by the selected status
+      if (!searchTerm) {
+        return users.filter((user) => user.status === status);
+      }
+      // if search term is not empty filter by the search term and selected status
+      return users.filter((user: IAppUser) => {
+        return (
+          (status === UserStatus.ALL || status === user.status) &&
+          this.filterUserBySearchTerm(user, searchTerm)
+        );
       });
     }),
     tap(() => stopLoading(this.isLoadingSubject)),
     catchError((err) => {
-      stopLoading(this.isLoadingSubject);
       this.snackbarService.showSnackBar(err);
-      return EMPTY;
-    })
+      return of([]);
+    }),
+    finalize(() => stopLoading(this.isLoadingSubject))
+  );
+
+  vm$ = combineLatest(this.users$, this.isLoading$).pipe(
+    takeUntil(this.destroy$),
+    map(([users, isLoading]) => ({
+      users,
+      isLoading,
+    }))
   );
 
   constructor(
@@ -77,22 +88,22 @@ export class AdminComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.onUserCategoryChange(this.defaultUserCategory);
+    this.initializeUsers();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
     this.isLoadingSubject.complete();
-    this.searchTermSubject.complete();
+    this.usersSubject.complete();
   }
 
   searchUser(searchTerm: string): void {
-    this.searchTermSubject.next(searchTerm.trim().toLowerCase());
+    this.adminService.searchUser(searchTerm);
   }
 
   onUserCategoryChange(selectedUserCategory: string): void {
-    this.adminService.selectUserCategory(selectedUserCategory);
+    this.adminService.onUserCategoryChange(selectedUserCategory);
   }
 
   takeDecision(userId: number, adminDecision: string): void {
@@ -102,7 +113,8 @@ export class AdminComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         catchError(() => EMPTY)
       )
-      .subscribe(() => {
+      .subscribe((user: IAppUser) => {
+        this.setUser(user);
         this.snackbarService.showSnackBar(
           `user has been ${adminDecision.toLowerCase()}ed`
         );
@@ -116,9 +128,27 @@ export class AdminComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         catchError(() => EMPTY)
       )
-      .subscribe((user) => {
+      .subscribe((user: IAppUser) => {
+        this.setUser(user);
         this.snackbarService.showSnackBar(`${user.username} has been enabled`);
       });
+  }
+
+  private initializeUsers(): void {
+    this.adminService
+      .getAllUsers()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(() => of([]))
+      )
+      .subscribe((users) => this.usersSubject.next(users));
+  }
+
+  private setUser(newUser: IAppUser): void {
+    const currentUsers = this.usersSubject.getValue();
+    this.usersSubject.next(
+      currentUsers.map((user) => (user.id === newUser.id ? newUser : user))
+    );
   }
 
   private filterUserBySearchTerm(user: IAppUser, searchTerm: string): boolean {
