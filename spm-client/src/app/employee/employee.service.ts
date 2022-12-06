@@ -35,6 +35,7 @@ import {
   ISearchResult,
   mapSearchResults,
   sendTaskApproachingDeadlineNotification,
+  showError,
 } from "../shared/utility/common";
 import { handleError } from "../shared/utility/error";
 import { TaskStatus } from "./../shared/interfaces/task.interface";
@@ -82,11 +83,7 @@ export class EmployeeService implements OnDestroy {
     takeWhile((pagedData) => this.checkPagedData(pagedData)),
     pluck("data"),
     scan((acc, value) => [...acc, ...value], [] as IProject[]),
-    catchError((err) =>
-      handleError(err, (errorMessage) => {
-        this.snackbarService.showSnackBar(errorMessage);
-      })
-    )
+    catchError((err) => handleError(err, showError.call(this)))
   );
 
   tasks$ = combineLatest(
@@ -98,15 +95,9 @@ export class EmployeeService implements OnDestroy {
       project.tasks.filter((task) => task.user.id === currentUser.id)
     ),
     tap((tasks) => {
-      tasks.forEach((task) => {
-        sendTaskApproachingDeadlineNotification.call(this, task);
-      });
+      sendTaskApproachingDeadlineNotification.call(this, tasks);
     }),
-    catchError((err) =>
-      handleError(err, (errorMessage) => {
-        this.snackbarService.showSnackBar(errorMessage);
-      })
-    )
+    catchError((err) => handleError(err, showError.call(this)))
   );
 
   constructor(

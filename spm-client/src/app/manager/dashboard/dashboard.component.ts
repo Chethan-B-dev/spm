@@ -29,7 +29,6 @@ import {
   AvatarImage,
   IAppUser,
 } from "src/app/shared/interfaces/user.interface";
-import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { startLoading, stopLoading } from "src/app/shared/utility/loading";
 import { ManagerService } from "../services/manager.service";
 import {
@@ -80,6 +79,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private readonly managerService: ManagerService) {}
 
   ngOnInit(): void {
+    console.log("executing again");
+
     this.projects$ = combineLatest(
       this.managerService.projectsWithAdd$,
       this.projectSort$,
@@ -89,13 +90,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
       tap(() => startLoading(this.isLoadingSubject)),
       map(([projects, projectSort, projectSortOrder, searchTerm]) => {
-        const filteredProjects = projects.filter((project) => {
-          const { name, description } = project;
-          return (
-            name.toLowerCase().includes(searchTerm) ||
-            description.toLowerCase().includes(searchTerm)
-          );
-        });
+        const filteredProjects = searchTerm
+          ? projects.filter((project) => {
+              const { name, description } = project;
+              return (
+                name.toLowerCase().includes(searchTerm) ||
+                description.toLowerCase().includes(searchTerm)
+              );
+            })
+          : projects;
 
         this.managerService.loadMoreProjects(
           filteredProjects.length >= this.projectPageSize
@@ -202,7 +205,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     projects: IProject[],
     sort: ProjectSort,
     sortOrder: ProjectSortOrder
-  ) {
+  ): IProject[] {
     switch (sort) {
       case ProjectSort.CREATED:
       case ProjectSort.TITLE:

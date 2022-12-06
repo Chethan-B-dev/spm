@@ -36,13 +36,14 @@ import {
 import { ITodo } from "src/app/shared/interfaces/todo.interface";
 import { IAppUser, UserRole } from "src/app/shared/interfaces/user.interface";
 import { NotificationService } from "src/app/shared/services/notification.service";
-import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import { SharedService } from "src/app/shared/services/shared.service";
+import { SnackbarService } from "src/app/shared/services/snackbar.service";
 import {
   ISearchGroup,
   ISearchResult,
   mapSearchResults,
   sendProjectApproachingDeadlineNotification,
+  showError,
 } from "src/app/shared/utility/common";
 import { handleError } from "src/app/shared/utility/error";
 import { environment } from "src/environments/environment";
@@ -108,16 +109,10 @@ export class ManagerService implements OnDestroy {
     takeWhile((pagedData) => this.checkPagedData(pagedData, DataType.PROJECT)),
     pluck("data"),
     tap((projects) => {
-      projects.forEach((project) => {
-        sendProjectApproachingDeadlineNotification.call(this, project);
-      });
+      sendProjectApproachingDeadlineNotification.call(this, projects);
     }),
     scan((acc, value) => [...acc, ...value], [] as IProject[]),
-    catchError((err) =>
-      handleError(err, (errorMessage) => {
-        this.snackbarService.showSnackBar(errorMessage);
-      })
-    )
+    catchError((err) => handleError(err, showError.call(this)))
   );
 
   users$ = this.stateRefresh$.pipe(
@@ -128,31 +123,19 @@ export class ManagerService implements OnDestroy {
     takeWhile((pagedData) => this.checkPagedData(pagedData, DataType.USER)),
     pluck("data"),
     scan((acc, value) => [...acc, ...value], [] as IAppUser[]),
-    catchError((err) =>
-      handleError(err, (errorMessage) => {
-        this.snackbarService.showSnackBar(errorMessage);
-      })
-    )
+    catchError((err) => handleError(err, showError.call(this)))
   );
 
   projectsWithAdd$: Observable<IProject[]> = this.stateRefresh$.pipe(
     switchMap(() => merge(this.pagedProjects$, this.projectAction$)),
     scan((acc, value) => this.modifyProjects(acc, value), [] as IProject[]),
-    catchError((err) =>
-      handleError(err, (errorMessage) => {
-        this.snackbarService.showSnackBar(errorMessage);
-      })
-    ),
+    catchError((err) => handleError(err, showError.call(this))),
     shareReplay(1)
   );
 
   tasks$ = this.selectedProject$.pipe(
     pluck("tasks"),
-    catchError((err) =>
-      handleError(err, (errorMessage) => {
-        this.snackbarService.showSnackBar(errorMessage);
-      })
-    )
+    catchError((err) => handleError(err, showError.call(this)))
   );
 
   tasksWithAdd$ = merge(this.tasks$, this.taskInsertedAction$).pipe(
@@ -160,11 +143,7 @@ export class ManagerService implements OnDestroy {
       (acc, value) => (value instanceof Array ? [...value] : [value, ...acc]),
       [] as ITask[]
     ),
-    catchError((err) =>
-      handleError(err, (errorMessage) => {
-        this.snackbarService.showSnackBar(errorMessage);
-      })
-    ),
+    catchError((err) => handleError(err, showError.call(this))),
     shareReplay(1)
   );
 
@@ -204,6 +183,7 @@ export class ManagerService implements OnDestroy {
   }
 
   getPagedProjects(pageNumber: number): Observable<IPagedData<IProject>> {
+    console.log("calling page projects");
     const params = new HttpParams().set("pageNumber", pageNumber.toString());
     return this.http.get<IPagedData<IProject>>(
       `${this.managerUrl}/projects/paged`,
@@ -226,6 +206,7 @@ export class ManagerService implements OnDestroy {
   }
 
   getMoreUsers(pageNumber: number): Observable<IPagedData<IAppUser>> {
+    console.log("calling page users");
     const params = new HttpParams().set("pageNumber", pageNumber.toString());
     return this.http.get<IPagedData<IAppUser>>(`${this.managerUrl}/employees`, {
       params,
@@ -272,18 +253,17 @@ export class ManagerService implements OnDestroy {
       })
       .pipe(
         tap((project) => {
-          this.editProjectAction(project);
+          this.performProjectAction(project, ICrudOperation.UPDATE);
           this.refresh();
         })
       );
   }
 
   setEmployeeDesignation(employee: IAppUser): Observable<IAppUser> {
+    const { id, designation } = employee;
     return this.http.put<IAppUser>(
-      `${this.managerUrl}/edit-designation/${employee.id}`,
-      {
-        designation: employee.designation,
-      }
+      `${this.managerUrl}/edit-designation/${id}`,
+      { designation }
     );
   }
 
@@ -303,7 +283,9 @@ export class ManagerService implements OnDestroy {
     };
     return this.http
       .post<IProject>(`${this.managerUrl}/create-project`, requestBody)
-      .pipe(tap((project) => this.addProjectAction(project)));
+      .pipe(
+        tap((project) => this.performProjectAction(project, ICrudOperation.ADD))
+      );
   }
 
   editProject(
@@ -328,7 +310,7 @@ export class ManagerService implements OnDestroy {
       )
       .pipe(
         tap((project) => {
-          this.editProjectAction(project);
+          this.performProjectAction(project, ICrudOperation.UPDATE);
           this.refresh();
         })
       );
@@ -405,7 +387,7 @@ export class ManagerService implements OnDestroy {
   private modifyProjects(
     projects: IProject[],
     projectAction: ICrudAction<IProject> | IProject[]
-  ) {
+  ): IProject[] {
     if (projectAction instanceof Array) {
       return [...projectAction];
     }
@@ -419,18 +401,8 @@ export class ManagerService implements OnDestroy {
     return [...projects];
   }
 
-  private addProjectAction(newProject: IProject): void {
-    this.projectSubject.next({
-      data: newProject,
-      action: ICrudOperation.ADD,
-    });
-  }
-
-  private editProjectAction(editedProject: IProject): void {
-    this.projectSubject.next({
-      data: editedProject,
-      action: ICrudOperation.UPDATE,
-    });
+  private performProjectAction(data: IProject, action: ICrudOperation): void {
+    this.projectSubject.next({ data, action });
   }
 
   private addTask(newTask: ITask): void {

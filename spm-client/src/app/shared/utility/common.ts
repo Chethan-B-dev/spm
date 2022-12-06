@@ -65,17 +65,17 @@ export interface PieData<T> {
   data: T[];
 }
 
-export function myTitleCase(string) {
-  let splitString = string.toLowerCase().split(" ");
+export function myTitleCase(string: string): string {
+  const splitString = string.toLowerCase().split(" ");
   for (let i = 0; i < splitString.length; i++) {
-    splitString[i] =
-      splitString[i].charAt(0).toUpperCase() + splitString[i].substring(1);
+    const firstLetter = splitString[i].charAt(0).toUpperCase();
+    splitString[i] = firstLetter + splitString[i].substring(1);
   }
   return splitString.join(" ");
 }
 
 export function mapSearchResults(searchResults: ISearchResult): ISearchGroup[] {
-  const dataTypesNameKey = {
+  const dataTypesNameKey: IStringMap<string> = {
     [DataType.PROJECT]: "name",
     [DataType.USER]: "username",
     [DataType.TASK]: "name",
@@ -96,34 +96,25 @@ export function mapSearchResults(searchResults: ISearchResult): ISearchGroup[] {
 }
 
 export function sendProjectApproachingDeadlineNotification(
-  project: IProject
+  data: IProject | IProject[]
 ): void {
-  const currentDate = new Date();
-  const diffTime = Math.abs(+currentDate - +new Date(project.toDate));
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  if (diffDays <= 3) {
-    const notification: INotification = {
-      userId: project.manager.id,
-      notification: `Project: ${project.name} is approaching deadline, ${diffDays} days left`,
-      time: Date.now(),
-    };
-    this.notificationService.addNotification(notification);
+  if (data instanceof Array) {
+    data.forEach((project) => sendProjectDeadlineNotification(project));
+  } else {
+    sendProjectDeadlineNotification(data);
   }
 }
 
-export function sendTaskApproachingDeadlineNotification(task: ITask): void {
-  const currentDate = new Date();
-  const diffTime = Math.abs(+currentDate - +new Date(task.deadLine));
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  if (diffDays <= 3) {
-    const notification: INotification = {
-      userId: task.user.id,
-      notification: `Task: ${task.name} is approaching deadline, ${diffDays} days left`,
-      time: Date.now(),
-    };
-    this.notificationService.addNotification(notification);
+export function sendTaskApproachingDeadlineNotification(
+  data: ITask | ITask[]
+): void {
+  if (data instanceof Array) {
+    data.forEach((task) => sendTaskDeadlineNotification(task));
+  } else {
+    sendTaskDeadlineNotification(data);
   }
 }
+
 /**
  * this function returns the difference between two dates in days
  * @param fromDate
@@ -136,4 +127,34 @@ export function differenceBetweenTwoDays(fromDate: Date, toDate: Date): number {
 
 export function goBack(): void {
   window.history.go(-1);
+}
+
+export function showError(): (err: string) => void {
+  return (err: string) => this.snackbarService.showSnackBar(err);
+}
+
+function sendProjectDeadlineNotification(project: IProject): void {
+  const diffTime = Math.abs(+new Date() - +new Date(project.toDate));
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays <= 3) {
+    const notification: INotification = {
+      userId: project.manager.id,
+      notification: `Project: ${project.name} is approaching deadline, ${diffDays} days left`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
+  }
+}
+
+function sendTaskDeadlineNotification(task: ITask): void {
+  const diffTime = Math.abs(+new Date() - +new Date(task.deadLine));
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays <= 3) {
+    const notification: INotification = {
+      userId: task.user.id,
+      notification: `Task: ${task.name} is approaching deadline, ${diffDays} days left`,
+      time: Date.now(),
+    };
+    this.notificationService.addNotification(notification);
+  }
 }

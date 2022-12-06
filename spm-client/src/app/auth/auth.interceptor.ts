@@ -8,6 +8,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { SnackbarService } from "../shared/services/snackbar.service";
+import { showError } from "../shared/utility/common";
 import { handleError } from "../shared/utility/error";
 import { AuthService } from "./auth.service";
 @Injectable()
@@ -30,12 +31,8 @@ export class AuthInterceptor implements HttpInterceptor {
         },
       });
     }
-    return next.handle(request).pipe(
-      catchError((err) =>
-        handleError(err, (errorMessage) => {
-          this.snackbarService.showSnackBar(errorMessage);
-        })
-      )
-    );
+    return next
+      .handle(request)
+      .pipe(catchError((err) => handleError(err, showError.call(this))));
   }
 }

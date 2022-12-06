@@ -3,7 +3,7 @@ import { Observable, throwError } from "rxjs";
 
 export function handleError(
   err: HttpErrorResponse | string,
-  callBack: Function
+  callBack: (err: string) => void
 ): Observable<never> {
   let errorMessage: string;
   if (typeof err === "string") {

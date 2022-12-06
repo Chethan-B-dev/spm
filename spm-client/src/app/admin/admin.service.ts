@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { environment } from "src/environments/environment";
 import { IAppUser, UserStatus } from "../shared/interfaces/user.interface";
@@ -7,7 +7,7 @@ import { IAppUser, UserStatus } from "../shared/interfaces/user.interface";
 @Injectable({
   providedIn: "root",
 })
-export class AdminService {
+export class AdminService implements OnDestroy {
   readonly defaultUserCategory = UserStatus.UNVERIFIED;
   private readonly adminUrl = environment.adminUrl;
 
@@ -52,5 +52,10 @@ export class AdminService {
 
   enableUser(userId: number): Observable<IAppUser> {
     return this.http.get<IAppUser>(`${this.adminUrl}/enable/${userId}`);
+  }
+
+  ngOnDestroy(): void {
+    this.userCategorySelectedSubject.complete();
+    this.searchTermSubject.complete();
   }
 }
