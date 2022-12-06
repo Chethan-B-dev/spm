@@ -18,7 +18,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,20 +25,19 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Objects.isNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private final AuthenticationManager authenticationManager;
     private final AppUserService userService;
-
+    private final JwtTokenUtil jwtTokenUtil;
     @Value("${jwt.secret}")
     private String jwtSecret;
-
-    private final JwtTokenUtil jwtTokenUtil;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CustomAuthenticationFilter(
             JwtTokenUtil jwtTokenUtil,
@@ -55,10 +53,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        if (email == null || password == null) {
+        if (isNull(email) || isNull(password)) {
             try {
-                Map<String, String> requestMap =
-                        objectMapper.readValue(request.getInputStream(), HashMap.class);
+                Map<String, String> requestMap = objectMapper.readValue(request.getInputStream(), HashMap.class);
                 email = requestMap.get("email");
                 password = requestMap.get("password");
             } catch (IOException e) {
@@ -66,11 +63,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             }
         }
         AppUser user = userService.getUser(email);
-        if (user == null)
+        if (isNull(user)) {
             throw new AuthenticationServiceException("email or password is incorrect");
+        }
         MyAppUserDetails myUserDetails = new MyAppUserDetails(user);
         UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(myUserDetails.getUsername(), password, myUserDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(myUserDetails.getUsername(), password, myUserDetails.getAuthorities());
         return authenticationManager.authenticate(authenticationToken);
     }
 

@@ -3,6 +3,7 @@ package com.example.spm.config;
 import com.example.spm.filter.CustomAuthenticationFilter;
 import com.example.spm.filter.JwtAuthenticationEntryPoint;
 import com.example.spm.filter.JwtTokenFilter;
+import com.example.spm.model.enums.UserRole;
 import com.example.spm.service.AppUserService;
 import com.example.spm.utility.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -28,16 +29,14 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    public static final Set<String> whiteListUrls =
+            Set.of("/api/login", "/api/auth/**", "/api/shared/get-admin");
     private final JwtTokenFilter jwtTokenFilter;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final AppUserService userService;
     private final JwtTokenUtil jwtTokenUtil;
-
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    public static final List<String> whiteListUrls =
-            List.of("/api/login", "/api/test/**", "/api/auth/**", "/api/shared/get-admin");
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -53,12 +52,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint);
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers(whiteListUrls.toArray(new String[] {})).permitAll();
+        http.authorizeRequests().antMatchers(whiteListUrls.toArray(new String[]{})).permitAll();
         http.authorizeRequests().antMatchers("/api/shared/get-admin").permitAll();
-        http.authorizeRequests().antMatchers("/api/admin/**").hasAnyAuthority("ADMIN");
-        http.authorizeRequests().antMatchers("/api/manager/**").hasAnyAuthority("MANAGER", "ADMIN");
-        http.authorizeRequests().antMatchers("/api/employee/**").hasAnyAuthority("EMPLOYEE", "ADMIN");
-        http.authorizeRequests().antMatchers("/api/shared/**").hasAnyAuthority("EMPLOYEE", "MANAGER", "ADMIN");
+        http.authorizeRequests().antMatchers("/api/admin/**")
+                .hasAnyAuthority(UserRole.ADMIN.name());
+        http.authorizeRequests().antMatchers("/api/manager/**")
+                .hasAnyAuthority(UserRole.MANAGER.name(), UserRole.ADMIN.name());
+        http.authorizeRequests().antMatchers("/api/employee/**")
+                .hasAnyAuthority(UserRole.EMPLOYEE.name(), UserRole.ADMIN.name());
+        http.authorizeRequests().antMatchers("/api/shared/**")
+                .hasAnyAuthority(UserRole.EMPLOYEE.name(), UserRole.MANAGER.name(), UserRole.ADMIN.name());
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

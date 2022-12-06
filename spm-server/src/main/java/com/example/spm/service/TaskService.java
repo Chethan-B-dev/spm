@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 @Service
 @Slf4j
@@ -31,7 +34,7 @@ public class TaskService {
                 .createdDate(LocalDate.now())
                 .description(createTaskDTO.getDescription())
                 .project(project)
-                .priority(createTaskDTO.getPriority() != null ? createTaskDTO.getPriority() : TaskPriority.LOW)
+                .priority(ofNullable(createTaskDTO.getPriority()).orElse(TaskPriority.LOW))
                 .status(TaskStatus.IN_PROGRESS)
                 .user(employee)
                 .deadLine(createTaskDTO.getDeadLine())
@@ -59,13 +62,15 @@ public class TaskService {
         return taskRepository.findAllByProjectId(projectId);
     }
 
+    @Transactional
+    @Modifying
     public Task updateTask(Integer taskId, UpdateTaskDTO updateTaskDTO) {
         Task task = checkIfTaskExists(taskId);
         task.setName(updateTaskDTO.getTaskName());
         task.setDeadLine(updateTaskDTO.getDeadline());
         task.setPriority(updateTaskDTO.getPriority());
         task.setDescription(updateTaskDTO.getDescription());
-        return taskRepository.save(task);
+        return task;
     }
 
     public List<Task> getUserTasks(Integer projectId, Integer userId) {
@@ -84,11 +89,13 @@ public class TaskService {
         return taskRepository.getAllTasksWithSearchKeyAndManagerId(managerId, searchKey);
     }
 
+    @Transactional
+    @Modifying
     public Task completeTask(Integer taskId) {
         Task task = checkIfTaskExists(taskId);
         task.setStatus(TaskStatus.COMPLETED);
         task.setCompletedDate(LocalDate.now());
-        return taskRepository.save(task);
+        return task;
     }
 
     public void checkIfTaskBelongsToManager(Task task, MyAppUserDetails loggedInUser) {

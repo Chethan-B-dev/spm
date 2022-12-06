@@ -141,13 +141,12 @@ public class ManagerService {
     public List<Todo> getAllTaskTodos(Integer taskId, MyAppUserDetails loggedInUser) {
         Task task = taskService.checkIfTaskExists(taskId);
         taskService.checkIfTaskBelongsToEmployee(task, loggedInUser.getUser().getId());
-        return todoService.getAllTaskTodos(taskId);
+        return task.getTodos();
     }
 
     @Transactional
     @Modifying
     public Todo updateTodo(Integer todoId, UpdateTodoDTO updateTodoDTO) {
-        todoService.checkIfTodoExists(todoId);
         return todoService.updateTodo(todoId, updateTodoDTO);
     }
 
@@ -156,6 +155,7 @@ public class ManagerService {
     }
 
     public List<Issue> getAllIssues(Integer projectId) {
+        projectService.checkIfProjectExists(projectId);
         return issueService.getAllIssues(projectId);
     }
 

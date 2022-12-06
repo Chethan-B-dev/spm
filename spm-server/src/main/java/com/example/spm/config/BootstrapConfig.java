@@ -18,17 +18,20 @@ public class BootstrapConfig implements CommandLineRunner {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private static final String username = "admin";
+
+
     @Override
     @Transactional
     public void run(String... args) throws Exception {
         // Creating an admin if not already exists to login with admin/admin creds
-        if (!appUserRepository.existsByUsername("admin") && !appUserRepository.existsByEmail("admin@test.com")) {
+        if (!appUserRepository.existsByUsername(username) && !appUserRepository.existsByEmail("admin@test.com")) {
             AppUser admin = AppUser.builder()
                     .status(UserStatus.VERIFIED)
                     .role(UserRole.ADMIN)
                     .email("admin@test.com")
-                    .username("admin")
-                    .password(passwordEncoder.encode("admin"))
+                    .username(username)
+                    .password(passwordEncoder.encode(username))
                     .build();
             appUserRepository.save(admin);
         }

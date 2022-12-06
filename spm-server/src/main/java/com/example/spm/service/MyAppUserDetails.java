@@ -3,6 +3,7 @@ package com.example.spm.service;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.model.enums.UserStatus;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,14 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
+@ToString
 public class MyAppUserDetails implements UserDetails {
     private final AppUser user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
-        simpleGrantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
-        return simpleGrantedAuthorities;
+        return List.of(new SimpleGrantedAuthority(user.getRole().toString()));
     }
 
     @Override
@@ -56,12 +56,5 @@ public class MyAppUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return user.getStatus().equals(UserStatus.VERIFIED);
-    }
-
-    @Override
-    public String toString() {
-        return "MyAppUserDetails{" +
-                "user=" + user +
-                '}';
     }
 }

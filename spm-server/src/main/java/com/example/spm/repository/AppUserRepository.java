@@ -14,18 +14,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AppUserRepository extends JpaRepository<AppUser, Integer> {
-    AppUser findByEmailOrUsername (String email, String username);
+    AppUser findByEmailOrUsername(String email, String username);
 
-    boolean existsByUsername (String username);
+    boolean existsByUsername(String username);
+
     @Transactional
     @Modifying
-    Integer deleteByEmail (String email);
-    List<AppUser> findAllByStatus (UserStatus userStatus);
+    Integer deleteByEmail(String email);
 
-    List<AppUser> findAllByStatusAndRoleNot (UserStatus userStatus, UserRole userRole);
-    List<AppUser> findByRoleNot (UserRole userRole);
+    List<AppUser> findAllByStatus(UserStatus userStatus);
 
-    Page<AppUser> findAllByStatusAndRole (UserStatus userStatus, UserRole userRole, Pageable pageable);
+    List<AppUser> findAllByStatusAndRoleNot(UserStatus userStatus, UserRole userRole);
+
+    List<AppUser> findByRoleNot(UserRole userRole);
+
+    Page<AppUser> findAllByStatusAndRole(UserStatus userStatus, UserRole userRole, Pageable pageable);
 
     boolean existsById(Integer userId);
 

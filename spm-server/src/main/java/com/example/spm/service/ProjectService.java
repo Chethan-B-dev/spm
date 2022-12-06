@@ -22,11 +22,13 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 
 
 @Service
@@ -99,28 +101,31 @@ public class ProjectService {
         project.setDescription(createProjectDTO.getDescription());
         project.setToDate(createProjectDTO.getToDate());
         project.setStatus(createProjectDTO.getStatus());
-        if (createProjectDTO.getFiles() != null) project.setFiles(createProjectDTO.getFiles());
-        return projectRepository.save(project);
+        Optional.ofNullable(createProjectDTO.getFiles()).ifPresent(project::setFiles);
+        return project;
     }
 
     public List<AppUser> getAllVerifiedEmployees(Project project) {
+        Set<AppUser> users = new HashSet<>(project.getUsers());
         return appUserService
                 .getVerifiedUsers()
                 .stream()
-                .filter(appUser -> (appUser.getRole().equals(UserRole.EMPLOYEE) && !project.getUsers().contains(appUser)))
-                .collect(Collectors.toList());
+                .filter(appUser -> appUser.getRole().equals(UserRole.EMPLOYEE) && !users.contains(appUser))
+                .collect(toList());
     }
 
+    @Transactional
+    @Modifying
     public Project addUsersToProject(Project project, List<Integer> userIds) {
         userIds.forEach(userId -> {
             AppUser appUser = appUserService.checkIfUserExists(userId);
-            if (appUser.getRole().equals(UserRole.EMPLOYEE))
+            if (appUser.getRole().equals(UserRole.EMPLOYEE)) {
                 project.getUsers().add(appUser);
-            else
+            } else {
                 throw new RoleNotAcceptableException("Role '" + appUser.getRole() + "' is not acceptable for the current action");
+            }
         });
-
-        return projectRepository.save(project);
+        return project;
     }
 
     public List<AppUser> getAllEmployeesOfTheProject(Project project) {

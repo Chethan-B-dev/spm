@@ -14,11 +14,8 @@ import java.util.List;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
-
-    // tested authorization working fine only for admin role
     private final AdminService adminService;
 
-    //tested working fine, frontend done
     @GetMapping
     public ResponseEntity<List<AppUser>> getAllUsers() {
         return new ResponseEntity<>(
@@ -27,7 +24,6 @@ public class AdminController {
         );
     }
 
-    //tested working fine, frontend done
     @GetMapping("/pending")
     public ResponseEntity<List<AppUser>> getPendingUsers() {
         return new ResponseEntity<>(
@@ -36,7 +32,6 @@ public class AdminController {
         );
     }
 
-    //tested working fine
     @GetMapping("/verified")
     public ResponseEntity<List<AppUser>> getVerifiedUsers() {
         return new ResponseEntity<>(
@@ -45,7 +40,6 @@ public class AdminController {
         );
     }
 
-    //tested working fine
     @GetMapping("/enable/{userId}")
     public ResponseEntity<AppUser> enableUser(@PathVariable Integer userId) {
         return ResponseEntity
@@ -53,7 +47,6 @@ public class AdminController {
                 .body(adminService.enableUser(userId));
     }
 
-    // tested working fine
     @PostMapping("/take-decision")
     public ResponseEntity<AppUser> takeDecision(@RequestBody AdminDecisionDTO adminDecisionDTO) {
         return ResponseEntity

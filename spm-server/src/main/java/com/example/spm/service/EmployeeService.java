@@ -25,7 +25,6 @@ public class EmployeeService {
     private final TaskService taskService;
     private final TodoService todoService;
     private final IssueService issueService;
-
     private final AppUserService appUserService;
 
     public List<Project> getAllProjectsByEmployee(final AppUser employee) {
@@ -79,7 +78,7 @@ public class EmployeeService {
     public List<Todo> getAllTaskTodos(Integer taskId, MyAppUserDetails loggedInUser) {
         Task task = taskService.checkIfTaskExists(taskId);
         taskService.checkIfTaskBelongsToEmployee(task, loggedInUser.getUser().getId());
-        return todoService.getAllTaskTodos(taskId);
+        return task.getTodos();
     }
 
     @Transactional

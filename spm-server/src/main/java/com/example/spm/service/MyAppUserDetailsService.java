@@ -3,11 +3,14 @@ package com.example.spm.service;
 import com.example.spm.model.entity.AppUser;
 import com.example.spm.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 
 @Component
@@ -20,17 +23,12 @@ public class MyAppUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         AppUser user = appUserRepository.findByEmailOrUsername(email, email);
-        if (user == null) {
+        if (Objects.isNull(user)) {
             log.error("User not found in the database");
             throw new UsernameNotFoundException("invalid email/password");
         } else {
             log.info("User found in the database: {}", email);
             return new MyAppUserDetails(user);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "my app user details service";
     }
 }

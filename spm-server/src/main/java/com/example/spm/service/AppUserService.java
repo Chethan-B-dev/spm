@@ -26,8 +26,10 @@ import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 
 @Service
 @Slf4j
@@ -39,9 +41,7 @@ public class AppUserService {
     private final PasswordEncoder passwordEncoder;
 
     public static MyAppUserDetails checkIfUserIsLoggedIn(MyAppUserDetails myAppUserDetails) {
-        if (isNull(myAppUserDetails))
-            throw new UserNotLoggedInException("Please Log in");
-        return myAppUserDetails;
+        return ofNullable(myAppUserDetails).orElseThrow(() -> new UserNotLoggedInException("Please Log in"));
     }
 
     public static void checkIfUserIsManager(MyAppUserDetails myAppUserDetails) {
@@ -65,7 +65,7 @@ public class AppUserService {
                 .email(userRegisterDTO.getEmail())
                 .username(userRegisterDTO.getUsername())
                 .password(passwordEncoder.encode(userRegisterDTO.getPassword()))
-                .status(userRegisterDTO.getUserRole() != UserRole.ADMIN ? UserStatus.UNVERIFIED : UserStatus.VERIFIED)
+                .status(UserStatus.UNVERIFIED)
                 .phone(userRegisterDTO.getPhone())
                 .role(userRegisterDTO.getUserRole())
                 .build();
@@ -95,7 +95,7 @@ public class AppUserService {
     public AppUser setDesignation(Integer userId, UserDesignation designation) {
         AppUser user = checkIfUserExists(userId);
         user.setDesignation(designation);
-        return appUserRepository.save(user);
+        return user;
     }
 
     public AppUser getUserById(Integer id) {

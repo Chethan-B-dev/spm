@@ -45,12 +45,12 @@ public class JwtTokenUtil implements Serializable {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    private Boolean ignoreTokenExpiration(String token) {
+    private boolean ignoreTokenExpiration(String token) {
         // here you specify tokens, for that the expiration is ignored
         return false;
     }
@@ -62,7 +62,6 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-
         return Jwts
                 .builder()
                 .setClaims(claims)
@@ -73,12 +72,12 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
-    public Boolean canTokenBeRefreshed(String token) {
-        return (!isTokenExpired(token) || ignoreTokenExpiration(token));
+    public boolean canTokenBeRefreshed(String token) {
+        return ignoreTokenExpiration(token) || !isTokenExpired(token);
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 }

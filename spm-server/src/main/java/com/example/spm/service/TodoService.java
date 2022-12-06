@@ -50,7 +50,6 @@ public class TodoService {
     }
 
     public List<Todo> getAllTaskTodos(Integer taskId) {
-        taskService.checkIfTaskExists(taskId);
         return todoRepository.findAllByTaskId(taskId);
     }
 
